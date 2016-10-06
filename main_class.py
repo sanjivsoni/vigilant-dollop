@@ -1,30 +1,12 @@
-#for Database
-import MySQLdb
+from libraries import *
 
-#Hashing Encryption
-from Crypto.Hash import SHA256
-
-#for UTC time
-from datetime import datetime
-
-#to get current user
-import getpass
-from uuid import getnode as get_mac
-
-import config
-
-conn = MySQLdb.connect(config.DB_HOSTIP, config.DB_USER, config.DB_PASS, config.DB_NAME)      #Establish Connection with DB
+#Databse Connection
+conn = MySQLdb.connect(config.db_hostip, config.db_user, config.db_pass, config.db_name)
 statement = conn.cursor()
 
 
-
-def getCurrentUser():
-    return getpass.getuser()
-
 def currentUTC():
     return datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")
-
-
 
 def encrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
@@ -42,6 +24,31 @@ def insertQueryHelper(raw):
 
 
 class User:
+
+    def sendOTP_mobile(self,case,sendTo):
+        if case == 1:
+            client = TwilioRestClient(config.account_sid, config.auth_token)
+            message = client.messages.create(to = sendTo, from_ = config.from_number, body = config.msg )
+
+    def sendOTP_email(self,case,sendTo):
+        if case == 1:
+            msg = MIMEMultipart()
+            msg['From'] = config.emailid
+            msg['To'] = sendTo
+            msg['Subject'] = config.email_subject
+            body = config.email_msg
+            msg.attach(MIMEText(body, 'plain'))
+
+            server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
+            server.starttls()
+            server.login(config.emailid, config.email_pass)
+            text = msg.as_string()
+            server.sendmail(config.emailid, sendTo, text)
+            server.quit()
+
+
+    def getCurrentUser(self):
+        return getpass.getuser()
 
     def user(self,userDetails):
 
