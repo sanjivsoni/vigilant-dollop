@@ -20,3 +20,7 @@ smtp_domain = "smtp.gmail.com"
 smtp_port = 587
 email_msg = "Your OneTimePassword(OTP) is "
 email_subject = "Your Vigilant Dollop OTP"
+
+#Lock & Unlock commands
+lockCommand = "cd && chmod 666 "
+unlockCommand = "cd && chmod 755 "

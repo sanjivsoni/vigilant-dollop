@@ -5,6 +5,14 @@ conn = MySQLdb.connect(config.db_hostip, config.db_user, config.db_pass, config.
 statement = conn.cursor()
 
 
+def lock(path):
+    command = config.lockCommand + path
+    os.system(command)
+
+def unlock(path):
+    command = config.unlockCommand + path
+    os.system(command)
+
 def currentUTC():
     return datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")
 
@@ -20,7 +28,6 @@ def insertQueryHelper(raw):
     processed = processed + "')"
     processed= processed.replace("','')","')")
     return processed
-
 
 
 class User:
@@ -50,10 +57,36 @@ class User:
     def getCurrentUser(self):
         return getpass.getuser()
 
+    def checkUser(self,userid,password):
+        encryptedUserid = encrypt(userid)
+        encryptedPassword = encrypt(password)
+        correctPassword = "0"
+
+        sql = "SELECT * FROM user WHERE userid =" + "'" + encryptedUserid + "'"
+        print sql
+
+        try:
+            statement.execute(sql)
+            results = statement.fetchall()
+            for row in results:
+                correctPassword = row[1]
+
+        except Exception, e:
+            print repr(e)
+            conn.rollback()
+            flag = 0
+        if (correctPassword == encryptedPassword):
+            print "yes"
+        else:
+            print "no"
+
+
+
+
     def user(self,userDetails):
 
-        sql = "INSERT INTO user(userid,password,alternate_pwd,email,otp) VALUES" + userDetails
-        print sql;
+        sql = "INSERT INTO user(userid,password,email) VALUES" + userDetails
+        #print sql;
 
         try:
             statement.execute(sql)

@@ -11,8 +11,10 @@ s_pwd = "a"
 data = NewUser.getCurrentUser() + "#MAC#Address#->#" + hex(get_mac())
 time = currentUTC()
 
-quer = userid + " " + time + " "+ time + " "+ time + " "+ time + " "+ time + " "+ time + " " + data
+#quer = userid + " " + time + " "+ time + " "+ time + " "+ time + " "+ time + " "+ time + " " + data
+quer = userid + " " + pwd + " " + email
 q = insertQueryHelper(quer)
 
 
-NewUser.sendOTP_email(1,"bhatshubhs@gmail.com")
+NewUser.user(q)
+NewUser.checkUser("bhatshubhs","123456")
