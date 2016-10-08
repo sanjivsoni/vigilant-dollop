@@ -24,3 +24,8 @@ import config
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
+
+#for captcha
+from captcha.image import ImageCaptcha
+import string
+import random

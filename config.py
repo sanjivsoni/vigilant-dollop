@@ -24,3 +24,6 @@ email_subject = "Your Vigilant Dollop OTP"
 #Lock & Unlock commands
 lockCommand = "cd && chmod 666 "
 unlockCommand = "cd && chmod 755 "
+
+#path to font
+fontPath = '/Library/Fonts/Arial Unicode.ttf'
