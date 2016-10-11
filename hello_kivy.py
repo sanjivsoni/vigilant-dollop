@@ -3,18 +3,24 @@ import kivy
 from kivy.app import App
 from kivy.app import ObjectProperty
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.screenmamager import ScreenManager, Screen
 
-class SayThis(BoxLayout):
-    saywhat_text = ObjectProperty(None)
+class LoginScreen(Screen):
+    pass
 
-    def clear(self):
-        self.saywhat_text.text = ""
-        self.saywhat_text.focus = True
+class SignUpScreen(Screen):
+    pass
 
-class SayThisApp(App):
+class MainScreen(BoxLayout):
+    pass
+
+class MyScreenManager(ScreenManager):
+    pass
+
+class AuthenticationApp(App):
     def build(self):
-        return SayThis()
+        return MyScreenManager()
 
 if __name__ == '__main__':
-    SayThisApp().run()
+    AuthenticationApp().run()
 
