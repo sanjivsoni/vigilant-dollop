@@ -1,4 +1,4 @@
-<LoginScreen>:
+<SignupScreen>:
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -33,6 +33,7 @@
                     id: login_button
                     text: 'Login'
                     font_size: '15sp'
+                    on_release: root.manager.current = 'login'
 
                 Button: 
                     id: login_button
@@ -228,7 +229,7 @@
 
 
 
-<SignupScreen>:
+<LoginScreen>:
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -257,6 +258,7 @@
                     id: login_button
                     text: 'Sign Up'
                     font_size: '15sp'
+                    on_press: root.manager.current = 'signup'
 
                 Button: 
                     id: login_button

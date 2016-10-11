@@ -24,10 +24,10 @@ Builder.load_file("authentication.kv")
 # Declare both screens
 
 
-class SignupScreen(Screen):
+class LoginScreen(Screen):
     pass
 
-class LoginScreen(Screen):
+class SignupScreen(Screen):
     def val_change(self):
         label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13']
         label_b = self.ids['bar']
@@ -142,8 +142,9 @@ class LoginScreen(Screen):
 
 # Create the screen manager
 sm = ScreenManager(transition=FadeTransition())
-sm.add_widget(LoginScreen(name='login'))
+
 sm.add_widget(SignupScreen(name='signup'))
+sm.add_widget(LoginScreen(name='login'))
 
 class TestApp(App):
 
