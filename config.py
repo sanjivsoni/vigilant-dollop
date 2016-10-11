@@ -22,8 +22,15 @@ email_msg = "Your OneTimePassword(OTP) is "
 email_subject = "Your Vigilant Dollop OTP"
 
 #Lock & Unlock commands
-lockCommand = "cd && chmod 666 "
-unlockCommand = "cd && chmod 755 "
+changeDirectory = "cd && echo "
+changeOwnerToRoot = " | sudo -S chown -R root "
+lockCommand = "  | sudo -S chmod 666 "
+unlockCommand = " | sudo -S chmod 755 "
 
 #path to font
 fontPath = '/Library/Fonts/Arial Unicode.ttf'
+
+#global variables
+conn=0
+statement=0
+BLOCK_SIZE = 32

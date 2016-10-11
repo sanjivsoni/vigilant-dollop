@@ -6,6 +6,8 @@ import MySQLdb
 
 #Hashing Encryption
 from Crypto.Hash import SHA256
+from Crypto.Cipher import AES
+import base64
 
 #for twilio
 from twilio.rest import TwilioRestClient

@@ -6,23 +6,18 @@ import config
 userid = encrypt("bhatshubhs")
 pwd = encrypt("123456")
 email = encrypt("bhatshubhs12@gmail.com")
-s_pwd = "a"
+sudoPwd = "Macintoshiou"
 #data = NewUser.getCurrentUser() + "#MAC#Address#->#" + hex(get_mac())
 time = currentUTC()
 
 #quer = userid + " " + time + " "+ time + " "+ time + " "+ time + " "+ time + " "+ time + " " + data
-quer = userid + " " + pwd + " " + email
+quer = userid + " " + pwd + " " + email + " " + encryptSudo(pwd,sudoPwd)
 
 #NewUser = User(quer)
 #NewUser.createUser()
 
-login = LoginDetails(quer)
-#login.userCreated()
-login.passwordChanged()
-login.updateLogoutTime()
-login.updateLastOTPtime()
-login.updateFailedLoginTime
-login.recordUpdated()
+au = Authentication(quer)
+au.unlockItem("Desktop/Images")
 
 #NewUser.user(quer)
-#NewUser.checkUser("bhatshubhs","123456")
+#NewUser.checkUser("bhatshubhs","123456")'''
