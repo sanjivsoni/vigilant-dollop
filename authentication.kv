@@ -1,0 +1,137 @@
+<LoginScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1,0.25
+
+            Label:
+                text: 'Vigilantdsjkadhakjshdakjsd Dollop'
+                font_size: '15sp'
+                size_hint: 1, 0.20 
+        
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1, 0.1
+
+                Button: 
+                    id: login_button
+                    text: 'Login'
+                    font_size: '15sp'
+                    on_release: root.manager.current = 'signup'
+
+                Button: 
+                    id: login_button
+                    text: 'Sign Up'
+                    font_size: '15sp'
+
+                Button: 
+                    id: login_button
+                    text: 'Recovershsdhsjhd'
+                    font_size: '15sp'
+
+                Button: 
+                    id: login_button
+                    text: 'Reset'
+                    font_size: '15sp'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1,0.75
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: 1,0.25
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1,0.25
+
+                Label:
+                    text: 'Username:'
+                    font_size: '15sp'
+                    size_hint: 0.5,1
+
+                TextInput:
+                    size_hint: 0.5,1
+                    multiline: False
+                
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1,0.25
+
+                Label:
+                    text: 'Password:'
+                    font_size: '15sp'
+                    size_hint: 0.5,1
+
+                TextInput:
+                    size_hint: 0.5,1
+                    multiline: False
+
+            BoxLayout:
+                orientation: 'vertical'
+                size_hint: 1,0.25
+
+
+
+<SignupScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+        
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1,0.25
+
+            Label:
+                text: 'Vigilant Dollop'
+                font_size: '15sp'
+                size_hint: 1, 0.20 
+        
+
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1, 0.1
+
+                Button: 
+                    id: login_button
+                    text: 'Login'
+                    font_size: '15sp'
+                    on_press: root.manager.current = 'login'
+
+                Button: 
+                    id: login_button
+                    text: 'Sign Up'
+                    font_size: '15sp'
+
+                Button: 
+                    id: login_button
+                    text: 'Recover'
+                    font_size: '15sp'
+
+                Button: 
+                    id: login_button
+                    text: 'Reset'
+                    font_size: '15sp'
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1,0.75
+
+            Button: 
+                text: 'Page'
