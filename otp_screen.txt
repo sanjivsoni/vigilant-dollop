@@ -1,0 +1,43 @@
+#:kivy 1.4
+
+BoxLayout:
+    orientation: 'vertical'
+    padding: 20
+    spacing: 10
+    BoxLayout:
+    	size_hint:1,0.25
+  
+    BoxLayout:
+    	orientation: 'horizontal'
+    	size_hint: 1,0.25
+    	spacing: 10
+    	BoxLayout:
+    		size_hint: 0.3,0.5
+    	BoxLayout:
+    		size_hint: 0.3,0.60
+    	
+    		BoxLayout:
+    			orientation: 'vertical'
+    			spacing: 10
+	   	 	TextInput:
+	   	 		hint_text: 'One Time password'
+	   	 		width: 1
+	   	 		multiline: 'false' 
+ 	   			
+ 	   		BoxLayout:
+ 	   			orientation: 'horizontal'
+ 	   			Button:
+    					text: 'Step 3'
+    				Button:
+    					text: 'Exit'
+    				
+ 	   		
+    	BoxLayout:
+    		size_hint: 0.3,0.5
+    				
+    BoxLayout:
+    	size_hint:1,0.25
+    BoxLayout:
+    	size_hint:1,0.25
+    
+    	

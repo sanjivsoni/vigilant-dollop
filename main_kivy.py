@@ -31,6 +31,16 @@ class SignupScreen(Screen):
     def val_change(self):
         label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13']
         label_b = self.ids['bar']
+
+
+        set_val = 0
+        for num in range(1,14):
+        	label[num] = self.ids[str(num)]
+        	if not(label[num].text == ''):
+        		set_val+=100
+
+        label_b.value =  set_val
+        '''
         label[1] = self.ids['1']
         label[2] = self.ids['2']
         label[3] = self.ids['3']
@@ -73,6 +83,8 @@ class SignupScreen(Screen):
         if not(label[13].text == ''):
             set_val+=100
         label_b.value =  set_val
+		'''
+
 
     def mail_valid():
         mail_e = self.ids['4']
