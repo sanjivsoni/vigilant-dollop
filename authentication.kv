@@ -1,4 +1,10 @@
 <LoginScreen>:
+    username: username
+    password: password
+    message: message
+    recoverButton: recoverButton
+    loginButton: loginButton
+
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -34,17 +40,27 @@
                 BoxLayout:
                     orientation: 'vertical'
                     spacing: 10
+                    Label:
+                        id: message
+
                     TextInput:
+                        id: username
                         hint_text: 'username'
                     
                     TextInput:
+                        id: password
                         hint_text: 'password'
+                        password: True
                     BoxLayout:
                         orientation: 'horizontal'
                         Button:
+                            id: loginButton
                             text: 'Login'
+                            on_release: root.loginEvent()
                         Button:
+                            id: recoverButton
                             text: 'Recover'
+                            on_release: root.recoverEvent()
 
             BoxLayout:
                 size_hint: 0.3,0.5                
@@ -53,8 +69,10 @@
         BoxLayout:
             size_hint:1,0.25
         
-
-<OtpScreen>:
+<UsernameScreen>:
+    username: username
+    message: message
+    
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -89,8 +107,139 @@
             
                 BoxLayout:
                     orientation: 'vertical'
-                    size_hint:1,0.5
                     spacing: 10
+                    Label:
+                        id: message
+
+                    TextInput:
+                        id: username
+                        hint_text: 'username'
+                    
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Button:
+                            id: loginButton
+                            text: 'Next'
+                            on_release: root.usernameEvent()
+                        Button:
+                            id: recoverButton
+                            text: 'Recover Username'
+                            on_release: root.recoverUsernameEvent()
+
+            BoxLayout:
+                size_hint: 0.3,0.5                
+        BoxLayout:
+            size_hint:1,0.25
+        BoxLayout:
+            size_hint:1,0.25
+
+<PasswordScreen>:
+    password: password
+    message: message
+    
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 10
+    
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint: 1,0.25
+            orientation: 'vertical'
+            Button:
+                text:'back'
+                size_hint:0.10,0.2
+                on_press: root.manager.current = 'main'
+
+            Label:
+                size_hint:0.10,0.8
+      
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,0.25
+            spacing: 10
+ 
+            BoxLayout:
+                size_hint: 0.3,0.5
+            BoxLayout:
+                size_hint: 0.3,1
+            
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 10
+                    Label:
+                        id: message
+
+                    TextInput:
+                        id: password
+                        hint_text: 'password'
+                        password: True
+                    
+                    BoxLayout:
+                        orientation: 'horizontal'
+                        Button:
+                            id: loginButton
+                            text: 'Next'
+                            on_release: root.passwordEvent()
+                        Button:
+                            id: recoverButton
+                            text: 'Recover Username'
+                            on_release: root.recoverPasswordEvent()
+
+            BoxLayout:
+                size_hint: 0.3,0.5                
+        BoxLayout:
+            size_hint:1,0.25
+        BoxLayout:
+            size_hint:1,0.25
+
+<OtpScreen>:
+    otp_label: otp_label
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 10
+    
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint: 1,0.25
+            orientation: 'vertical'
+            Button:
+                text:'back'
+                size_hint:0.10,0.2
+                on_press: root.manager.current = 'main'
+
+            Label:
+                size_hint:0.10,0.8
+      
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,0.25
+            spacing: 10
+ 
+            BoxLayout:
+                size_hint: 0.3,0.5
+            BoxLayout:
+                size_hint: 0.3,1
+            
+                BoxLayout:
+                    orientation: 'vertical'
+                    size_hint:1,0.7
+                    spacing: 10
+
+                    Label:
+                        id: otp_label
+
                     TextInput:
                         hint_text: 'OTP'
                     
