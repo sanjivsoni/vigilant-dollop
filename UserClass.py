@@ -1,4 +1,4 @@
-from libraries import *
+from helperFunctions import *
 
 class User:
 
@@ -23,8 +23,10 @@ class User:
 
     def addPersonalDetails(self,info):
 
+        encryptedInfo = aesEncrypt(config.key,info)
         establishConnection()
-        sql = "INSERT INTO user(userid,first_name,last_name,mobile,dob,ssnid,ssn_type,address,pincode,country) VALUES" + info
+        sql = "INSERT INTO personal(userid,first_name,last_name,dob,ssnid,ssn_type,address,pincode,country) VALUES" + insertQueryHelper(self.userID + " " + encryptedInfo)
+        print sql
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -36,52 +38,18 @@ class User:
 
         closeConnection()
 
-    def verifyMobile(self,case,sendTo):
+    def addSecurityQuestions(self,info):
 
-        if case == 1:
-            generatedOTP = generateOTP()
-            establishConnection()
-            sql = "UPDATE user SET mobileOTP = '" + hashEncrypt(generatedOTP) + "'" + "WHERE userid = " + "'" + self.userID + "'"
+        encryptedInfo = aesEncrypt(config.key,info)
+        establishConnection()
+        sql = "INSERT INTO security_ques(userid,ques1,ques2,ans1,ans2) VALUES" + insertQueryHelper(self.userID + " " + encryptedInfo)
+        try:
+            config.statement.execute(sql)
+            config.conn.commit()
+            flag = 1
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
 
-            try:
-                config.statement.execute(sql)
-                config.conn.commit()
-                flag = 1
-            except Exception, e:
-                print repr(e)
-                config.conn.rollback()
-                flag = 0
-            closeConnection()
-
-            client = TwilioRestClient(config.account_sid, config.auth_token)
-            message = client.messages.create(to = sendTo, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
-
-    def verifyEmail(self,case,sendTo):
-        if case == 1:
-            generatedOTP = generateOTP()
-            establishConnection()
-            sql = "UPDATE user SET emailOTP = '" + hashEncrypt(generatedOTP) + "'" + "WHERE userid = " + "'" + self.userID + "'"
-
-            try:
-                config.statement.execute(sql)
-                config.conn.commit()
-                flag = 1
-            except Exception, e:
-                print repr(e)
-                config.conn.rollback()
-                flag = 0
-            closeConnection()
-
-            msg = MIMEMultipart()
-            msg['From'] = config.emailid
-            msg['To'] = sendTo
-            msg['Subject'] = config.email_subject
-            body = config.email_msg + generatedOTP
-            msg.attach(MIMEText(body, 'plain'))
-
-            server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
-            server.starttls()
-            server.login(config.emailid, config.email_pass)
-            text = msg.as_string()
-            server.sendmail(config.emailid, sendTo, text)
-            server.quit()
+        closeConnection()

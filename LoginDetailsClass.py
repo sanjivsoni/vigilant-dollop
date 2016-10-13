@@ -1,7 +1,9 @@
-from UserClass import User
-from libraries import *
+from helperFunctions import *
 
-class LoginDetails(User):
+class LoginDetails:
+
+    def __init__(self,userID):
+        self.userID = userID
 
     def userCreated(self):
         details = self.userID + " " + currentUTC() + " " + getUserDetails()
@@ -83,34 +85,4 @@ class LoginDetails(User):
 
         closeConnection()
 
-    def updateMobileLastOTPtime(self):
-
-        establishConnection()
-        sql = "UPDATE login_stats SET mobile_last_otp_time = '" + currentUTC() + " '" + ",system_details = '" + getUserDetails() + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        sql = sql.replace("#", " ")
-        try:
-            config.statement.execute(sql)
-            config.conn.commit()
-            print "success"
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
-
-        closeConnection()
-
-    def updateEmailLastOTPtime(self):
-
-        establishConnection()
-        sql = "UPDATE login_stats SET email_last_otp_time = '" + currentUTC() + " '" + ",system_details = '" + getUserDetails() + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        sql = sql.replace("#", " ")
-        try:
-            config.statement.execute(sql)
-            config.conn.commit()
-            print "success"
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
-
-        closeConnection()
+    

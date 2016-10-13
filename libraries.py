@@ -31,8 +31,3 @@ from email.MIMEText import MIMEText
 from captcha.image import ImageCaptcha
 import string
 import random
-
-#Classes
-from AuthenticationClass import *
-from LoginDetailsClass import *
-from UserClass import *

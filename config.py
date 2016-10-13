@@ -24,7 +24,7 @@ email_subject = "Your Vigilant Dollop OTP"
 #Lock & Unlock commands
 changeDirectory = "cd && echo "
 changeOwnerToRoot = " | sudo -S chown -R root "
-lockCommand = "  | sudo -S chmod 666 "
+lockCommand = "  | sudo -S chmod 000 "
 unlockCommand = " | sudo -S chmod 755 "
 
 #path to font
@@ -34,3 +34,6 @@ fontPath = '/Library/Fonts/Arial Unicode.ttf'
 conn=0
 statement=0
 BLOCK_SIZE = 32
+
+#AES key
+key = "*BA@Jy*uHur&v5B7WX%^Ecobv@D&WY#%"

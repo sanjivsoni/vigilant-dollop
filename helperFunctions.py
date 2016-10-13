@@ -1,7 +1,11 @@
 from libraries import *
 
 
-def aesEncrypt(key,plaintext):
+def aesEncrypt(key,plaintextArray):
+
+    plaintexts = plaintextArray.split()
+    totalWords = len(plaintexts)
+    encrypted = ""
 
     blockSize = config.BLOCK_SIZE
     PADDING = '{'
@@ -12,8 +16,10 @@ def aesEncrypt(key,plaintext):
 
     cipher = AES.new(key[0:16])
 
-    encrypted = EncryptAES(cipher, plaintext)
-    return encrypted
+    for i in plaintexts:
+        encrypted = encrypted + " " + EncryptAES(cipher,i)
+
+    return encrypted.strip()
 
 def aesDecrypt(key,encryptedText):
     blockSize = config.BLOCK_SIZE
@@ -42,7 +48,7 @@ def createCaptcha():
 
 def lock(path,key,encryptedSudoPwd):
 
-    sudoPwd = decryptSudo(key,encryptedSudoPwd)
+    sudoPwd = aesDecrypt(key,encryptedSudoPwd)
 
     command = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
     print command
@@ -52,7 +58,7 @@ def lock(path,key,encryptedSudoPwd):
     os.system(command)
 
 def unlock(path,key,encryptedSudoPwd):
-    sudoPwd = decryptSudo(key,encryptedSudoPwd)
+    sudoPwd = aesDecrypt(key,encryptedSudoPwd)
 
     command = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
     os.system(command)
