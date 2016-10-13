@@ -24,7 +24,13 @@ Builder.load_file("authentication.kv")
 # Declare both screens
 
 
+class MenuScreen(Screen):
+    pass
+
 class LoginScreen(Screen):
+    pass
+
+class OtpScreen(Screen):
     pass
 
 class SignupScreen(Screen):
@@ -40,51 +46,6 @@ class SignupScreen(Screen):
         		set_val+=100
 
         label_b.value =  set_val
-        '''
-        label[1] = self.ids['1']
-        label[2] = self.ids['2']
-        label[3] = self.ids['3']
-        label[4] = self.ids['4']
-        label[5] = self.ids['5']
-        label[6] = self.ids['6']
-        label[7] = self.ids['7']
-        label[8] = self.ids['8'] 
-        label[9] = self.ids['9']
-        label[10] = self.ids['10']
-        label[11] = self.ids['11']
-        label[12] = self.ids['12']
-        label[13] = self.ids['13']
-        set_val = 0
-
-        if not(label[1].text == ''):
-            set_val+=100
-        if not(label[2].text == ''):
-            set_val+=100
-        if not(label[3].text == ''):
-            set_val+=100
-        if not(label[4].text == ''):
-            set_val+=100
-        if not(label[5].text == ''):
-            set_val+=100
-        if not(label[6].text == ''):
-            set_val+=100
-        if not(label[7].text == ''):
-            set_val+=100
-        if not(label[8].text == ''):
-            set_val+=100
-        if not(label[9].text == ''):
-            set_val+=100
-        if not(label[10].text == ''):
-            set_val+=100
-        if not(label[11].text == ''):
-            set_val+=100
-        if not(label[12].text == ''):
-            set_val+=100
-        if not(label[13].text == ''):
-            set_val+=100
-        label_b.value =  set_val
-		'''
-
 
     def mail_valid():
         mail_e = self.ids['4']
@@ -155,9 +116,11 @@ class SignupScreen(Screen):
 # Create the screen manager
 sm = ScreenManager(transition=FadeTransition())
 
+#s
+sm.add_widget(MenuScreen(name='main'))
 sm.add_widget(SignupScreen(name='signup'))
 sm.add_widget(LoginScreen(name='login'))
-
+sm.add_widget(OtpScreen(name='otp'))
 class TestApp(App):
 
     def build(self):
