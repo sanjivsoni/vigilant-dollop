@@ -1,74 +1,6 @@
 <LoginScreen>:
     username: username
     password: password
-    message: message
-    recoverButton: recoverButton
-    loginButton: loginButton
-
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 10
-    
-        canvas:
-            Rectangle: 
-                source: 'images/blue.png'
-                pos: self.pos
-                size: self.size
-
-        BoxLayout:
-            size_hint: 1,0.25
-            orientation: 'vertical'
-            Button:
-                text:'back'
-                size_hint:0.10,0.2
-                on_press: root.manager.current = 'main'
-
-            Label:
-                size_hint:0.10,0.8
-      
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1,0.25
-            spacing: 10
- 
-            BoxLayout:
-                size_hint: 0.3,0.5
-            BoxLayout:
-                size_hint: 0.3,1
-            
-                BoxLayout:
-                    orientation: 'vertical'
-                    spacing: 10
-                    Label:
-                        id: message
-
-                    TextInput:
-                        id: username
-                        hint_text: 'username'
-                    
-                    TextInput:
-                        id: password
-                        hint_text: 'password'
-                        password: True
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        Button:
-                            id: loginButton
-                            text: 'Login'
-                            on_release: root.loginEvent()
-                        Button:
-                            id: recoverButton
-                            text: 'Recover'
-                            on_release: root.recoverEvent()
-
-            BoxLayout:
-                size_hint: 0.3,0.5                
-        BoxLayout:
-            size_hint:1,0.25
-        BoxLayout:
-            size_hint:1,0.25
-        
 <UsernameScreen>:
     username: username
     message: message
@@ -103,7 +35,7 @@
             BoxLayout:
                 size_hint: 0.3,0.5
             BoxLayout:
-                size_hint: 0.3,1
+                size_hint: 0.5,0.7
             
                 BoxLayout:
                     orientation: 'vertical'
@@ -167,7 +99,7 @@
             BoxLayout:
                 size_hint: 0.3,0.5
             BoxLayout:
-                size_hint: 0.3,1
+                size_hint: 0.5,0.7
             
                 BoxLayout:
                     orientation: 'vertical'
@@ -178,17 +110,16 @@
                     TextInput:
                         id: password
                         hint_text: 'password'
-                        password: True
                     
                     BoxLayout:
                         orientation: 'horizontal'
                         Button:
-                            id: loginButton
+                            id: passwordButton
                             text: 'Next'
                             on_release: root.passwordEvent()
                         Button:
                             id: recoverButton
-                            text: 'Recover Username'
+                            text: 'Recover Passphrase'
                             on_release: root.recoverPasswordEvent()
 
             BoxLayout:
@@ -198,64 +129,108 @@
         BoxLayout:
             size_hint:1,0.25
 
-<OtpScreen>:
-    otp_label: otp_label
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 10
-    
-        canvas:
-            Rectangle: 
-                source: 'images/blue.png'
-                pos: self.pos
-                size: self.size
+<LevelTwoScreen>:
+	otp:otp
+	send:send
+	minutes: minutes
+	seconds: seconds
 
-        BoxLayout:
-            size_hint: 1,0.25
-            orientation: 'vertical'
-            Button:
-                text:'back'
-                size_hint:0.10,0.2
-                on_press: root.manager.current = 'main'
 
-            Label:
-                size_hint:0.10,0.8
-      
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1,0.25
-            spacing: 10
- 
-            BoxLayout:
-                size_hint: 0.3,0.5
-            BoxLayout:
-                size_hint: 0.3,1
-            
-                BoxLayout:
-                    orientation: 'vertical'
-                    size_hint:1,0.7
-                    spacing: 10
+	BoxLayout:
 
-                    Label:
-                        id: otp_label
-
-                    TextInput:
-                        hint_text: 'OTP'
-                    
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        Button:
-                            text: 'Next'
-                        Button:
-                            text: 'Exit'
-
-            BoxLayout:
-                size_hint: 0.3,0.5                
-        BoxLayout:
-            size_hint:1,0.25
-        BoxLayout:
-            size_hint:1,0.25
+		canvas:
+			Rectangle: 
+				source: 'images/blue.png'
+				pos: self.pos
+				size: self.size
+		orientation: 'vertical'
+		padding: 20
+		spacing: 10
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint: 1, 0.1
+			Label:
+				text: "Enter OTP"
+				font_size: '20sp'
+			BoxLayout:
+			    size_hint: 1,0.5
+			    orientation: 'horizontal'
+			    BoxLayout: 
+			        size_hint:0.25,1
+			    
+			    Button:
+			        size_hint: 0.5,1
+				    id: send
+				    text: 'Sent to Registered Mobile/Email'
+				    font_size:'15sp'
+				    on_release: root.validOtpEvent()
+			    BoxLayout: 
+			        size_hint:0.25,1
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint: 1, 0.5
+			BoxLayout:
+				size_hint: 1,0.9
+				orientation: 'horizontal'
+				BoxLayout:
+					orientation: 'horizontal'
+					size_hint: 0.25,1
+				BoxLayout:
+					orientation: 'horizontal'
+					size_hint: 0.5,0.24 
+					
+					TextInput:
+						id: otp
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+					TextInput:
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+					TextInput:
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+					TextInput:
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+					TextInput:
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+					TextInput:
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+				BoxLayout:
+					size_hint: 0.25,1
+				
+			BoxLayout:
+				size_hint: 1,0.8
+				orientation: 'horizontal'
+				BoxLayout:
+					size_hint: 1,0.25
+				BoxLayout:
+					size_hint: 1,0.25
+					orientation: 'horizontal'
+					Label:
+						id: minutes
+						font_size: '90sp'
+					Label:
+					    id: seconds
+					    font_size: '90sp'
+				BoxLayout:
+					size_hint: 1,0.25
+					
+							
 
 <SignupScreen>:
     BoxLayout:

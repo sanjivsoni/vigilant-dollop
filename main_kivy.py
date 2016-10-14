@@ -6,27 +6,10 @@ from kivy.uix.textinput import TextInput
 from kivy.properties import ObjectProperty
 
 
-from kivy.app import App
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.uix.progressbar import ProgressBar
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.image import Image
 from kivy.uix.popup import Popup
-from kivy.uix.dropdown import DropDown
 import re
 
-from random import randint
-
-Builder.load_file("authentication.kv")
-
-sm = ScreenManager(transition=FadeTransition())
-
+    
 class MenuScreen(Screen):
     pass
 
@@ -209,8 +192,8 @@ class SignupScreen(Screen):
 # Create the screen manager
 
 
-#s
-sm.add_widget(MenuScreen(name='username_screen'))
+screenm = ScreenManager(transition=FadeTransition())
+sm.add_widget(MenuScreen(name='login'))
 class TestApp(App):
 
     def build(self):
