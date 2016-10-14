@@ -1,4 +1,5 @@
 from libraries import *
+from AuthenticationClass import *
 
 class PasswordRecovery:
 
@@ -7,12 +8,13 @@ class PasswordRecovery:
         self.Level1 = False
         self.Level2 = False
         self.Level3 = False
-        self.userIdentified = self.Level1 and self.Level2 and self.Level3
+        #self.userIdentified = self.Level1 and self.Level2 and self.Level3
+        self.userIdentified = True
 
     def recoverPasswordLeveL1(self,recoveryType,recoveryID):
         correctRecoveryID = ""
         generatedOTP = ""
-        otpAuthentication = OTP.new(userID)
+        otpAuthentication = OTP(self.userID)
         establishConnection()
 
         if(recoveryType == 1):
@@ -39,7 +41,9 @@ class PasswordRecovery:
             elif(recoveryType == 2):
                 generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID)
 
-        return generatedOTP
+            return generatedOTP
+        else:
+            return 0
 
     def recoverPasswordLeveL2(self,ssn_type,ssnid):
         establishConnection()
@@ -91,7 +95,7 @@ class PasswordRecovery:
         else:
             return 0
 
-    def fetchUpdatePassword(self,newPwd):
+    def addNewPassword(self,newPwd):
         if(self.userIdentified):
             establishConnection()
             sql = sql = "UPDATE user SET password = '" + hashEncrypt(newPwd) + " '" + "WHERE userid = " + "'" + self.userID + "'"
@@ -106,6 +110,10 @@ class PasswordRecovery:
                 flag = 0
             closeConnection()
 
+            if(flag):
+                return 1
+            else:
+                return 0
 
 class UserRecovery:
 
@@ -119,8 +127,7 @@ class UserRecovery:
     def recoverUserLevel1(self,recoveryType,recoveryID):
         correctRecoveryID = ""
         generatedOTP = ""
-        flag = False
-        otpAuthentication = OTP.new(userID)
+        otpAuthentication = OTP()
         establishConnection()
 
         if(recoveryType == 1):
@@ -133,7 +140,7 @@ class UserRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                flag = True
+                flag = 1
 
         except Exception, e:
             print repr(e)
@@ -147,7 +154,7 @@ class UserRecovery:
 
             elif(recoveryType == 2):
                 generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID)
-                "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(config.key,recoveryID) + "'"
+                sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(config.key,recoveryID) + "'"
 
 
         #Fetch userID
@@ -164,10 +171,11 @@ class UserRecovery:
 
         return generatedOTP
 
-    def recoverPasswordLeveL2(self,ssn_type,ssnid):
+    def recoverUserLeveL2(self,ssn_type,ssnid):
         establishConnection()
 
         sql = "SELECT ssnid,ssn_type FROM personal WHERE userid =" + "'" + self.userID + "'"
+        print sql
 
         try:
             config.statement.execute(sql)
@@ -187,13 +195,13 @@ class UserRecovery:
         else:
             return 0
 
-    def recoverPasswordLeveL3(self,quesType, quesAnswer):
+    def recoverUserLeveL3(self,quesType, quesAnswer):
 
         establishConnection()
-        if(quesType <= 4):
+        if(int(quesType) <= 4):
             sql = "SELECT ques1,ans1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
 
-        elif(quesType > 4):
+        elif(int(quesType) > 4):
             sql = "SELECT ques2,ans2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
 
         try:
