@@ -3,36 +3,66 @@ from LoginDetailsClass import *
 
 class Authentication:
 
-    def __init__(self,userDetails):
-        self.userID = (userDetails).split()[0]
-        self.userPwd = (userDetails).split()[1]
-        self.userDetails = userDetails
+    def __init__(self):
+        self.userID = ""
+        self.userDetails = ""
         self.userVerifiedLevel1 = False
         self.userVerifiedLevel2 = False
         self.userVerifiedLevel3 = False
         #self.authenticationComplete = self.userVerifiedLevel1 and self.userVerifiedLevel2 and self.userVerifiedLevel3
         self.authenticationComplete = True
 
-    def checkUserLevel1(self):
-        correctPassword = ""
-
+    def checkIfUserExists(self,userID):
+        flag = 0
         establishConnection()
-        sql = "SELECT * FROM user WHERE userid =" + "'" + self.userID + "'"
+        sql = "SELECT userid FROM user WHERE userid =" + "'" + hashEncrypt(userID) + "'"
 
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctPassword = row[1]
+                self.userID = row[0]
+                flag = 1
 
         except Exception, e:
             print repr(e)
             config.conn.rollback()
             flag = 0
-        if (correctPassword == self.userPwd):
-            self.userVerifiedLevel1 = True
 
         closeConnection()
+
+        if(flag):
+            return 1
+        else:
+            return 0
+
+    def checkUserLevel1(self,userEnteredPwd):
+        correctPassword = ""
+
+        establishConnection()
+        sql = "SELECT password FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                self.userPwd = row[0]
+                correctPassword = row[0]
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+        closeConnection()
+        if (correctPassword == hashEncrypt(userEnteredPwd)):
+            self.userVerifiedLevel1 = True
+            return 1
+        else:
+            return 0
+
+
+
 
     def lockItem(self,path):
         if(self.authenticationComplete):

@@ -27,26 +27,34 @@ from random import randint
 import re
 from functools import partial
 
+from helperFunctions import*
+
+from UserClass import*
+from LoginDetailsClass import*
+from AuthenticationClass import*
+from UserCredentialsRecoveryClass import *
+
 # Load Kivy file
 Builder.load_file("authentication.kv")
 
 Window.size = (700, 700)
+verifyUser = Authentication()
 
 # Classes for seperate screens
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
-    
+
     # Validate User input Event
     def usernameEvent(self):
         # Stub
-        self.username.text = "elliot"
-
-        # Successful match for Username 
-        if( self.username.text == "elliot"):
+        global verifyUser
+        userExists = verifyUser.checkIfUserExists(self.username.text)
+        # Successful match for Username
+        if(userExists):
             # Change present screen to password screen.
             App.get_running_app().root.current = 'passwordScreen'
-        
+
         # Unsuccessful match for Username
         else:
             self.message.text = 'Invalid Username'
@@ -58,27 +66,28 @@ class UsernameScreen(Screen):
 class PasswordScreen(Screen):
     password = ObjectProperty(None)
     message = ObjectProperty(None)
-    
+
     # Validate User Password input Event
     def passwordEvent(self):
         # Stub
-        self.password.text = "elliot"
-
-        # Successful match for Password 
-        if( self.password.text == "elliot"):
+        global verifyUser
+        print self.password.text
+        passwordMatched = verifyUser.checkUserLevel1(self.password.text)
+        # Successful match for Password
+        if(passwordMatched):
             # Change present screen to password screen.
             App.get_running_app().root.current = 'levelTwoScreen'
-        
+
         # Unsuccessful match for Username
         else:
-            self.message.text = 'Invalid Username'
+            self.message.text = 'Invalid Password'
 
     # Recover User name Event
     def recoverUsernameEvent(self):
         pass
 
 class LevelTwoScreen(Screen):
-    
+
     otp = ObjectProperty(None)
     send = ObjectProperty(None)
     minutes = ObjectProperty(None)
@@ -99,7 +108,7 @@ class LevelTwoScreen(Screen):
     def updateTimer(self, dt):
         if self._minutes >= 0 and self._seconds > 0:
             self._seconds = self._seconds - 1
-            if self._minutes > 0 and self._seconds == 0: 
+            if self._minutes > 0 and self._seconds == 0:
                 self._seconds = 60
                 self._minutes = self._minutes - 1
 
@@ -113,19 +122,19 @@ class LevelTwoScreen(Screen):
                 self.minutes.text = str(self._minutes) + ':'
             else:
                 self.minutes.text = '0' + str(self._minutes) + ':'
-                
+
             if self._seconds > 9:
                 self.seconds.text = str(self._seconds)
             else:
                 self.seconds.text = '0' + str(self._seconds)
-    
+
     def endTimer(self):
         pass
 
     # Save OTP to database incase of app crash
     def saveTimer(self):
         pass
-	
+
     def validOtpEvent(self):
         # Stub
         self.otp.text = "1"
@@ -139,7 +148,7 @@ class LevelTwoScreen(Screen):
         # If valid OTP
         if validOtp == self.otp.text:
            # App.get_running_app().root.current = 'levelThreeScreen'
-            pass            
+            pass
         # Invalid OTP
 
 
@@ -160,5 +169,3 @@ class ThreeLevelAuthApp(App):
 
 if __name__ == '__main__':
 	ThreeLevelAuthApp().run()
-
-
