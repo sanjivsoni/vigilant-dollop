@@ -10,6 +10,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 
 
+from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.label import Label
@@ -77,9 +78,11 @@ class PasswordScreen(Screen):
         if(passwordMatched):
             # Change present screen to password screen.
             App.get_running_app().root.current = 'levelTwoScreen'
+            choice = randint(0, 1)
+            App.get_running_app().root.get_screen('levelTwoScreen').updateButtonLabel(choice)
 
-        # Unsuccessful match for Username
         else:
+            # Unsuccessful match for Username
             self.message.text = 'Invalid Password'
 
     # Recover User name Event
@@ -100,9 +103,16 @@ class LevelTwoScreen(Screen):
     _otp_expired = 0
 
     _time_event = 0
+    _otp_choice = 0
 
     def sendOtp(self):
         pass
+
+    def updateButtonLabel(self, choice):
+        if choice == 1:
+            self.ids.send.text = "Send OTP to Email"
+        else:
+            self.ids.send.text = "Send OTP to Mobile"
 
     # Update Timer after One Second
     def updateTimer(self, dt):
@@ -115,8 +125,8 @@ class LevelTwoScreen(Screen):
             elif self._minutes == 0 and self._seconds == 0:
                 Clock.unschedule(self._time_event)
                 self.ids.send.disabled = False
+
                 # Resend OTP after Timeout
-                sentOtp()
 
             if self._minutes > 9:
                 self.minutes.text = str(self._minutes) + ':'
@@ -151,17 +161,20 @@ class LevelTwoScreen(Screen):
             pass
         # Invalid OTP
 
+class HomeScreen(Screen):
+    pass
 
 
 # Screen Manager
 screenManager = ScreenManager( transition = FadeTransition() )
 
 # Add all screens to screen manager
-screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
-screenManager.add_widget( PasswordScreen( name = 'passwordScreen' ) )
-screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
-screenManager.add_widget( LevelTwoScreen( name = 'levelThreeScreen' ) )
+#screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
+#screenManager.add_widget( PasswordScreen( name = 'passwordScreen' ) )
+#screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
+#screenManager.add_widget( LevelTwoScreen( name = 'levelThreeScreen' ) )
 
+screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
 class ThreeLevelAuthApp(App):
 	def build(self):
