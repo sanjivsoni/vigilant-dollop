@@ -206,6 +206,34 @@ class HomeScreen(Screen):
 	layout.add_widget(bottom_layout)
         self.add_widget(layout)
 
+        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        
+        content = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
+        fileView = FileChooserIconView(id = 'filechooser')
+        
+        buttons = BoxLayout(size_hint_y = None, height = 30)
+        
+        cancel_button = Button(text = 'cancel')
+        cancel_button.bind(on_press = self.cancel)
+
+        load_button = Button(text = 'load')
+        load_button.bind(on_press = partial(self.load,fileView))
+
+        buttons.add_widget(cancel_button)
+        buttons.add_widget(load_button)
+        content.add_widget(fileView)
+        content.add_widget(buttons)
+
+        self._popup = Popup(title="Select Files to lock", content=content,
+                            size_hint=(0.9, 0.9))
+    def cancel(self, *args):
+        self._popup.dismiss()
+
+    def load(self, *args):
+        print args[0].path, args[0].selection 
+        self.dismiss_popup
+        
+    
     def lockFile(self, *args):
         self.counter = self.counter + 1
 #        print args[0]
@@ -227,24 +255,13 @@ class HomeScreen(Screen):
             if child.id == args[0]:
                 grid.remove_widget(child)
     
-#    def printFilePath(self):
-#        print self.ids.icon_view_tab.path, self.ids.icon_view_tab.selection
-    
     def dismiss_popup(self):
         self._popup.dismiss()
 
     def show_load(self, *args):
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        self._popup = Popup(title="Select Files to lock", content=content,
-                            size_hint=(0.9, 0.9))
+        
         self._popup.open()
 
-    def load(self, path, filename):
-        print path, filename
-        with open(os.path.join(path, filename[0])) as stream:
-            self.text_input.text = stream.read()
-
-        self.dismiss_popup()
 
 Factory.register('HomeScreen', cls=HomeScreen)
 Factory.register('LoadDialog', cls=LoadDialog)
