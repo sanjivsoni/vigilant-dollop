@@ -31,3 +31,8 @@ from email.MIMEText import MIMEText
 from captcha.image import ImageCaptcha
 import string
 import random
+
+#for threading
+from threading import Thread
+from time import sleep
+import Queue

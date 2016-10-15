@@ -108,9 +108,9 @@ class Authentication:
 
 class OTP:
     def __init__(self,userID = ""):
-        self.userID = userID
+        self.userID = hashEncrypt(userID)
 
-    def sendOTPforAuth_mobile(self):
+    def sendOTPforAuth_mobile(self,out_queue):
         login_stats = LoginDetails(self.userID)
         userMobile = ""
         establishConnection()
@@ -131,9 +131,10 @@ class OTP:
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = userMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
 
-        return generatedOTP
+        out_queue.put(generatedOTP)
 
-    def sendOTPforAuth_email(self):
+
+    def sendOTPforAuth_email(self,out_queue):
         userEmail = ""
         establishConnection()
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
@@ -162,7 +163,7 @@ class OTP:
         text = msg.as_string()
         server.sendmail(config.emailid, userEmail, text)
         server.quit()
-        return generatedOTP
+        out_queue.put(generatedOTP)
 
     def sendOTPforRecovery_mobile(self,sendToMobile):
 

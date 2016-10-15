@@ -85,4 +85,4 @@ def getUserDetails():
     return  "User:" + getpass.getuser() + "#MAC#Address#:#" + hex(get_mac())
 
 def generateOTP():
-    return ''.join(random.choice(string.ascii_lowercase + string.digits) for j in range(6))
+    return ''.join(random.choice(string.digits) for j in range(6))

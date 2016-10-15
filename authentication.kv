@@ -1,3 +1,6 @@
+<LoginScreen>:
+    username: username
+    password: password
 <UsernameScreen>:
     username: username
     message: message
@@ -182,31 +185,42 @@
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check1_otp()
 					TextInput:
+                        id: otp_2
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check2_otp()
 					TextInput:
+                        id: otp_3
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text:root.check3_otp()
 					TextInput:
+                        id: otp_4
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text:root.check4_otp()
 					TextInput:
+                        id: otp_5
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text:root.check5_otp()
 					TextInput:
+                        id: otp_6
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text:root.check6_otp()
 				BoxLayout:
 					size_hint: 0.25,1
 				
@@ -246,6 +260,51 @@
             id: icon_view_tab
             show_hidden: True
 
-<HomeScreen>:
-    
+<MenuScreen>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 1,0.20
+            Label: 
+                text:'Welcome'
+                font_size:'20sp'
+            Label:
+                text:'to'
+                font_size: '20sp'
+            Label:
+                text:'Vigilant Dollop!'
+                font_size:'20sp'
+       
+        BoxLayout:
+            size_hint:1,0.25        
+        
+        BoxLayout:
+            padding: 20
+            spacing: 10
+            size_hint:1,0.15
+            Button:
+                text: 'Login'   
+                on_press: root.manager.current = 'login'
+            Button:
+                text: 'Sign Up'
+                on_press: root.manager.current = 'signup'
+            Button:
+                text: 'help'
+                on_press: root.manager.current = 'otp'
+        BoxLayout:
+            size_hint:1,0.25
+              
+                            
+        BoxLayout:
+            size_hint:1,0.25
+
             
