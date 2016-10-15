@@ -161,48 +161,69 @@ class LoadDialog(FloatLayout):
 class HomeScreen(Screen):
 
     counter = 0
+    second_counter = 0
 
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
 
         layout = BoxLayout(orientation = 'vertical')
-        top_layout = BoxLayout(orientation= 'vertical', size_hint=(1, 0.1))
+        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1))
         
         button = Button(text="Lock Files", id='lock_button')
-        button.bind(on_press = partial(self.unlockFiles, 'file' ))
+        button.bind(on_press = partial(self.lockFile, 'file' ))
+
+        button_unlock = Button(text="Unlock File", id='unlock_button')
+        #button_unlock.bind(on_press = partial(self.unlockFile, 'file1'))
 
         top_layout.add_widget(button)
+        top_layout.add_widget(button_unlock)
         bottom_layout = BoxLayout(size_hint = (1, 0.9))
         
 
-        grid = GridLayout(id='unlocked_files', cols=5, padding=30, spacing=20,
-                size_hint=(None, None), width=600,  pos_hint={'center_x': .5, 'center_y': .5})
+        grid = GridLayout(id='unlocked_files', cols=6, padding=25, spacing=41,
+                size_hint=(None, None), width=650,  pos_hint={'center_x': .5, 'center_y': .5})
 
         grid.bind(minimum_height=grid.setter('height'))
 
 
         # add button into that grid
-        for i in range(80):
-            btn = Button(text=str(i), size=(90, 90),
-                         size_hint=(None, None))
-            grid.add_widget(btn)
+        '''
+        for i in range(8):
+            btn = Button(text = "file" + str(i), size = (90, 90),
+                         size_hint = (None, None), id = str(i))
+            btn.bind(on_press = partial(self.unlockFile, str(i)))
 
+            grid.add_widget(btn)
+        '''
         # create a scroll view, with a size < size of the grid
-        scroll = ScrollView(size_hint=(None, None), size=(600, 500),
-                pos_hint={'center_x': .5, 'center_y': .5}, do_scroll_x=False)	
+        scroll = ScrollView(size_hint = (None, None), size = (650, 500),
+                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
 	layout.add_widget(top_layout)
 	layout.add_widget(bottom_layout)
         self.add_widget(layout)
 
-    def unlockFiles(self, *args):
+    def lockFile(self, *args):
         self.counter = self.counter + 1
-        print args[0]
-        print ("button pressed <%s> " %args[0])
-        button = Button(text=str(args[0]) + str(self.counter), size=(90, 90),
-                         size_hint=(None, None))
-        print self.children[0].children[0].children[0].children[0].add_widget(button)
+#        print args[0]
+#        print ("button pressed <%s> " %args[0])
+        button = Button(text=str(args[0]) + str(self.counter), size=(70, 70),
+                         size_hint=(None, None), id = str(self.counter))
+
+        button.bind(on_press = partial(self.unlockFile, str(self.counter)))
+        #button.bind(on_press = partial(self.un
+        self.children[0].children[0].children[0].children[0].add_widget(button)
+
+    def unlockFile(self, *args):
+
+        grid = self.children[0].children[0].children[0].children[0]
+#        print grid.children[int(args[0])]
+        inValidWidget = []
+        
+        for child in grid.children:
+            if child.id == args[0]:
+                grid.remove_widget(child)
     
 #    def printFilePath(self):
 #        print self.ids.icon_view_tab.path, self.ids.icon_view_tab.selection
