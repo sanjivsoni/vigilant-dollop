@@ -105,7 +105,6 @@ class Authentication:
             status = unlock(path,self.userPwd,encryptedSudoPwd)
             closeConnection()
 
-
 class OTP:
     def __init__(self,userID = ""):
         self.userID = hashEncrypt(userID)
