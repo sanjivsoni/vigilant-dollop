@@ -10,6 +10,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 
+from kivy.factory import Factory
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
@@ -170,7 +171,8 @@ class HomeScreen(Screen):
         top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1))
         
         button = Button(text="Lock Files", id='lock_button')
-        button.bind(on_press = partial(self.lockFile, 'file' ))
+	button.bind(on_press = self.show_load)
+        #button.bind(on_press = partial(self.lockFile, 'file' ))
 
         button_unlock = Button(text="Unlock File", id='unlock_button')
         #button_unlock.bind(on_press = partial(self.unlockFile, 'file1'))
@@ -228,6 +230,25 @@ class HomeScreen(Screen):
 #    def printFilePath(self):
 #        print self.ids.icon_view_tab.path, self.ids.icon_view_tab.selection
     
+    def dismiss_popup(self):
+        self._popup.dismiss()
+
+    def show_load(self, *args):
+        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
+        self._popup = Popup(title="Select Files to lock", content=content,
+                            size_hint=(0.9, 0.9))
+        self._popup.open()
+
+    def load(self, path, filename):
+        print path, filename
+        with open(os.path.join(path, filename[0])) as stream:
+            self.text_input.text = stream.read()
+
+        self.dismiss_popup()
+
+Factory.register('HomeScreen', cls=HomeScreen)
+Factory.register('LoadDialog', cls=LoadDialog)
+
 
 
 
