@@ -168,7 +168,7 @@ class HomeScreen(Screen):
         super(HomeScreen, self).__init__(**kwargs)
 
         layout = BoxLayout(orientation = 'vertical')
-        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1))
+        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1), height = 10 )
         
         button = Button(text="Lock Files", id='lock_button')
 	button.bind(on_press = self.show_load)
@@ -206,12 +206,10 @@ class HomeScreen(Screen):
 	layout.add_widget(bottom_layout)
         self.add_widget(layout)
 
-        content = LoadDialog(load=self.load, cancel=self.dismiss_popup)
-        
         content = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
         fileView = FileChooserIconView(id = 'filechooser')
         
-        buttons = BoxLayout(size_hint_y = None, height = 30)
+        buttons = BoxLayout(size_hint_y = None, height = 20)
         
         cancel_button = Button(text = 'cancel')
         cancel_button.bind(on_press = self.cancel)
@@ -231,17 +229,19 @@ class HomeScreen(Screen):
 
     def load(self, *args):
         print args[0].path, args[0].selection 
-        self.dismiss_popup
+        self.lockFile(args[0],args[1])
+        self.cancel()
         
     
     def lockFile(self, *args):
         self.counter = self.counter + 1
 #        print args[0]
 #        print ("button pressed <%s> " %args[0])
+        button_id = str(args[1])
         button = Button(text=str(args[0]) + str(self.counter), size=(70, 70),
-                         size_hint=(None, None), id = str(self.counter))
+                         size_hint=(None, None), id = button_id)
 
-        button.bind(on_press = partial(self.unlockFile, str(self.counter)))
+        button.bind(on_press = partial(self.unlockFile, button_id))
         #button.bind(on_press = partial(self.un
         self.children[0].children[0].children[0].children[0].add_widget(button)
 
@@ -255,18 +255,10 @@ class HomeScreen(Screen):
             if child.id == args[0]:
                 grid.remove_widget(child)
     
-    def dismiss_popup(self):
-        self._popup.dismiss()
 
     def show_load(self, *args):
         
         self._popup.open()
-
-
-Factory.register('HomeScreen', cls=HomeScreen)
-Factory.register('LoadDialog', cls=LoadDialog)
-
-
 
 
 # Screen Manager
