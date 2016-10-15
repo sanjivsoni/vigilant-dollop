@@ -226,26 +226,53 @@
 					    font_size: '90sp'
 				BoxLayout:
 					size_hint: 1,0.25
-					
-<HomeScreen>:
-    BoxLayout:
-    # Double as a Tabbed Panel Demo!
-    TabbedPanel:
-        tab_pos: "top_right"
-        default_tab_text: "Unlock Files"
-        default_tab_content: list_view_tab
 
-        TabbedPanelHeader:
-            text: 'Lock Files'
-            content: icon_view_tab
+<HomeScreen2>:
+    ScrollView:
+        size_hint: None, None
+        size: 400, 400
+        pos_hint: { 'center_x': 0.5,'center_y': 0.5 }   
+        do_scroll_x: False
 
-        FileChooserListView:
-            id: list_view_tab
-
-        FileChooserIconView:
-            id: icon_view_tab
-            show_hidden: True
+    GridLayout:
+        cols: 6
+        padding: 20
+        spacing: 20
+        size_hint: None, None
+        width: 400
 
 <HomeScreen>:
     
-            
+#    BoxLayout:
+#       orientation: 'vertical'
+ #       BoxLayout:
+  #          size_hint_y: None
+   #         height:30
+#            Button:
+ #               text: 'Lock Files'
+  #          Button:
+   #             text: 'Unlock Files'
+#
+ #       BoxLayout:
+  #          Label:
+
+<LoadDialog>:
+    BoxLayout:
+        size: root.size
+        pos: root.pos
+        orientation: 'vertical'
+        FileChooserIconView:
+            id: filechooser
+
+        BoxLayout:
+            size_hint_y: None
+            hoeight: 30
+            Button:
+                text: 'Cancel'
+
+            Button:
+                text: 'Load'
+
+
+
+        

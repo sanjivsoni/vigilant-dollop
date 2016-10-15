@@ -5,11 +5,12 @@ from kivy.uix.screenmanager import FadeTransition, ScreenManager, Screen
 from kivy.properties import ObjectProperty
 
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 
-
+from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
@@ -153,8 +154,56 @@ class LevelTwoScreen(Screen):
             pass            
         # Invalid OTP
 
+class LoadDialog(FloatLayout):
+    load = ObjectProperty(None)
+    cancel = ObjectProperty(None)
+
 class HomeScreen(Screen):
-    pass
+
+    def __init__(self, **kwargs):
+        super(HomeScreen, self).__init__(**kwargs)
+
+        layout = BoxLayout(orientation = 'vertical')
+        top_layout = BoxLayout(orientation= 'vertical', size_hint=(1, 0.1))
+        
+        button = Button(text="Lock Files", id='lock_button')
+        button.bind(on_press=self.unlockFiles)
+
+        top_layout.add_widget(button)
+        bottom_layout = BoxLayout(size_hint = (1, 0.9))
+        
+
+        grid = GridLayout(id='unlocked_files', cols=5, padding=30, spacing=20,
+                size_hint=(None, None), width=600,  pos_hint={'center_x': .5, 'center_y': .5})
+
+        grid.bind(minimum_height=grid.setter('height'))
+
+
+        # add button into that grid
+        for i in range(80):
+            btn = Button(text=str(i), size=(90, 90),
+                         size_hint=(None, None))
+            grid.add_widget(btn)
+
+        # create a scroll view, with a size < size of the grid
+        scroll = ScrollView(size_hint=(None, None), size=(600, 500),
+                pos_hint={'center_x': .5, 'center_y': .5}, do_scroll_x=False)	
+	scroll.add_widget(grid)
+	bottom_layout.add_widget(scroll)
+	layout.add_widget(top_layout)
+	layout.add_widget(bottom_layout)
+        self.add_widget(layout)
+
+    def unlockFiles(self, instance):
+        print ("button pressed <%s> " %instance.text)
+        button = Button(text='hello', size=(90, 90),
+                         size_hint=(None, None))
+        print self.children[0].children[0].children[0].children[0].add_widget(button)
+    
+#    def printFilePath(self):
+#        print self.ids.icon_view_tab.path, self.ids.icon_view_tab.selection
+    
+
 
 
 # Screen Manager
