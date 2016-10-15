@@ -1,35 +1,6 @@
-# Kivy Imports
-from kivy.app import App
-from kivy.app import Builder
-from kivy.uix.screenmanager import FadeTransition, ScreenManager, Screen
-from kivy.properties import ObjectProperty
-
-from kivy.uix.floatlayout import FloatLayout
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.relativelayout import RelativeLayout
-from kivy.core.window import Window
-
-
-from kivy.uix.popup import Popup
-from kivy.uix.textinput import TextInput
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.label import Label
-from kivy.uix.textinput import TextInput
-from kivy.uix.button import Button
-from kivy.uix.progressbar import ProgressBar
-from kivy.uix.dropdown import DropDown
-
-from kivy.uix.image import Image
-
-from kivy.clock import Clock
-
-# Python Imports
-from random import randint
-import re
-from functools import partial
-
 from helperFunctions import*
 
+#for classes
 from UserClass import*
 from LoginDetailsClass import*
 from AuthenticationClass import*
@@ -102,7 +73,7 @@ class LevelTwoScreen(Screen):
     minutes = ObjectProperty(None)
     seconds = ObjectProperty(None)
     # 5 minutes timer
-    _total_seconds = 30
+    _total_seconds = 60
     _total_minutes = 0
     _minutes = _total_seconds
     _seconds = _total_minutes
@@ -110,7 +81,8 @@ class LevelTwoScreen(Screen):
 
     _time_event = 0
     _otp_choice = 0
-    my_queue = Queue.Queue()
+    correctOTP = ""
+
 
     def color_white(self,dt):
         label= []
@@ -136,7 +108,7 @@ class LevelTwoScreen(Screen):
         tempPass = ""
         for i in range(0,6):
             tempPass += label[i].text
-        cOTP = "123456"
+
         otpFlag = 0
 
         for i in range(0,6):
@@ -146,7 +118,7 @@ class LevelTwoScreen(Screen):
                 otpFlag = 1
                 break
         if otpFlag == 0:
-            if tempPass == self.my_queue.get():
+            if tempPass == self.correctOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
             else:
@@ -285,6 +257,7 @@ class LevelTwoScreen(Screen):
         validOtp = ""
         global choice
         global userID
+        my_queue = Queue.Queue()
         sendOTP = OTP(userID)
 
         self._seconds = self._total_seconds
@@ -295,12 +268,14 @@ class LevelTwoScreen(Screen):
 
         if(choice == 1):
             print "email"
-            thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (self.my_queue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (my_queue,))
             thread1.start()
         else:
             print "mobile"
-            thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (self.my_queue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (my_queue,))
             thread1.start()
+
+        self.correctOTP = my_queue.get()
 
 class HomeScreen(Screen):
     pass

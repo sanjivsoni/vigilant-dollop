@@ -128,10 +128,11 @@ class OTP:
             flag = 0
 
         generatedOTP = generateOTP()
+        out_queue.put(generatedOTP)
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = userMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
 
-        out_queue.put(generatedOTP)
+
 
 
     def sendOTPforAuth_email(self,out_queue):
@@ -150,6 +151,7 @@ class OTP:
             print "error"
 
         generatedOTP = generateOTP()
+        out_queue.put(generatedOTP)
         msg = MIMEMultipart()
         msg['From'] = config.emailid
         msg['To'] = userEmail
@@ -163,7 +165,7 @@ class OTP:
         text = msg.as_string()
         server.sendmail(config.emailid, userEmail, text)
         server.quit()
-        out_queue.put(generatedOTP)
+
 
     def sendOTPforRecovery_mobile(self,sendToMobile):
 

@@ -36,3 +36,33 @@ import random
 from threading import Thread
 from time import sleep
 import Queue
+
+# For Random generator and other tools
+from random import randint
+import re
+from functools import partial
+
+#for Kivy
+from kivy.app import App
+from kivy.app import Builder
+from kivy.uix.screenmanager import FadeTransition, ScreenManager, Screen
+from kivy.properties import ObjectProperty
+
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.relativelayout import RelativeLayout
+from kivy.core.window import Window
+
+
+from kivy.uix.popup import Popup
+from kivy.uix.textinput import TextInput
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.label import Label
+from kivy.uix.textinput import TextInput
+from kivy.uix.button import Button
+from kivy.uix.progressbar import ProgressBar
+from kivy.uix.dropdown import DropDown
+
+from kivy.uix.image import Image
+
+from kivy.clock import Clock
