@@ -229,7 +229,7 @@ class HomeScreen(Screen):
 
     def load(self, *args):
         print args[0].path, args[0].selection 
-        self.lockFile(args[0],args[1])
+        self.lockFile(args[0].path,args[0].selection)
         self.cancel()
         
     
@@ -238,7 +238,7 @@ class HomeScreen(Screen):
 #        print args[0]
 #        print ("button pressed <%s> " %args[0])
         button_id = str(args[1])
-        button = Button(text=str(args[0]) + str(self.counter), size=(70, 70),
+        button = Button(text=button_id, size=(70, 70),
                          size_hint=(None, None), id = button_id)
 
         button.bind(on_press = partial(self.unlockFile, button_id))
