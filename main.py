@@ -160,6 +160,8 @@ class LoadDialog(FloatLayout):
 
 class HomeScreen(Screen):
 
+    counter = 0
+
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
 
@@ -167,7 +169,7 @@ class HomeScreen(Screen):
         top_layout = BoxLayout(orientation= 'vertical', size_hint=(1, 0.1))
         
         button = Button(text="Lock Files", id='lock_button')
-        button.bind(on_press=self.unlockFiles)
+        button.bind(on_press = partial(self.unlockFiles, 'file' ))
 
         top_layout.add_widget(button)
         bottom_layout = BoxLayout(size_hint = (1, 0.9))
@@ -194,9 +196,11 @@ class HomeScreen(Screen):
 	layout.add_widget(bottom_layout)
         self.add_widget(layout)
 
-    def unlockFiles(self, instance):
-        print ("button pressed <%s> " %instance.text)
-        button = Button(text='hello', size=(90, 90),
+    def unlockFiles(self, *args):
+        self.counter = self.counter + 1
+        print args[0]
+        print ("button pressed <%s> " %args[0])
+        button = Button(text=str(args[0]) + str(self.counter), size=(90, 90),
                          size_hint=(None, None))
         print self.children[0].children[0].children[0].children[0].add_widget(button)
     
