@@ -124,10 +124,11 @@ class UserRecovery:
         self.Level3 = False
         self.userIdentified = self.Level1 and self.Level2 and self.Level3
 
-    def recoverUserLevel1(self,recoveryType,recoveryID):
+    def recoverUserLevel1(self,recoveryType,recoveryID,out_queue):
         correctRecoveryID = ""
         generatedOTP = ""
         otpAuthentication = OTP()
+        flag = 0
         establishConnection()
 
         if(recoveryType == 1):
@@ -149,11 +150,11 @@ class UserRecovery:
 
         if (flag):
             if(recoveryType == 1):
-                generatedOTP = otpAuthentication.sendOTPforRecovery_mobile(recoveryID)
+                generatedOTP = otpAuthentication.sendOTPforRecovery_mobile(recoveryID,out_queue)
                 sql = "SELECT userid FROM user WHERE mobile =" + "'" + aesEncrypt(recoveryID) + "'"
 
             elif(recoveryType == 2):
-                generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID)
+                generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID,out_queue)
                 sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(recoveryID) + "'"
 
         else:

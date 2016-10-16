@@ -85,18 +85,22 @@ class UsernameRecover(Screen):
     #self.ids['loginButton'].disabled = True
     def nextUserEvent(self):
         # Stub
+        my_queue = Queue.Queue()
         recoverUser = UserRecovery()
         contact = self.ids.recoverlink
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
             print "Email"
-            generatedOTP = recoverUser.recoverUserLevel1(2,contact.text)
+            thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
+            thread1.start()
 
         else:
             print "Phone"
-            generatedOTP = recoverUser.recoverUserLevel1(1,contact.text)
+            thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
+            thread1.start()
 
-        
-        
+
+
+
 
     def parameter(self,x):
         self.pathValue = x

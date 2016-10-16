@@ -189,16 +189,18 @@ class OTP:
         server.quit()
 
 
-    def sendOTPforRecovery_mobile(self,sendToMobile):
+    def sendOTPforRecovery_mobile(self,sendToMobile,out_queue):
 
         generatedOTP = generateOTP()
+        out_queue.put(generatedOTP)
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = sendToMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
         return generatedOTP
 
-    def sendOTPforRecovery_email(self,sendToEmail):
+    def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
         generatedOTP = generateOTP()
+        out_queue.put(generatedOTP)
         msg = MIMEMultipart()
         msg['From'] = "Team Vigilant Dollop"
         msg['To'] = sendToEmail
