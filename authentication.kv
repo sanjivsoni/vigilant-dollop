@@ -130,6 +130,7 @@
             size_hint:1,0.25
 
 <UsernameRecover>: 
+    recoverlink: recoverlink
     BoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -155,7 +156,7 @@
         BoxLayout:
             orientation: 'horizontal'
             size_hint: 1,0.25
-            spacing: 10
+            spacing: 20
  
             BoxLayout:
                 size_hint: 0.3,0.5
@@ -165,22 +166,84 @@
                 BoxLayout:
                     orientation: 'vertical'
                     spacing: 20
-                
-                    Button:
-                        id: recover1
-                        text: 'Recover By Email'
-                        on_press: root.nextStepEvent(1)
-
+                    Label:
+                        text: 'Recover By Email/Mobile'
+                    
+                    TextInput:
+                        id: recoverlink
+                        hint_text: 'Recover By Email/Mobile'
+                        size:300,30
+                        size_hint: None, None
                     Button:
                         id: recover2
-                        text: 'Recover By Mobile'
-                        on_press: root.nextStepEvent(2)
+                        text: 'Submit'
+                        size:300,30
+                        size_hint: None, None
+                        on_press: root.nextUserEvent(1)
             BoxLayout:
                 size_hint: 0.3,0.5                
         BoxLayout:
             size_hint:1,0.25
         BoxLayout:
             size_hint:1,0.25
+
+<PasswordRecover>: 
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 10
+    
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+
+        BoxLayout:
+            size_hint: 1,0.25
+            orientation: 'vertical'
+            Button:
+                text:'back'
+                size_hint:0.10,0.2
+                on_press: root.manager.current = 'main'
+
+            Label:
+                size_hint:0.10,0.8
+      
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,0.25
+            spacing: 20
+ 
+            BoxLayout:
+                size_hint: 0.3,0.5
+            BoxLayout:
+                size_hint: 0.5,0.7
+            
+                BoxLayout:
+                    orientation: 'vertical'
+                    spacing: 20
+                    Label:
+                        text: 'Recover By '
+                    
+                    Button:
+                        id: recover2
+                        text: 'Email'
+                        on_press: root.nextPassEvent(2)
+                    
+                    Label:
+                        text: 'Or '
+                    Button:
+                        id: recover2
+                        text: 'Password'
+                        on_press: root.nextPassEvent(2)
+            BoxLayout:
+                size_hint: 0.3,0.5                
+        BoxLayout:
+            size_hint:1,0.25
+        BoxLayout:
+            size_hint:1,0.25
+
 
 <RecoveryLevelTwoScreen>:
     otp:otp
@@ -335,6 +398,64 @@
                         text: 'Next'
                         font_size:'15sp'
                         on_release: root.validOtpEvent()
+                    Label:
+            BoxLayout:
+                size_hint: 1, 0.25
+
+
+<RecoverySecQuestion>:
+	BoxLayout:
+		canvas:
+			Rectangle: 
+				source: 'images/blue.png'
+				pos: self.pos
+				size: self.size
+		orientation: 'vertical'
+
+        BoxLayout:
+            orientation: 'vertical'
+            padding: 20
+            spacing: 10
+            BoxLayout:
+                size_hint: 1, 0.25
+            BoxLayout:
+                spacing: 40
+                size_hint: 1, 0.25
+                orientation: 'vertical'
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                    Label:
+                        text: "Please Enter Your SSN Registered With Us."
+                    Label:
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                    Spinner:
+                        background_color: 255,255,255,1
+                        color: 0,0,0,1
+                        text: "Security Question"
+                        values: "Teacher's Name", "Mother 's Name"
+                        size_hint: .6, None
+                        size: 370,40
+                    Label:
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                    TextInput:
+                        size_hint: 0.5,1
+                        hint_text: 'Answer Here'
+                        size_hint: .6, None
+                        size: 370,40
+                    Label:
+                BoxLayout:
+                    orientation: 'horizontal'
+                    Label:
+                    Button:
+                        text: 'Submit'
+                        size_hint: .6, None
+                        size: 370,40
+                        on_release: root.questionEvent()
                     Label:
             BoxLayout:
                 size_hint: 1, 0.25

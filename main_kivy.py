@@ -50,7 +50,7 @@ class SignupScreen(Screen):
 
 
     def val_change(self):
-        label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13']
+        label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13', '14']
         label_b = self.ids['bar']
         label[1] = self.ids['1']
         label[2] = self.ids['2']
@@ -64,6 +64,7 @@ class SignupScreen(Screen):
         label[11] = self.ids['11']
         label[12] = self.ids['12']
         label[13] = self.ids['13']
+        label[14] = self.ids['14']
         set_val = 0
 
         if not(label[1].text == ''):
@@ -325,7 +326,7 @@ class SignupScreen(Screen):
         ID = self.ids['X']
         ID2 = self.ids['Y']
         ID3 = self.ids['10']
-        label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13']
+        label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13','14']
         label_b = self.ids['bar']
         label[1] = self.ids['1']
         label[2] = self.ids['2']
@@ -339,13 +340,13 @@ class SignupScreen(Screen):
         label[11] = self.ids['11']
         label[12] = self.ids['12']
         label[13] = self.ids['13']
-
+        label[14] = self.ids['14']
 
 
         Q1 = 0
         Q2 = 0
         _SSN = 0
-        if not(ID.text == "Security Question") and not(ID2.text == "Security Question") and not(ID3.text == "SSN Type"):
+        if not(ID.text == "Security Question") and not(ID2.text == "Security Question") and not(ID3.text == "SSN Type") and not(label[14].text == "Country Code"):
             if self.flag5 and self.flag3 and self.flag11 and self.flag1 and self.flag10 and self.flag4 and self.flag9 and self.flag8 and self.flag6 and self.flag2 and self.flag12:
                 if ID.text == "Your Childhood Hero?":
                     Q2 = 5
@@ -377,12 +378,13 @@ class SignupScreen(Screen):
                     _SSN = 4
                 else:
                     _SSN = 0
-
+                
+                phoneNo = label[14].text+label[5].text
                 userCredentials = label[1].text + " " + label[2].text
-                userContactDetails = label[4].text + " " +label[5].text +  " " +"sudoPwd"
+                userContactDetails = label[4].text + " " +phoneNo +  " " +"sudoPwd"
                 userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(_SSN) + " " +label[11].text
                 userSecurityQues = str(Q1) + " " +label[12].text + " " + str(Q2) + " " +label[13].text
-
+                print phoneNo
                 newUser = User(userCredentials)
                 newUser.createUser(userContactDetails)
                 newUser.addPersonalDetails(userPersonalDetails)
