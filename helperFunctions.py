@@ -86,3 +86,29 @@ def getUserDetails():
 
 def generateOTP():
     return ''.join(random.choice(string.digits) for j in range(6))
+
+def fetchLocation():
+    send_url = 'http://freegeoip.net/json'
+    r = requests.get(send_url)
+    j = json.loads(r.text)
+    details = "\nIP address: " + j['ip'] + "\n" + "Location: " + j['city'] + "," + j['region_name'] + "," + j['country_name']
+    return details
+
+def getUserName(userID):
+
+    establishConnection()
+    sql = "SELECT first_name FROM personal WHERE userid =" + "'" + userID + "'"
+    #print sql
+    try:
+        config.statement.execute(sql)
+        results = config.statement.fetchall()
+        for row in results:
+            userName = aesDecrypt(row[0])
+
+    except Exception, e:
+        print repr(e)
+        config.conn.rollback()
+        flag = 0
+
+    closeConnection()
+    return userName

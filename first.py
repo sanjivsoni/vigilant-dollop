@@ -5,7 +5,7 @@ from LoginDetailsClass import*
 from AuthenticationClass import*
 from UserCredentialsRecoveryClass import *
 
-userid = hashEncrypt("bhatshubhs")
+'''userid = hashEncrypt("bhatshubhs")
 pwd = hashEncrypt("123456")
 email = aesEncrypt(config.key,"bhatshubhs12@gmail.com")
 mobile = aesEncrypt(config.key,"+919810158269")
@@ -42,4 +42,10 @@ NewUser.createUser()
 #print au.recoverUserLeveL3("3","hjk")
 
 #NewUser.user(quer)
-#NewUser.checkUser("bhatshubhs","123456")'''
+#NewUser.checkUser("bhatshubhs","123456")
+
+client = TwilioRestClient(config.account_sid, config.auth_token)
+message = client.messages.create(to = "+919810030997", from_ = config.from_number, body = config.succesfulLoginMessageText + fetchLocation())'''
+au = LoginDetailsMessages("bhatshubhs")
+#au.succesfulLoginMessage()
+au.failedLoginMessage()
