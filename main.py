@@ -95,17 +95,8 @@ class UsernameRecover(Screen):
             print "Phone"
             generatedOTP = recoverUser.recoverUserLevel1(1,contact.text)
 
-        App.get_running_app().root.current = 'recoverylevelTwoScreen'
-        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
-        # elif (contact.text[0] == "7") or (contact.text[0] == "8") or (contact.text[0] == "9"):
-        #     if((contact.text.isdigit()) and len(contact.text)!=10):
-        #         print "Phone"
-        #     else:
-        #         contact.text = ""
-        #         contact.hint_text = "Please Enter A Valid Contact Link."
-        # else:
-        #         contact.text = ""
-        #         contact.hint_text = "Please Enter A Valid Contact Link."
+        
+        
 
     def parameter(self,x):
         self.pathValue = x
@@ -219,6 +210,8 @@ class RecoveryLevelTwoScreen(Screen):
             if tempPass == self.correctOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
+                    App.get_running_app().root.current = 'recoverylevelTwoScreen'
+                    App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
             else:
                 for i in range(0,6):
                     label[i].background_color = [1,0,0,1]
