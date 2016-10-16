@@ -29,9 +29,9 @@ class UsernameScreen(Screen):
         global verifyUser
         global userID
         
-        userExists = verifyUser.checkIfUserExists(self.username.text)
+        #userExists = verifyUser.checkIfUserExists(self.username.text)
         # Successful match for Username
-        if(userExists):
+        if(self.username.text  == "bhatshubhs"):
             # Change present screen to password screen.
             App.get_running_app().root.current = 'passwordScreen'
             userID = self.username.text
@@ -69,11 +69,36 @@ class PasswordScreen(Screen):
             self.message.text = 'Invalid Password'
 
     # Recover User name Event
-    def recoverUsernameEvent(self):
-        App.get_running_app().root.current = 'usernameRecoverScreen'
-        App.get_running_app().root.get_screen('usernameRecoverScreen').parameter(2)
+    def recoverPasswordEvent(self):
+        App.get_running_app().root.current = 'passwordRecoverScreen'
+        App.get_running_app().root.get_screen('passwordRecoverScreen').parameter(2)
 
 class UsernameRecover(Screen):
+    username = ObjectProperty(None)
+    message = ObjectProperty(None)
+    recoverlink = ObjectProperty(None)
+    attempt = 0
+    invalidTime = 0
+    pathValue = 0
+    
+    # Validate User input Event
+    #self.ids['loginButton'].disabled = True
+    def nextUserEvent(self, buttonValue):
+        # Stub
+        contact = self.ids.recoverlink
+        App.get_running_app().root.current = 'recoverylevelTwoScreen'
+        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
+        if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
+            print "Email"
+        else:
+            print "Phone" 
+    def parameter(self,x):
+        self.pathValue = x
+    # Recover User name Event
+    def recoverUsernameEvent(self):
+        pass
+
+class PasswordRecover(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
     attempt = 0
@@ -81,7 +106,7 @@ class UsernameRecover(Screen):
     pathValue = 0
     # Validate User input Event
     #self.ids['loginButton'].disabled = True
-    def nextStepEvent(self, buttonValue):
+    def nextPassEvent(self, buttonValue):
         # Stub
         App.get_running_app().root.current = 'recoverylevelTwoScreen'
         App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
@@ -508,6 +533,7 @@ screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelThreeScreen' ) )
 screenManager.add_widget( RecoveryLevelTwoScreen( name = 'recoverylevelTwoScreen' ) )
 screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
+screenManager.add_widget( PasswordRecover( name = 'passwordRecoverScreen' ) )
 screenManager.add_widget( RecoveryLevelThreeScreen( name = 'recoverylevelThreeScreen' ) )
 #screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
 
