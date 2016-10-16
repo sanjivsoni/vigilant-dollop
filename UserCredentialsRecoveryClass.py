@@ -44,7 +44,6 @@ class PasswordRecovery:
         if flag == 0 :
             return -1
 
-
     def recoverPasswordLeveL2(self,ssn_type,ssnid):
         establishConnection()
 
@@ -68,7 +67,7 @@ class PasswordRecovery:
         else:
             return 0
 
-    def recoverPasswordLeveL3(self,quesType, quesAnswer):
+    def recoverPasswordLeveL3(self,quesType,quesAnswer):
 
         establishConnection()
         if(quesType <= 4):
