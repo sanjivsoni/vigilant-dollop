@@ -291,10 +291,10 @@ class HomeScreen(Screen):
         
         button = Button(text="Lock Files", id='lock_button', size_hint=(1,1))
 	button.bind(on_press = self.show_load)
-        #button.bind(on_press = partial(self.lockFile, 'file' ))
 
+        
         top_layout.add_widget(button)
-        top_layout.add_widget(Label(text = ' ', size_hint=(1,1)))
+        mid_layout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
         bottom_layout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
         grid = GridLayout(id='unlocked_files', cols=6, padding=5, spacing=20,
@@ -321,6 +321,7 @@ class HomeScreen(Screen):
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
 	layout.add_widget(top_layout)
+	layout.add_widget(mid_layout)
 	layout.add_widget(bottom_layout)
         self.add_widget(layout)
 
@@ -379,33 +380,62 @@ class HomeScreen(Screen):
         grid.add_widget(button)
         grid.add_widget(label)
 
+    previous_remove_button_label = ''
+    first_time_add_button = 1
+
     def removeFile(self, *args):
         grid = args[0]
-        complete_file_name = args[1]
-        remove_button_parent = args[3]
-        file_name = args[2]
+        file_name = args[1]
+        label_previous = args[2]
+        button_previous = args[3]
+        mid_layout = self.children[0].children[1]
+
         for child in grid.children:
             if child.id == file_name:
                 grid.remove_widget(child)
                 for label in grid.children:
                     if label.id == "label"+ str(file_name):
                         grid.remove_widget(label)
-                        remove_button_parent.children[1].text = " "
-                        remove_button_parent.remove_widget(args[4])
+                        mid_layout.remove_widget(button_previous)
+                        mid_layout.remove_widget(label_previous)
+                        self.counter_element = self.counter_element - 1
         
         
-        
+    counter_element = 0
 
     def unlockFile(self, *args):
 
         grid = self.children[0].children[0].children[0].children[0]
-        filepathlabel = self.children[0].children[1].children[0]
         complete_file_name = str(args[1]+'/'+ args[0])
+        file_name = args[0]
+        mid_layout = self.children[0].children[1]
 
-        filepathlabel.text = complete_file_name
-        remove_button = Button(text = 'remove')
-        remove_button.bind( on_press = partial(self.removeFile, grid, complete_file_name, args[0], filepathlabel.parent))
-        filepathlabel.parent.add_widget(remove_button)
+        if  self.first_time_add_button == 1:
+            self.first_time_add_button = 0
+            label = Label(text = complete_file_name, size_hint = (0.5,1))
+            button = Button(text = 'remove', size_hint = (0.5,1))
+            button.bind(on_press = partial(self.removeFile, grid, file_name,label, button)) 
+            mid_layout.add_widget(label)
+            mid_layout.add_widget(button)
+            self.counter_element = self.counter_element + 1
+            print 'A',self.counter_element
+        else:
+            if self.counter_element > 0:
+                previous_label = mid_layout.children[0]
+                previous_button = mid_layout.children[1]
+
+                mid_layout.remove_widget(previous_label)
+                mid_layout.remove_widget(previous_button)
+            else: 
+                label = Label(text = complete_file_name, size_hint = (0.5,1))
+                button = Button(text = 'remove', size_hint = (0.5,1))
+                button.bind(on_press = partial(self.removeFile, grid, file_name, label, button)) 
+                
+                mid_layout.add_widget(label)
+                mid_layout.add_widget(button)
+                self.counter_element = self.counter_element + 1
+                print 'B',self.counter_element
+
 
     def show_load(self, *args):
         
