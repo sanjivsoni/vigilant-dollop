@@ -16,6 +16,9 @@ userID = ""
 attempt = 0
 generatedOTP = 0
 # Classes for seperate screens
+class ChangePassword(Screen):
+
+
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
@@ -144,7 +147,16 @@ class RecoverySecQuestion(Screen):
    pathValue = 0
 
    def questionEvent(self):
-       pass
+       Question = self.ids['recoveryQuestion']
+       Answer = self.ids['recoveryAnswer']
+
+       if Question.text == "": #Comparison for Question 
+           if Answer.text == ""#Comparison for Answer
+               pass
+            else:
+               pass
+       else:
+           pass
    def parameter(self,x):
        self.pathValue = x
 class RecoveryLevelThreeScreen(Screen):
@@ -156,9 +168,13 @@ class RecoveryLevelThreeScreen(Screen):
         self.pathValue = x
         self.contactValue = y
     def renderSecurityQues(self):
+        ssn = self.ids['ssn_Value']
         # Stub
-        App.get_running_app().root.current = 'recoverysecQuestion'
-        App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
+        if 1:#compare SSN with Database Value
+            App.get_running_app().root.current = 'recoverysecQuestion'
+            App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
+        else:
+            pass
         # Invalid OTP
 
 class RecoveryLevelTwoScreen(Screen):
@@ -695,7 +711,7 @@ screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
 screenManager.add_widget( PasswordRecover( name = 'passwordRecoverScreen' ) )
 screenManager.add_widget( RecoveryLevelThreeScreen( name = 'recoverylevelThreeScreen' ) )
 screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
-
+screenManager.add_widget( ChangePassword( name = 'changePassword' ) )
 
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
