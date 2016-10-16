@@ -10,7 +10,7 @@ class User:
 
 
     def createUser(self,info):
-        aesEncryptedInfo = aesEncrypt(config.key,info)
+        aesEncryptedInfo = aesEncrypt(info)
         establishConnection()
         sql = "INSERT INTO user(userid,password,email,mobile,sudoPwd) VALUES" + insertQueryHelper(self.userID + " " + self.pwd + " " +  aesEncryptedInfo)
         #print sql
@@ -26,7 +26,7 @@ class User:
 
     def addPersonalDetails(self,info):
 
-        aesEncryptedInfo = aesEncrypt(config.key,info)
+        aesEncryptedInfo = aesEncrypt(info)
         establishConnection()
         sql = "INSERT INTO personal(userid,first_name,last_name,dob,ssn_type,ssnid) VALUES" + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
         #print sql
@@ -44,7 +44,7 @@ class User:
 
     def addSecurityQuestions(self,info):
 
-        aesEncryptedInfo = aesEncrypt(config.key,info)
+        aesEncryptedInfo = aesEncrypt(info)
         establishConnection()
         sql = "INSERT INTO security_ques(userid,ques1,ques2,ans1,ans2) VALUES" + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
         try:

@@ -24,6 +24,7 @@ email_subject = "Your Vigilant Dollop OTP"
 #Lock & Unlock commands
 changeDirectory = "cd && echo "
 changeOwnerToRoot = " | sudo -S chown -R root "
+changeOwnerToUser = " | sudo -S chown -R $USER "
 lockCommand = "  | sudo -S chmod 000 "
 unlockCommand = " | sudo -S chmod 755 "
 

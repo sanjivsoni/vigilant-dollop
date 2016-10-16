@@ -61,10 +61,7 @@ class Authentication:
         else:
             return 0
 
-
-
-
-    def lockItem(self,path):
+    def lockItem(self,filePath,fileName):
         if(self.authenticationComplete):
             encryptedSudoPwd = ""
             establishConnection()
@@ -81,10 +78,23 @@ class Authentication:
                 config.conn.rollback()
                 flag = 0
 
-            status = lock(path,self.userPwd,encryptedSudoPwd)
+            status = lock(filePath + fileName,encryptedSudoPwd)
+            if status == 0 :
+                encryptedData = aesEncrypt(filePath + " " + fileName)
+                sql = "INSERT INTO lockedFiles(filepath,filename) VALUES " + insertQueryHelper(encryptedData)
+                try:
+                    config.statement.execute(sql)
+
+                except Exception, e:
+                    print repr(e)
+                    config.conn.rollback()
+                    flag = 0
+
+                return 1
+
             closeConnection()
 
-    def unlockItem(self,path):
+    def unlockItem(self,filePath,fileName):
         if(self.authenticationComplete):
             encryptedSudoPwd = ""
             establishConnection()
@@ -102,7 +112,20 @@ class Authentication:
                 config.conn.rollback()
                 flag = 0
 
-            status = unlock(path,self.userPwd,encryptedSudoPwd)
+            status = unlock(path,encryptedSudoPwd)
+
+            if status == 0:
+                sql = "DELETE FROM lockedFiles WHERE filepath = '" + filePath + "' AND filename = '" + fileName + "'"
+                try:
+                    config.statement.execute(sql)
+
+                except Exception, e:
+                    print repr(e)
+                    config.conn.rollback()
+                    flag = 0
+
+                return 1
+
             closeConnection()
 
 class OTP:
@@ -119,7 +142,7 @@ class OTP:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                userMobile = aesDecrypt(config.key,row[0])
+                userMobile = aesDecrypt(row[0])
 
         except Exception, e:
             print repr(e)
@@ -142,7 +165,7 @@ class OTP:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                userEmail = aesDecrypt(config.key,row[0])
+                userEmail = aesDecrypt(row[0])
 
         except Exception, e:
             print repr(e)
