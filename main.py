@@ -15,7 +15,6 @@ choice = -1
 userID = ""
 attempt = 0
 generatedOTP = 0
-
 # Classes for seperate screens
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
@@ -85,6 +84,7 @@ class UsernameRecover(Screen):
     #self.ids['loginButton'].disabled = True
     def nextUserEvent(self):
         # Stub
+        global generatedOTP
         my_queue = Queue.Queue()
         recoverUser = UserRecovery()
         contact = self.ids.recoverlink
@@ -98,9 +98,13 @@ class UsernameRecover(Screen):
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
             thread1.start()
 
+        generatedOTP = my_queue.get()
 
-
-
+        if generatedOTP == -1:
+            pass
+        else:
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
 
     def parameter(self,x):
         self.pathValue = x
@@ -198,7 +202,8 @@ class RecoveryLevelTwoScreen(Screen):
         label.append(self.ids['otp_4'])
         label.append(self.ids['otp_5'])
         label.append(self.ids['otp_6'])
-
+        global otpCompareValue
+        otpCompareValue = 0
         tempPass = ""
         for i in range(0,6):
             tempPass += label[i].text
@@ -215,12 +220,11 @@ class RecoveryLevelTwoScreen(Screen):
             if tempPass == generatedOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
-                    App.get_running_app().root.current = 'recoverylevelTwoScreen'
-                    App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
+                    otpCompareValue = 1
             else:
                 for i in range(0,6):
                     label[i].background_color = [1,0,0,1]
-
+                    otpCompareValue = 0
                 Clock.schedule_once(self.color_white, 1)
                 label[0].focus = True
 
@@ -345,9 +349,7 @@ class RecoveryLevelTwoScreen(Screen):
 
     def validOtpEvent(self):
         # Stub
-        global generatedOTP
-        self.otp.text = "1"
-        validOtp = "1"
+        validOtp = ""
         self._seconds = self._total_seconds
         self._minutes = self._total_minutes
 
