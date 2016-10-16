@@ -287,18 +287,18 @@ class HomeScreen(Screen):
         super(HomeScreen, self).__init__(**kwargs)
 
         layout = BoxLayout(orientation = 'vertical')
-        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.05))
+        top_layout = BoxLayout(orientation= 'vertical', size_hint=(1, 0.10))
         
-        button = Button(text="Lock Files", id='lock_button')
+        button = Button(text="Lock Files", id='lock_button', size_hint=(1,1))
 	button.bind(on_press = self.show_load)
         #button.bind(on_press = partial(self.lockFile, 'file' ))
 
-
         top_layout.add_widget(button)
+        top_layout.add_widget(Label(text = ' ', size_hint=(1,1)))
         bottom_layout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
-        grid = GridLayout(id='unlocked_files', cols=4, padding=5, spacing=5,
-                size_hint=(None, None), width=600,  pos_hint={'center_x': .5, 'center_y': .5})
+        grid = GridLayout(id='unlocked_files', cols=6, padding=5, spacing=20,
+                size_hint=(None, None), width=650,  pos_hint={'center_x': .5, 'center_y': .5})
 
         grid.bind(minimum_height=grid.setter('height'))
 
@@ -316,7 +316,7 @@ class HomeScreen(Screen):
             grid.add_widget(label)
         '''
         # create a scroll view, with a size < size of the grid
-        scroll = ScrollView(size_hint = (None, None), size = (550, 500),
+        scroll = ScrollView(size_hint = (None, None), size = (650, 500),
                 pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
@@ -367,33 +367,45 @@ class HomeScreen(Screen):
 #        print args[0]
 #        print ("button pressed <%s> " %args[0])
         button_id = str(args[1])
-        button = Button(text=' ', size=(30, 30),
+        button = Button(text=' ', size=(40, 40),
                          size_hint=(None, None), id = button_id)
 
-        button.bind(on_press = partial(self.unlockFile, button_id))
-        button.add_widget(Image(source = "images/file.png", size=(30,30)))
-        label = Label(text = button_id  , width = 70, halign = 'left',valign = 'middle', id="label"+button_id)
+        button.bind(on_press = partial(self.unlockFile, button_id, args[0]))
+        label = Label(text = button_id  , width = 70, halign = 'left',valign = 'middle', id="label"+button_id, font_size='15sp')
         label.bind(size=label.setter('text_size'))
-
-        #button.bind(on_press = partial(self.un
+        
+        
         grid = self.children[0].children[0].children[0].children[0]
         grid.add_widget(button)
         grid.add_widget(label)
 
+    def removeFile(self, *args):
+        grid = args[0]
+        complete_file_name = args[1]
+        remove_button_parent = args[3]
+        file_name = args[2]
+        for child in grid.children:
+            if child.id == file_name:
+                grid.remove_widget(child)
+                for label in grid.children:
+                    if label.id == "label"+ str(file_name):
+                        grid.remove_widget(label)
+                        remove_button_parent.children[1].text = " "
+                        remove_button_parent.remove_widget(args[4])
+        
+        
+        
 
     def unlockFile(self, *args):
 
         grid = self.children[0].children[0].children[0].children[0]
-#        print grid.children[int(args[0])]
-        inValidWidget = []
-        
-        for child in grid.children:
-            if child.id == args[0]:
-                grid.remove_widget(child)
-                for label in grid.children:
-                    if label.id == "label"+ str(args[0]):
-                        grid.remove_widget(label)
-    
+        filepathlabel = self.children[0].children[1].children[0]
+        complete_file_name = str(args[1]+'/'+ args[0])
+
+        filepathlabel.text = complete_file_name
+        remove_button = Button(text = 'remove')
+        remove_button.bind( on_press = partial(self.removeFile, grid, complete_file_name, args[0], filepathlabel.parent))
+        filepathlabel.parent.add_widget(remove_button)
 
     def show_load(self, *args):
         
