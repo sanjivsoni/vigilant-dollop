@@ -1,87 +1,3 @@
-<ChangePassword>:
-    BoxLayout:
-            orientation: 'vertical'
-            padding: 20
-            spacing: 10
-        
-            canvas:
-                Rectangle: 
-                    source: 'images/blue.png'
-                    pos: self.pos
-                    size: self.size
-
-            BoxLayout:
-                size_hint: 1,0.25
-                orientation: 'vertical'
-
-        
-            BoxLayout:
-                orientation: 'horizontal'
-                size_hint: 1,0.25
-                spacing: 20
-    
-                BoxLayout:
-                    size_hint: 0.3,0.5
-                BoxLayout:
-                    size_hint: 0.5,0.7
-                
-                    BoxLayout:
-                        orientation: 'vertical'
-                        spacing: 20
-                        Label:
-                            text: 'Recover By Email/Mobile'
-                        
-                        TextInput:
-                            id: recoverlink
-                            hint_text: 'Recover By Email/Mobile'
-                            size:300,30
-                            size_hint: None, None
-                        Button:
-                            id: recover2
-                            text: 'Submit'
-                            size:300,30
-                            size_hint: None, None
-                            on_press: root.nextUserEvent()
-            BoxLayout:
-                size_hint: 0.3,0.5        
-
-            BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1,0.25
-            spacing: 20
-
-            BoxLayout:
-                size_hint: 0.3,0.5
-            BoxLayout:
-                size_hint: 0.5,0.7
-            
-                BoxLayout:
-                    orientation: 'vertical'
-                    spacing: 20
-                    Label:
-                        text: 'Recover By Email/Mobile'
-                    
-                    TextInput:
-                        id: recoverlink
-                        hint_text: 'Recover By Email/Mobile'
-                        size:300,30
-                        size_hint: None, None
-                    Button:
-                        id: recover2
-                        text: 'Submit'
-                        size:300,30
-                        size_hint: None, None
-                        on_press: root.nextUserEvent()
-                BoxLayout:
-                    size_hint: 0.3,0.5                
-            BoxLayout:
-                size_hint:1,0.25
-            BoxLayout:
-                size_hint:1,0.25 
-
-
-
-
 <LoginScreen>:
     username: username
     password: password
@@ -522,7 +438,7 @@
                     orientation: 'horizontal'
                     Label:
                     Label:
-                        text: "Please Select And Answer Your Security Question With Us."
+                        text: "Please Select And Answer The Security Question Registered With Us."
                     Label:
                 BoxLayout:
                     orientation: 'horizontal'
@@ -532,7 +448,7 @@
                         background_color: 255,255,255,1
                         color: 0,0,0,1
                         text: "Security Question"
-                        values: "Teacher's Name", "Mother 's Name"
+                        values: "Your Childhood Hero?","Time Of The Day Were You Born ?","The steet you grew up in?","Your Childhood Nickname?","Mother's Maiden Name ?","Pet's Name ?","First Teacher's Name ?","Favourite Holiday Destination?"
                         size_hint: .6, None
                         size: 370,40
                     Label:

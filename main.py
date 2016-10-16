@@ -17,7 +17,7 @@ attempt = 0
 generatedOTP = 0
 # Classes for seperate screens
 class ChangePassword(Screen):
-
+    pass
 
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
@@ -155,21 +155,39 @@ class PasswordRecover(Screen):
     def recoverUsernameEvent(self):
         pass
 class RecoverySecQuestion(Screen):
-   pathValue = 0
-
-   def questionEvent(self):
-       Question = self.ids['recoveryQuestion']
-       Answer = self.ids['recoveryAnswer']
-
-       if Question.text == "": #Comparison for Question 
-           if Answer.text == ""#Comparison for Answer
-               pass
+    pathValue = 0
+    
+    def questionEvent(self):
+        QValue = -1
+        Question = self.ids['recoveryQuestion']
+        Answer = self.ids['recoveryAnswer']
+        if Question.text == "Your Childhood Hero?":
+            QValue = 5
+        elif Question.text == "Time Of The Day Were You Born ?":
+            QValue = 6
+        elif Question.text == "The steet you grew up in?":
+            QValue = 7
+        elif Question.text == "Your Childhood Nickname?":
+            QValue = 8
+        elif Question.text == "Mother's Maiden Name ?":
+            QValue = 1
+        elif Question.text == "Pet's Name ?":
+            QValue = 2
+        elif Question.text ==  "First Teacher's Name ?":
+            QValue = 3
+        elif Question.text == "Favourite Holiday Destination?":
+            QValue = 4
+        else:
+            QValue = -1
+        if QValue == "": #Comparison for Question 
+            if Answer.text == "":#Comparison for Answer
+                pass
             else:
-               pass
-       else:
-           pass
-   def parameter(self,x):
-       self.pathValue = x
+                pass
+        else:
+            pass
+    def parameter(self,x):
+        self.pathValue = x
 class RecoveryLevelThreeScreen(Screen):
 
     pathValue = 0
@@ -180,6 +198,8 @@ class RecoveryLevelThreeScreen(Screen):
         self.contactValue = y
     def renderSecurityQues(self):
         ssn = self.ids['ssn_Value']
+        ssnType = 0
+        message = "Please Enter Your" + str(ssnType) + "Number"
         # Stub
         if 1:#compare SSN with Database Value
             App.get_running_app().root.current = 'recoverysecQuestion'
@@ -724,7 +744,6 @@ screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
 screenManager.add_widget( PasswordRecover( name = 'passwordRecoverScreen' ) )
 screenManager.add_widget( RecoveryLevelThreeScreen( name = 'recoverylevelThreeScreen' ) )
 screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
-screenManager.add_widget( ChangePassword( name = 'changePassword' ) )
 
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
