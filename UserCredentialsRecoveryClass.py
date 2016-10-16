@@ -34,7 +34,7 @@ class PasswordRecovery:
             config.conn.rollback()
             flag = 0
 
-        if (correctRecoveryID == aesEncrypt(config.key,recoveryID)):
+        if (correctRecoveryID == aesEncrypt(recoveryID)):
             if(recoveryType == 1):
                 generatedOTP = otpAuthentication.sendOTPforRecovery_mobile(recoveryID)
 
@@ -54,8 +54,8 @@ class PasswordRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctSSnId = aesDecrypt(config.key,row[0])
-                correctSSntype = aesDecrypt(config.key,row[1])
+                correctSSnId = aesDecrypt(row[0])
+                correctSSntype = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
@@ -81,8 +81,8 @@ class PasswordRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctQuesType = aesDecrypt(config.key,row[0])
-                correctAnswer = aesDecrypt(config.key,row[1])
+                correctQuesType = aesDecrypt(row[0])
+                correctAnswer = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
@@ -131,10 +131,10 @@ class UserRecovery:
         establishConnection()
 
         if(recoveryType == 1):
-            sql = "SELECT mobile FROM user WHERE mobile =" + "'" + aesEncrypt(config.key,recoveryID) + "'"
+            sql = "SELECT mobile FROM user WHERE mobile =" + "'" + aesEncrypt(recoveryID) + "'"
 
         elif(recoveryType == 2):
-            sql = "SELECT email FROM user WHERE email =" + "'" + aesEncrypt(config.key,recoveryID) + "'"
+            sql = "SELECT email FROM user WHERE email =" + "'" + aesEncrypt(recoveryID) + "'"
 
         try:
             config.statement.execute(sql)
@@ -150,11 +150,11 @@ class UserRecovery:
         if (flag):
             if(recoveryType == 1):
                 generatedOTP = otpAuthentication.sendOTPforRecovery_mobile(recoveryID)
-                sql = "SELECT userid FROM user WHERE mobile =" + "'" + aesEncrypt(config.key,recoveryID) + "'"
+                sql = "SELECT userid FROM user WHERE mobile =" + "'" + aesEncrypt(recoveryID) + "'"
 
             elif(recoveryType == 2):
                 generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID)
-                sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(config.key,recoveryID) + "'"
+                sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(recoveryID) + "'"
 
 
         #Fetch userID
@@ -181,8 +181,8 @@ class UserRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctSSnId = aesDecrypt(config.key,row[0])
-                correctSSntype = aesDecrypt(config.key,row[1])
+                correctSSnId = aesDecrypt(row[0])
+                correctSSntype = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
@@ -208,8 +208,8 @@ class UserRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctQuesType = aesDecrypt(config.key,row[0])
-                correctAnswer = aesDecrypt(config.key,row[1])
+                correctQuesType = aesDecrypt(row[0])
+                correctAnswer = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
