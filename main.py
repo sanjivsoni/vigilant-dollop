@@ -287,17 +287,14 @@ class HomeScreen(Screen):
         super(HomeScreen, self).__init__(**kwargs)
 
         layout = BoxLayout(orientation = 'vertical')
-        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1), height = 10 )
+        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.05))
         
         button = Button(text="Lock Files", id='lock_button')
 	button.bind(on_press = self.show_load)
         #button.bind(on_press = partial(self.lockFile, 'file' ))
 
-        button_unlock = Button(text="Unlock File", id='unlock_button')
-        #button_unlock.bind(on_press = partial(self.unlockFile, 'file1'))
 
         top_layout.add_widget(button)
-        top_layout.add_widget(button_unlock)
         bottom_layout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
         grid = GridLayout(id='unlocked_files', cols=4, padding=5, spacing=5,
@@ -307,19 +304,19 @@ class HomeScreen(Screen):
 
 
         # add button into that grid
-        
+        ''' 
         for i in range(8):
             btn = Button(text = "file" + str(i), size = (30, 30),
                          size_hint = (None, None), id = str(i))
             btn.bind(on_press = partial(self.unlockFile, str(i)))
-            label = Label(text = "file" + str(i), width=70, halign = 'left',valign = 'middle')
+            label = Label(text = "file" + str(i), width=90, halign = 'left',valign = 'middle', id="label"+str(i))
             label.bind(size=label.setter('text_size'))
 
             grid.add_widget(btn)
             grid.add_widget(label)
-
+        '''
         # create a scroll view, with a size < size of the grid
-        scroll = ScrollView(size_hint = (None, None), size = (600, 500),
+        scroll = ScrollView(size_hint = (None, None), size = (550, 500),
                 pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
@@ -349,8 +346,19 @@ class HomeScreen(Screen):
         self._popup.dismiss()
 
     def load(self, *args):
-        print args[0].path, args[0].selection 
-        self.lockFile(args[0].path,args[0].selection)
+        print args[0].path, args[0].selection[0]
+        path = str(args[0].path).split('/')
+#        print path
+        complete_path = str(args[0].selection[0]).split('/')
+#        print complete_path
+
+        for name in path:
+            try:
+                complete_path.remove(name)
+            except ValueError:
+                pass
+
+        self.lockFile(args[0].path, complete_path[0])
         self.cancel()
         
     
@@ -359,12 +367,19 @@ class HomeScreen(Screen):
 #        print args[0]
 #        print ("button pressed <%s> " %args[0])
         button_id = str(args[1])
-        button = Button(text=button_id, size=(30, 30),
+        button = Button(text=' ', size=(30, 30),
                          size_hint=(None, None), id = button_id)
 
         button.bind(on_press = partial(self.unlockFile, button_id))
+        button.add_widget(Image(source = "images/file.png", size=(30,30)))
+        label = Label(text = button_id  , width = 70, halign = 'left',valign = 'middle', id="label"+button_id)
+        label.bind(size=label.setter('text_size'))
+
         #button.bind(on_press = partial(self.un
-        self.children[0].children[0].children[0].children[0].add_widget(button)
+        grid = self.children[0].children[0].children[0].children[0]
+        grid.add_widget(button)
+        grid.add_widget(label)
+
 
     def unlockFile(self, *args):
 
@@ -375,6 +390,9 @@ class HomeScreen(Screen):
         for child in grid.children:
             if child.id == args[0]:
                 grid.remove_widget(child)
+                for label in grid.children:
+                    if label.id == "label"+ str(args[0]):
+                        grid.remove_widget(label)
     
 
     def show_load(self, *args):
