@@ -49,6 +49,7 @@ from kivy.uix.screenmanager import FadeTransition, ScreenManager, Screen
 from kivy.properties import ObjectProperty
 
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window

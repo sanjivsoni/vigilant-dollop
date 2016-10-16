@@ -13,18 +13,22 @@ Window.size = (700, 700)
 verifyUser = Authentication()
 choice = -1
 userID = ""
+attempt = 0
 
 # Classes for seperate screens
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
-
+    attempt = 0
+    invalidTime = 0
     # Validate User input Event
     def usernameEvent(self):
         # Stub
         self.username.text  = "bhatshubhs"
+        global attempt
         global verifyUser
         global userID
+        
         userExists = verifyUser.checkIfUserExists(self.username.text)
         # Successful match for Username
         if(userExists):
@@ -38,7 +42,8 @@ class UsernameScreen(Screen):
 
     # Recover User name Event
     def recoverUsernameEvent(self):
-        pass
+        App.get_running_app().root.current = 'usernameRecoverScreen'
+        App.get_running_app().root.get_screen('usernameRecoverScreen').parameter(1)
 
 class PasswordScreen(Screen):
     password = ObjectProperty(None)
@@ -56,7 +61,8 @@ class PasswordScreen(Screen):
             # Change present screen to password screen.
             App.get_running_app().root.current = 'levelTwoScreen'
             choice = randint(0, 1)
-            App.get_running_app().root.get_screen('levelTwoScreen').updateButtonLabel()
+            choice2 = randint(0, 6)
+            App.get_running_app().root.get_screen('levelTwoScreen').updateScreen(choice, choice2)
 
         else:
             # Unsuccessful match for Username
@@ -64,7 +70,116 @@ class PasswordScreen(Screen):
 
     # Recover User name Event
     def recoverUsernameEvent(self):
+        App.get_running_app().root.current = 'usernameRecoverScreen'
+        App.get_running_app().root.get_screen('usernameRecoverScreen').parameter(2)
+
+class UsernameRecover(Screen):
+    username = ObjectProperty(None)
+    message = ObjectProperty(None)
+    attempt = 0
+    invalidTime = 0
+    pathValue = 0
+    # Validate User input Event
+    #self.ids['loginButton'].disabled = True
+    def nextStepEvent(self, buttonValue):
+        # Stub
+        App.get_running_app().root.current = 'recoverylevelTwoScreen'
+        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
+    def parameter(self,x):
+        self.pathValue = x
+    # Recover User name Event
+    def recoverUsernameEvent(self):
         pass
+
+class RecoveryLevelThreeScreen(Screen):
+    
+    pathValue = 0
+    choiceValue = 0
+
+    def parameter(self,x,y):
+        self.pathValue = x
+        self.choiceValue = y
+    def validOtpEvent(self):
+        # Stub
+        "HI"          
+        # Invalid OTP
+
+class RecoveryLevelTwoScreen(Screen):
+    
+    otp = ObjectProperty(None)
+    send = ObjectProperty(None)
+    minutes = ObjectProperty(None)
+    seconds = ObjectProperty(None)
+    # 5 minutes timer
+    _total_seconds = 30
+    _total_minutes = 0
+    _minutes = _total_seconds
+    _seconds = _total_minutes
+    _otp_expired = 0
+    pathValue = 0
+    choiceValue = 0
+    _time_event = 0
+    _otp_choice = 0
+
+    def parameter(self,x,y):
+        self.pathValue = x
+        self.choiceValue = y
+    def sendOtp(self):
+        pass
+
+    def updateButtonLabel(self, choice):
+        if choice == 1:
+            self.ids.send.text = "Send OTP to Email"
+        else:
+            self.ids.send.text = "Send OTP to Mobile"
+    # Update Timer after One Second
+    def updateTimer(self, dt):
+        if self._minutes >= 0 and self._seconds > 0:
+            self._seconds = self._seconds - 1
+            if self._minutes > 0 and self._seconds == 0: 
+                self._seconds = 60
+                self._minutes = self._minutes - 1
+
+            elif self._minutes == 0 and self._seconds == 0:
+                Clock.unschedule(self._time_event)
+                self.ids.send.disabled = False
+
+                # Resend OTP after Timeout
+
+            if self._minutes > 9:
+                self.minutes.text = str(self._minutes) + ':'
+            else:
+                self.minutes.text = '0' + str(self._minutes) + ':'
+                
+            if self._seconds > 9:
+                self.seconds.text = str(self._seconds)
+            else:
+                self.seconds.text = '0' + str(self._seconds)
+    
+    def endTimer(self):
+        pass
+
+    # Save OTP to database incase of app crash
+    def saveTimer(self):
+        pass
+	
+    def validOtpEvent(self):
+        # Stub
+        self.otp.text = "1"
+        validOtp = "1"
+        self._seconds = self._total_seconds
+        self._minutes = self._total_minutes
+
+        self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
+        self.ids.send.disabled = True
+
+        # If valid OTP
+        if validOtp == self.otp.text:
+            App.get_running_app().root.current = 'recoverylevelThreeScreen'
+            App.get_running_app().root.get_screen('recoverylevelThreeScreen').parameter(self.pathValue,self.choiceValue)
+           # App.get_running_app().root.current = 'levelThreeScreen'
+            pass            
+        # Invalid OTP
 
 class LevelTwoScreen(Screen):
 
@@ -277,14 +392,11 @@ class LevelTwoScreen(Screen):
 
         self.correctOTP = my_queue.get()
 
-class LoadDialog(FloatLayout):
-    load = ObjectProperty(None)
-    cancel = ObjectProperty(None)
-
 class HomeScreen(Screen):
 
     counter = 0
     second_counter = 0
+
 
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
@@ -301,26 +413,28 @@ class HomeScreen(Screen):
 
         top_layout.add_widget(button)
         top_layout.add_widget(button_unlock)
-        bottom_layout = BoxLayout(size_hint = (1, 0.9))
-        
+        bottom_layout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
-        grid = GridLayout(id='unlocked_files', cols=6, padding=25, spacing=41,
-                size_hint=(None, None), width=650,  pos_hint={'center_x': .5, 'center_y': .5})
+        grid = GridLayout(id='unlocked_files', cols=4, padding=5, spacing=5,
+                size_hint=(None, None), width=600,  pos_hint={'center_x': .5, 'center_y': .5})
 
         grid.bind(minimum_height=grid.setter('height'))
 
 
         # add button into that grid
-        '''
+        
         for i in range(8):
-            btn = Button(text = "file" + str(i), size = (90, 90),
+            btn = Button(text = "file" + str(i), size = (30, 30),
                          size_hint = (None, None), id = str(i))
             btn.bind(on_press = partial(self.unlockFile, str(i)))
+            label = Label(text = "file" + str(i), width=70, halign = 'left',valign = 'middle')
+            label.bind(size=label.setter('text_size'))
 
             grid.add_widget(btn)
-        '''
+            grid.add_widget(label)
+
         # create a scroll view, with a size < size of the grid
-        scroll = ScrollView(size_hint = (None, None), size = (650, 500),
+        scroll = ScrollView(size_hint = (None, None), size = (600, 500),
                 pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
@@ -360,7 +474,7 @@ class HomeScreen(Screen):
 #        print args[0]
 #        print ("button pressed <%s> " %args[0])
         button_id = str(args[1])
-        button = Button(text=button_id, size=(70, 70),
+        button = Button(text=button_id, size=(30, 30),
                          size_hint=(None, None), id = button_id)
 
         button.bind(on_press = partial(self.unlockFile, button_id))
@@ -387,10 +501,16 @@ class HomeScreen(Screen):
 screenManager = ScreenManager( transition = FadeTransition() )
 
 # Add all screens to screen manager
+
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( PasswordScreen( name = 'passwordScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelThreeScreen' ) )
+screenManager.add_widget( RecoveryLevelTwoScreen( name = 'recoverylevelTwoScreen' ) )
+screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
+screenManager.add_widget( RecoveryLevelThreeScreen( name = 'recoverylevelThreeScreen' ) )
+#screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
+
 
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
