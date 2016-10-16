@@ -81,14 +81,12 @@ class UsernameRecover(Screen):
     attempt = 0
     invalidTime = 0
     pathValue = 0
-
     # Validate User input Event
     #self.ids['loginButton'].disabled = True
-    def nextUserEvent(self, buttonValue):
+    def nextUserEvent(self):
         # Stub
         recoverUser = UserRecovery()
         contact = self.ids.recoverlink
-
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
             print "Email"
             generatedOTP = recoverUser.recoverUserLevel1(2,contact.text)
@@ -98,7 +96,7 @@ class UsernameRecover(Screen):
             generatedOTP = recoverUser.recoverUserLevel1(1,contact.text)
 
         App.get_running_app().root.current = 'recoverylevelTwoScreen'
-        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)    
+        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
         # elif (contact.text[0] == "7") or (contact.text[0] == "8") or (contact.text[0] == "9"):
         #     if((contact.text.isdigit()) and len(contact.text)!=10):
         #         print "Phone"
@@ -108,6 +106,7 @@ class UsernameRecover(Screen):
         # else:
         #         contact.text = ""
         #         contact.hint_text = "Please Enter A Valid Contact Link."
+
     def parameter(self,x):
         self.pathValue = x
     # Recover User name Event
@@ -124,8 +123,15 @@ class PasswordRecover(Screen):
     #self.ids['loginButton'].disabled = True
     def nextPassEvent(self, buttonValue):
         # Stub
-        App.get_running_app().root.current = 'recoverysecQuestion'
-        App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue,buttonValue)
+        if buttonValue == 1:
+            pass#send Email
+        elif buttonValue == 2:
+            pass#send SMS
+        # if date validated
+            App.get_running_app().root.current = 'recoverysecQuestion'
+            App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
+        #else:
+         #  pass
     def parameter(self,x):
         self.pathValue = x
     # Recover User name Event
@@ -146,7 +152,7 @@ class RecoveryLevelThreeScreen(Screen):
     def parameter(self,x,y):
         self.pathValue = x
         self.contactValue = y
-    def validOtpEvent(self):
+    def renderSecurityQues(self):
         # Stub
         App.get_running_app().root.current = 'recoverysecQuestion'
         App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
@@ -169,12 +175,140 @@ class RecoveryLevelTwoScreen(Screen):
     _time_event = 0
     _otp_choice = 0
 
-    def parameter(self,x,y):
+    def parameter(self,x):
         self.pathValue = x
-        self.choiceValue = y
+
+
     def sendOtp(self):
         pass
 
+    def color_white(self,dt):
+        label= []
+        label.append(self.ids['otp'])
+        label.append(self.ids['otp_2'])
+        label.append(self.ids['otp_3'])
+        label.append(self.ids['otp_4'])
+        label.append(self.ids['otp_5'])
+        label.append(self.ids['otp_6'])
+
+        for i in range(0,6):
+            label[i].background_color = [1,1,1,1]
+            label[i].text = ""
+    def compareOTP(self):
+        label= []
+        label.append(self.ids['otp'])
+        label.append(self.ids['otp_2'])
+        label.append(self.ids['otp_3'])
+        label.append(self.ids['otp_4'])
+        label.append(self.ids['otp_5'])
+        label.append(self.ids['otp_6'])
+
+        tempPass = ""
+        for i in range(0,6):
+            tempPass += label[i].text
+
+        otpFlag = 0
+
+        for i in range(0,6):
+            if not(label[i].text ==""):
+                continue
+            else:
+                otpFlag = 1
+                break
+        if otpFlag == 0:
+            if tempPass == self.correctOTP:
+                for i in range(0,6):
+                    label[i].background_color = [0,1,0,1]
+            else:
+                for i in range(0,6):
+                    label[i].background_color = [1,0,0,1]
+
+                Clock.schedule_once(self.color_white, 1)
+                label[0].focus = True
+
+    def check1_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp.text == ""):
+            if not(otp.text.isdigit()):
+                otp.text = ""
+            else:
+                self.compareOTP()
+                otp.focus = False
+                otp2.focus = True
+    def check2_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp2.text == ""):
+            if not(otp2.text.isdigit()):
+                otp.text = ""
+            else:
+                self.compareOTP()
+                otp2.focus = False
+                otp3.focus = True
+    def check3_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp3.text == ""):
+            if not(otp3.text.isdigit()):
+                otp3.text = ""
+            else:
+                self.compareOTP()
+                otp3.focus = False
+                otp4.focus = True
+    def check4_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp4.text == ""):
+            if not(otp4.text.isdigit()):
+                otp4.text = ""
+            else:
+                self.compareOTP()
+                otp4.focus = False
+                otp5.focus = True
+    def check5_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp5.text == ""):
+            if not(otp5.text.isdigit()):
+                otp5.text = ""
+            else:
+                self.compareOTP()
+                otp5.focus = False
+                otp6.focus = True
+    def check6_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+
+        if not(otp6.text == ""):
+            if not(otp6.text.isdigit()):
+                otp6.text = ""
+            else:
+                self.compareOTP()
     def updateButtonLabel(self, choice):
         if choice == 1:
             self.ids.send.text = "Send OTP to Email"

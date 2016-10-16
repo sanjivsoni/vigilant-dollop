@@ -179,7 +179,7 @@
                         text: 'Submit'
                         size:300,30
                         size_hint: None, None
-                        on_press: root.nextUserEvent(1)
+                        on_press: root.nextUserEvent()
             BoxLayout:
                 size_hint: 0.3,0.5                
         BoxLayout:
@@ -229,12 +229,12 @@
                     Button:
                         id: recover2
                         text: 'Email'
-                        on_press: root.nextPassEvent(2)
+                        on_press: root.nextPassEvent(1)
                     
                     Label:
                         text: 'Or '
                     Button:
-                        id: recover2
+                        id: recover3
                         text: 'Password'
                         on_press: root.nextPassEvent(2)
             BoxLayout:
@@ -308,31 +308,42 @@
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check1_otp()
 					TextInput:
+                        id: otp_2
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check2_otp()
 					TextInput:
+                        id: otp_3
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check3_otp()
 					TextInput:
+                        id: otp_4
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check4_otp()
 					TextInput:
+                        id: otp_5
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check5_otp()
 					TextInput:
+                        id: otp_6
 						size_hint: 0.2,1
 						font_size: '50sp'
 						padding:15,5,15,0
 						write_tab: False
+                        on_text: root.check6_otp()
 				BoxLayout:
 					size_hint: 0.25,1
 				
@@ -397,7 +408,7 @@
                         id: send
                         text: 'Next'
                         font_size:'15sp'
-                        on_release: root.validOtpEvent()
+                        on_release: root.renderSecurityQues()
                     Label:
             BoxLayout:
                 size_hint: 1, 0.25
@@ -426,7 +437,7 @@
                     orientation: 'horizontal'
                     Label:
                     Label:
-                        text: "Please Enter Your SSN Registered With Us."
+                        text: "Please Select And Answer Your Security Question With Us."
                     Label:
                 BoxLayout:
                     orientation: 'horizontal'
