@@ -22,6 +22,10 @@ from uuid import getnode as get_mac
 #config file
 import config
 
+#for gps coordinates
+import requests
+import json
+
 #for email
 import smtplib
 from email.MIMEMultipart import MIMEMultipart

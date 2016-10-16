@@ -175,7 +175,7 @@ class OTP:
         generatedOTP = generateOTP()
         out_queue.put(generatedOTP)
         msg = MIMEMultipart()
-        msg['From'] = config.emailid
+        msg['From'] = "Team Vigilant Dollop"
         msg['To'] = userEmail
         msg['Subject'] = config.email_subject
         body = config.email_msg + generatedOTP
@@ -200,7 +200,7 @@ class OTP:
 
         generatedOTP = generateOTP()
         msg = MIMEMultipart()
-        msg['From'] = config.emailid
+        msg['From'] = "Team Vigilant Dollop"
         msg['To'] = sendToEmail
         msg['Subject'] = config.email_subject
         body = config.email_msg + generatedOTP
