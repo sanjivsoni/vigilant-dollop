@@ -92,19 +92,23 @@ class UsernameRecover(Screen):
             print "Email"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
             thread1.start()
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
 
         else:
             print "Phone"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
             thread1.start()
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
 
         generatedOTP = my_queue.get()
 
         if generatedOTP == -1:
             pass
         else:
-            App.get_running_app().root.current = 'recoverylevelTwoScreen'
-            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+            App.get_running_app().root.current = 'recoverylevelThreeScreen'
+            App.get_running_app().root.get_screen('recoverylevelThreeScreen').parameter(self.pathValue)
 
     def parameter(self,x):
         self.pathValue = x
@@ -358,11 +362,7 @@ class RecoveryLevelTwoScreen(Screen):
 
         # If valid OTP
 
-        if validOtp == self.otp.text:
-            App.get_running_app().root.current = 'recoverylevelThreeScreen'
-            App.get_running_app().root.get_screen('recoverylevelThreeScreen').parameter(self.pathValue,self.choiceValue)
            # App.get_running_app().root.current = 'levelThreeScreen'
-            pass
         # Invalid OTP
 
 class LevelTwoScreen(Screen):
