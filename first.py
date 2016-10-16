@@ -31,15 +31,15 @@ quer = userid + " " + pwd + " " + email + " " + mobile + " " + sudoPwd
 quer2 = fname + " " +lname + " " +dob + " " +ssnid + " " +ssn_type + " " +address + " " +pincode + " " +country
 quer3 = ques1 + " " + ques2 + " " + ans1 + " " + ans2
 
-#NewUser = User(quer)
-#NewUser.createUser()
+NewUser = User(quer)
+NewUser.createUser()
 #NewUser.addSecurityQuestions(quer3)
 #print config.db_pass
 
-au = UserRecovery()
-print au.recoverUserLevel1(1, "+919810158269")
-print au.recoverUserLeveL2("2","2ewfrefeg")
-print au.recoverUserLeveL3("3","hjk")
+#au = UserRecovery()
+#print au.recoverUserLevel1(1, "+919810158269")
+#print au.recoverUserLeveL2("2","2ewfrefeg")
+#print au.recoverUserLeveL3("3","hjk")
 
 #NewUser.user(quer)
 #NewUser.checkUser("bhatshubhs","123456")'''
