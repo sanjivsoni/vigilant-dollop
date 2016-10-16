@@ -195,6 +195,7 @@ class RecoveryLevelTwoScreen(Screen):
             label[i].background_color = [1,1,1,1]
             label[i].text = ""
     def compareOTP(self):
+        global generatedOTP
         label= []
         label.append(self.ids['otp'])
         label.append(self.ids['otp_2'])
@@ -216,7 +217,7 @@ class RecoveryLevelTwoScreen(Screen):
                 otpFlag = 1
                 break
         if otpFlag == 0:
-            if tempPass == self.correctOTP:
+            if tempPass == generatedOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
             else:
