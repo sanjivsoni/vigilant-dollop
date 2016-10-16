@@ -88,12 +88,14 @@ class UsernameRecover(Screen):
         my_queue = Queue.Queue()
         recoverUser = UserRecovery()
         contact = self.ids.recoverlink
+        x = 0
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
             print "Email"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
             thread1.start()
             App.get_running_app().root.current = 'recoverylevelTwoScreen'
             App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+            x =1
 
         else:
             print "Phone"
@@ -101,14 +103,11 @@ class UsernameRecover(Screen):
             thread1.start()
             App.get_running_app().root.current = 'recoverylevelTwoScreen'
             App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
-
+            x = 2
         generatedOTP = my_queue.get()
 
-        if generatedOTP == -1:
-            pass
-        else:
-            App.get_running_app().root.current = 'recoverylevelThreeScreen'
-            App.get_running_app().root.get_screen('recoverylevelThreeScreen').parameter(self.pathValue)
+
+
 
     def parameter(self,x):
         self.pathValue = x
@@ -125,14 +124,26 @@ class PasswordRecover(Screen):
     # Validate User input Event
     #self.ids['loginButton'].disabled = True
     def nextPassEvent(self, buttonValue):
+        global userID
+        recoverPassword = PasswordRecovery(userID)
+        my_queue = Queue.Queue()
+
         # Stub
         if buttonValue == 1:
-            pass#send Email
+            thread1 = Thread(target = recoverPassword.recoverPasswordLeveL1, args = (2,my_queue,))
+            thread1.start()
+
         elif buttonValue == 2:
-            pass#send SMS
-        # if date validated
-            App.get_running_app().root.current = 'recoverysecQuestion'
-            App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
+            thread1 = Thread(target = recoverPassword.recoverPasswordLeveL1, args = (1,my_queue,))
+            thread1.start()
+
+        global generatedOTP
+        generatedOTP = my_queue.get()
+        print generatedOTP
+        
+        App.get_running_app().root.current = 'recoverylevelTwoScreen'
+        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+
         #else:
          #  pass
     def parameter(self,x):
@@ -224,7 +235,9 @@ class RecoveryLevelTwoScreen(Screen):
             if tempPass == generatedOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
-                    otpCompareValue = 1
+                    App.get_running_app().root.current = 'recoverylevelThreeScreen'
+                    App.get_running_app().root.get_screen('recoverylevelThreeScreen').parameter(self.pathValue,x)
+
             else:
                 for i in range(0,6):
                     label[i].background_color = [1,0,0,1]
@@ -557,7 +570,7 @@ class LevelTwoScreen(Screen):
         global choice
         global userID
         my_queue = Queue.Queue()
-        sendOTP = OTP(userID)
+        sendOTP = OTP(hashEncrypt(userID))
 
         self._seconds = self._total_seconds
         self._minutes = self._total_minutes

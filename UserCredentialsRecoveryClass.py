@@ -4,17 +4,17 @@ from AuthenticationClass import *
 class PasswordRecovery:
 
     def __init__(self,userID):
-        self.userID = userID
+        self.userID = hashEncrypt(userID)
         self.Level1 = False
         self.Level2 = False
         self.Level3 = False
         #self.userIdentified = self.Level1 and self.Level2 and self.Level3
         self.userIdentified = True
 
-    def recoverPasswordLeveL1(self,recoveryType,recoveryID):
-        correctRecoveryID = ""
-        generatedOTP = ""
+    def recoverPasswordLeveL1(self,recoveryType,out_queue):
+        recoveryID = ""
         otpAuthentication = OTP(self.userID)
+        flag = 0
         establishConnection()
 
         if(recoveryType == 1):
@@ -27,23 +27,23 @@ class PasswordRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctRecoveryID = row[0]
+                recoveryID = row[0]
 
         except Exception, e:
             print repr(e)
             config.conn.rollback()
             flag = 0
 
-        if (correctRecoveryID == aesEncrypt(recoveryID)):
-            if(recoveryType == 1):
-                generatedOTP = otpAuthentication.sendOTPforRecovery_mobile(recoveryID)
 
-            elif(recoveryType == 2):
-                generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID)
+        if(recoveryType == 1):
+            otpAuthentication.sendOTPforAuth_mobile(out_queue)
 
-            return generatedOTP
-        else:
-            return 0
+        elif(recoveryType == 2):
+            otpAuthentication.sendOTPforAuth_email(out_queue)
+
+        if flag == 0 :
+            return -1
+
 
     def recoverPasswordLeveL2(self,ssn_type,ssnid):
         establishConnection()
@@ -150,11 +150,11 @@ class UserRecovery:
 
         if (flag):
             if(recoveryType == 1):
-                generatedOTP = otpAuthentication.sendOTPforRecovery_mobile(recoveryID,out_queue)
+                otpAuthentication.sendOTPforRecovery_mobile(recoveryID,out_queue)
                 sql = "SELECT userid FROM user WHERE mobile =" + "'" + aesEncrypt(recoveryID) + "'"
 
             elif(recoveryType == 2):
-                generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID,out_queue)
+                otpAuthentication.sendOTPforRecovery_email(recoveryID,out_queue)
                 sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(recoveryID) + "'"
 
         else:

@@ -130,7 +130,7 @@ class Authentication:
 
 class OTP:
     def __init__(self,userID = ""):
-        self.userID = hashEncrypt(userID)
+        self.userID = userID
 
     def sendOTPforAuth_mobile(self,out_queue):
         login_stats = LoginDetails(self.userID)
@@ -157,15 +157,17 @@ class OTP:
 
 
 
-    def sendOTPforAuth_email(self,out_queue):
+    def sendOTPforAuth_email(self,output_queue):
         userEmail = ""
         establishConnection()
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
                 userEmail = aesDecrypt(row[0])
+                #print userEmail
 
         except Exception, e:
             print repr(e)
@@ -173,7 +175,7 @@ class OTP:
             print "error"
 
         generatedOTP = generateOTP()
-        out_queue.put(generatedOTP)
+        output_queue.put(generatedOTP)
         msg = MIMEMultipart()
         msg['From'] = "Team Vigilant Dollop"
         msg['To'] = userEmail
@@ -195,7 +197,6 @@ class OTP:
         out_queue.put(generatedOTP)
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = sendToMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
-        return generatedOTP
 
     def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
@@ -214,5 +215,3 @@ class OTP:
         text = msg.as_string()
         server.sendmail(config.emailid, sendToEmail, text)
         server.quit()
-
-        return generatedOTP
