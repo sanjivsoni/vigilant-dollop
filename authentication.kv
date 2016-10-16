@@ -1,3 +1,88 @@
+<PasswordReset>:
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 10
+    
+        canvas:
+            Rectangle: 
+                source: 'images/blue.png'
+                pos: self.pos
+                size: self.size
+        
+        BoxLayout:
+            size_hint: 1,0.05
+        BoxLayout:
+            size_hint: 1,0.1
+            BoxLayout:
+                orientation: 'horizontal'
+                size_hint: 1,0.15
+                spacing: 10
+                Label:
+                    size_hint: 0.3,1
+                Label:
+                    text: "Enter The New Password"
+                    size_hint: 0.4, None
+                    size: 370,40
+                    font_size:25
+                Label:
+                    size_hint: 0.3,1
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,0.15
+            spacing: 10
+            Label:
+                size_hint: 0.3,1
+            Label:
+                text: "Password"
+                size_hint: 0.6, None
+                size: 370,40
+            TextInput:
+                id: pass_reset
+                hint_text: 'password'
+                size_hint: 0.6, None
+                size: 370,40
+                on_text: root.check_validity()
+            Label:
+                id:Message
+                text: ""
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,0.15
+            spacing: 10
+            Label:
+                size_hint: 0.3,1
+            Label:
+                text: "Confirm Password"
+                size_hint: 0.6, None
+                size: 370,40
+            TextInput:
+                id: confirm_reset
+                hint_text: 'password'
+                size_hint: 0.6, None
+                size: 370,40
+            Label:
+
+        BoxLayout:
+            orientation: 'horizontal'
+            size_hint: 1,0.15
+            spacing: 10
+            Label:
+                size_hint: 0.3,1
+            Label:
+                size_hint: 0.6, None
+                size: 370,40
+            Button:
+                text: 'password'
+                size_hint: 0.6, None
+                size: 370,40
+            Label:
+        BoxLayout:
+            size_hint: 0.3,0.5                
+        
+
 <LoginScreen>:
     username: username
     password: password
@@ -46,7 +131,7 @@
                     TextInput:
                         id: username
                         hint_text: 'username'
-                    
+                        on_text: root.check_username()
                     BoxLayout:
                         orientation: 'horizontal'
                         Button:
@@ -110,7 +195,7 @@
                     TextInput:
                         id: password
                         hint_text: 'password'
-                    
+                        on_text: root.check_password()
                     BoxLayout:
                         orientation: 'horizontal'
                         Button:
@@ -511,7 +596,17 @@
 				    on_release: root.validOtpEvent()
 			    BoxLayout: 
 			        size_hint:0.25,1
-		BoxLayout:
+		
+        BoxLayout:
+            spacing: 20
+            size_hint: 1, 0.001
+            Label: 
+			    id: instruction
+                size_hint:0.25,1
+                color: [0,0,0,1]
+                text: "Enter The Recovery Code"
+
+        BoxLayout:
 			orientation: 'vertical'
 			size_hint: 1, 0.5
 			BoxLayout:
@@ -586,6 +681,117 @@
 				BoxLayout:
 					size_hint: 1,0.25
 
+<LevelThreeScreen>:
+	otp:otp
+	send:send
+	minutes: minutes
+	seconds: seconds
+
+
+	BoxLayout:
+
+		canvas:
+			Rectangle: 
+				source: 'images/blue.png'
+				pos: self.pos
+				size: self.size
+		orientation: 'vertical'
+		padding: 20
+		spacing: 10
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint: 1, 0.1
+			Label:
+				text: "Enter OTP"
+				font_size: '20sp'
+			BoxLayout:
+			    size_hint: 1,0.5
+			    orientation: 'horizontal'
+			    BoxLayout: 
+			        size_hint:0.25,1
+			    
+			    Button:
+			        size_hint: 0.5,1
+				    id: send
+				    text: 'Sent to Registered Mobile/Email'
+				    font_size:'15sp'
+				    on_release: root.validOtpEvent()
+			    BoxLayout: 
+			        size_hint:0.25,1
+		BoxLayout:
+			orientation: 'vertical'
+			size_hint: 1, 0.5
+			BoxLayout:
+				size_hint: 1,0.9
+				orientation: 'horizontal'
+				BoxLayout:
+					orientation: 'horizontal'
+					size_hint: 0.25,1
+				BoxLayout:
+					orientation: 'horizontal'
+					size_hint: 0.5,0.24 
+					
+					TextInput:
+						id: otp
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+                        on_text: root.check1_otp()
+					TextInput:
+                        id: otp_2
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+                        on_text: root.check2_otp()
+					TextInput:
+                        id: otp_3
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+                        on_text:root.check3_otp()
+					TextInput:
+                        id: otp_4
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+                        on_text:root.check4_otp()
+					TextInput:
+                        id: otp_5
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+                        on_text:root.check5_otp()
+					TextInput:
+                        id: otp_6
+						size_hint: 0.2,1
+						font_size: '50sp'
+						padding:15,5,15,0
+						write_tab: False
+                        on_text:root.check6_otp()
+				BoxLayout:
+					size_hint: 0.25,1
+				
+			BoxLayout:
+				size_hint: 1,0.8
+				orientation: 'horizontal'
+				BoxLayout:
+					size_hint: 1,0.25
+				BoxLayout:
+					size_hint: 1,0.25
+					orientation: 'horizontal'
+					Label:
+						id: minutes
+						font_size: '90sp'
+					Label:
+					    id: seconds
+					    font_size: '90sp'
+				BoxLayout:
+					size_hint: 1,0.25
 <HomeScreen2>:
     ScrollView:
         size_hint: None, None
