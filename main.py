@@ -11,7 +11,7 @@ from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 
 from kivy.factory import Factory
-from kivy.uix.filechooser import FileChooserIconView
+from kivy.uix.filechooser import FileChooserIconView, FileChooserListView
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.scrollview import ScrollView
@@ -207,7 +207,7 @@ class HomeScreen(Screen):
         self.add_widget(layout)
 
         content = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
-        fileView = FileChooserIconView(id = 'filechooser')
+        fileView = FileChooserListView(id = 'filechooser')
         
         buttons = BoxLayout(size_hint_y = None, height = 20)
         
