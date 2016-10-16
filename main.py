@@ -15,7 +15,7 @@ choice = -1
 userID = ""
 attempt = 0
 generatedOTP = 0
-
+otpCompareValue = 0
 # Classes for seperate screens
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
@@ -95,8 +95,11 @@ class UsernameRecover(Screen):
             print "Phone"
             generatedOTP = recoverUser.recoverUserLevel1(1,contact.text)
 
-        
-        
+        if otpCompareValue: 
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
+        else:
+            pass
 
     def parameter(self,x):
         self.pathValue = x
@@ -194,7 +197,7 @@ class RecoveryLevelTwoScreen(Screen):
         label.append(self.ids['otp_4'])
         label.append(self.ids['otp_5'])
         label.append(self.ids['otp_6'])
-
+        global otpCompareValue = 0
         tempPass = ""
         for i in range(0,6):
             tempPass += label[i].text
@@ -211,12 +214,11 @@ class RecoveryLevelTwoScreen(Screen):
             if tempPass == generatedOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
-                    App.get_running_app().root.current = 'recoverylevelTwoScreen'
-                    App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
+                    otpCompareValue = 1
             else:
                 for i in range(0,6):
                     label[i].background_color = [1,0,0,1]
-
+                    otpCompareValue = 0
                 Clock.schedule_once(self.color_white, 1)
                 label[0].focus = True
 
