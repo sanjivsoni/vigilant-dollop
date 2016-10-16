@@ -14,6 +14,7 @@ verifyUser = Authentication()
 choice = -1
 userID = ""
 attempt = 0
+generatedOTP = 0
 
 # Classes for seperate screens
 class UsernameScreen(Screen):
@@ -28,8 +29,8 @@ class UsernameScreen(Screen):
         global attempt
         global verifyUser
         global userID
-        
-        #userExists = verifyUser.checkIfUserExists(self.username.text)
+
+        userExists = verifyUser.checkIfUserExists(self.username.text)
         # Successful match for Username
         if(self.username.text  == "bhatshubhs"):
             # Change present screen to password screen.
@@ -80,18 +81,24 @@ class UsernameRecover(Screen):
     attempt = 0
     invalidTime = 0
     pathValue = 0
-    
+
     # Validate User input Event
     #self.ids['loginButton'].disabled = True
     def nextUserEvent(self, buttonValue):
         # Stub
+        recoverUser = UserRecovery()
         contact = self.ids.recoverlink
-        App.get_running_app().root.current = 'recoverylevelTwoScreen'
-        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)
+
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
             print "Email"
+            generatedOTP = recoverUser.recoverUserLevel1(2,contact.text)
+
         else:
             print "Phone"
+            generatedOTP = recoverUser.recoverUserLevel1(1,contact.text)
+
+        App.get_running_app().root.current = 'recoverylevelTwoScreen'
+        App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue,buttonValue)    
         # elif (contact.text[0] == "7") or (contact.text[0] == "8") or (contact.text[0] == "9"):
         #     if((contact.text.isdigit()) and len(contact.text)!=10):
         #         print "Phone"
@@ -107,7 +114,6 @@ class UsernameRecover(Screen):
     def recoverUsernameEvent(self):
         pass
 
-    
 class PasswordRecover(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
@@ -127,13 +133,13 @@ class PasswordRecover(Screen):
         pass
 class RecoverySecQuestion(Screen):
    pathValue = 0
-   
+
    def questionEvent(self):
        pass
    def parameter(self,x):
        self.pathValue = x
 class RecoveryLevelThreeScreen(Screen):
-    
+
     pathValue = 0
     contactValue = 0
 
@@ -142,12 +148,12 @@ class RecoveryLevelThreeScreen(Screen):
         self.contactValue = y
     def validOtpEvent(self):
         # Stub
-        App.get_running_app().root.current = 'recoverysecQuestion'   
+        App.get_running_app().root.current = 'recoverysecQuestion'
         App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
         # Invalid OTP
 
 class RecoveryLevelTwoScreen(Screen):
-    
+
     otp = ObjectProperty(None)
     send = ObjectProperty(None)
     minutes = ObjectProperty(None)
@@ -178,7 +184,7 @@ class RecoveryLevelTwoScreen(Screen):
     def updateTimer(self, dt):
         if self._minutes >= 0 and self._seconds > 0:
             self._seconds = self._seconds - 1
-            if self._minutes > 0 and self._seconds == 0: 
+            if self._minutes > 0 and self._seconds == 0:
                 self._seconds = 60
                 self._minutes = self._minutes - 1
 
@@ -192,21 +198,22 @@ class RecoveryLevelTwoScreen(Screen):
                 self.minutes.text = str(self._minutes) + ':'
             else:
                 self.minutes.text = '0' + str(self._minutes) + ':'
-                
+
             if self._seconds > 9:
                 self.seconds.text = str(self._seconds)
             else:
                 self.seconds.text = '0' + str(self._seconds)
-    
+
     def endTimer(self):
         pass
 
     # Save OTP to database incase of app crash
     def saveTimer(self):
         pass
-	
+
     def validOtpEvent(self):
         # Stub
+        global generatedOTP
         self.otp.text = "1"
         validOtp = "1"
         self._seconds = self._total_seconds
@@ -216,11 +223,12 @@ class RecoveryLevelTwoScreen(Screen):
         self.ids.send.disabled = True
 
         # If valid OTP
+
         if validOtp == self.otp.text:
             App.get_running_app().root.current = 'recoverylevelThreeScreen'
             App.get_running_app().root.get_screen('recoverylevelThreeScreen').parameter(self.pathValue,self.choiceValue)
            # App.get_running_app().root.current = 'levelThreeScreen'
-            pass            
+            pass
         # Invalid OTP
 
 class LevelTwoScreen(Screen):
@@ -445,7 +453,7 @@ class HomeScreen(Screen):
 
         layout = BoxLayout(orientation = 'vertical')
         top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1), height = 10 )
-        
+
         button = Button(text="Lock Files", id='lock_button')
 	button.bind(on_press = self.show_load)
         #button.bind(on_press = partial(self.lockFile, 'file' ))
@@ -464,7 +472,7 @@ class HomeScreen(Screen):
 
 
         # add button into that grid
-        
+
         for i in range(8):
             btn = Button(text = "file" + str(i), size = (30, 30),
                          size_hint = (None, None), id = str(i))
@@ -477,7 +485,7 @@ class HomeScreen(Screen):
 
         # create a scroll view, with a size < size of the grid
         scroll = ScrollView(size_hint = (None, None), size = (600, 500),
-                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
+                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
 	layout.add_widget(top_layout)
@@ -486,9 +494,9 @@ class HomeScreen(Screen):
 
         content = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
         fileView = FileChooserListView(id = 'filechooser')
-        
+
         buttons = BoxLayout(size_hint_y = None, height = 20)
-        
+
         cancel_button = Button(text = 'cancel')
         cancel_button.bind(on_press = self.cancel)
 
@@ -506,11 +514,11 @@ class HomeScreen(Screen):
         self._popup.dismiss()
 
     def load(self, *args):
-        print args[0].path, args[0].selection 
+        print args[0].path, args[0].selection
         self.lockFile(args[0].path,args[0].selection)
         self.cancel()
-        
-    
+
+
     def lockFile(self, *args):
         self.counter = self.counter + 1
 #        print args[0]
@@ -528,14 +536,14 @@ class HomeScreen(Screen):
         grid = self.children[0].children[0].children[0].children[0]
 #        print grid.children[int(args[0])]
         inValidWidget = []
-        
+
         for child in grid.children:
             if child.id == args[0]:
                 grid.remove_widget(child)
-    
+
 
     def show_load(self, *args):
-        
+
         self._popup.open()
 
 

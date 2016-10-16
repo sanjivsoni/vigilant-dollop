@@ -156,7 +156,9 @@ class UserRecovery:
                 generatedOTP = otpAuthentication.sendOTPforRecovery_email(recoveryID)
                 sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(recoveryID) + "'"
 
-
+        else:
+            closeConnection()
+            return -1
         #Fetch userID
         try:
             config.statement.execute(sql)
