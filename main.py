@@ -277,14 +277,11 @@ class LevelTwoScreen(Screen):
 
         self.correctOTP = my_queue.get()
 
-class LoadDialog(FloatLayout):
-    load = ObjectProperty(None)
-    cancel = ObjectProperty(None)
-
 class HomeScreen(Screen):
 
     counter = 0
     second_counter = 0
+
 
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
@@ -301,26 +298,28 @@ class HomeScreen(Screen):
 
         top_layout.add_widget(button)
         top_layout.add_widget(button_unlock)
-        bottom_layout = BoxLayout(size_hint = (1, 0.9))
-        
+        bottom_layout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
-        grid = GridLayout(id='unlocked_files', cols=6, padding=25, spacing=41,
-                size_hint=(None, None), width=650,  pos_hint={'center_x': .5, 'center_y': .5})
+        grid = GridLayout(id='unlocked_files', cols=4, padding=5, spacing=5,
+                size_hint=(None, None), width=600,  pos_hint={'center_x': .5, 'center_y': .5})
 
         grid.bind(minimum_height=grid.setter('height'))
 
 
         # add button into that grid
-        '''
+        
         for i in range(8):
-            btn = Button(text = "file" + str(i), size = (90, 90),
+            btn = Button(text = "file" + str(i), size = (30, 30),
                          size_hint = (None, None), id = str(i))
             btn.bind(on_press = partial(self.unlockFile, str(i)))
+            label = Label(text = "file" + str(i), width=70, halign = 'left',valign = 'middle')
+            label.bind(size=label.setter('text_size'))
 
             grid.add_widget(btn)
-        '''
+            grid.add_widget(label)
+
         # create a scroll view, with a size < size of the grid
-        scroll = ScrollView(size_hint = (None, None), size = (650, 500),
+        scroll = ScrollView(size_hint = (None, None), size = (600, 500),
                 pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
 	scroll.add_widget(grid)
 	bottom_layout.add_widget(scroll)
@@ -360,7 +359,7 @@ class HomeScreen(Screen):
 #        print args[0]
 #        print ("button pressed <%s> " %args[0])
         button_id = str(args[1])
-        button = Button(text=button_id, size=(70, 70),
+        button = Button(text=button_id, size=(30, 30),
                          size_hint=(None, None), id = button_id)
 
         button.bind(on_press = partial(self.unlockFile, button_id))
@@ -387,11 +386,12 @@ class HomeScreen(Screen):
 screenManager = ScreenManager( transition = FadeTransition() )
 
 # Add all screens to screen manager
+'''
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( PasswordScreen( name = 'passwordScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelThreeScreen' ) )
-
+'''
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
 class ThreeLevelAuthApp(App):
