@@ -629,6 +629,7 @@ class HomeScreen(Screen):
 
     counter = 0
     second_counter = 0
+    counter_element = 0
 
 
     def __init__(self, **kwargs):
@@ -636,7 +637,7 @@ class HomeScreen(Screen):
 
         layout = BoxLayout(orientation = 'vertical')
         
-        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.1), height = 10 )
+        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.05), height = 10 )
 
         button = Button(text="Lock Files", id='lock_button')
 	button.bind(on_press = self.show_load)
@@ -725,6 +726,15 @@ class HomeScreen(Screen):
         label = Label(text = button_id  , width = 70, halign = 'left',valign = 'middle', id="label"+button_id, font_size='15sp')
         label.bind(size=label.setter('text_size'))
         
+        if self.counter_element > 0:
+            
+            mid_layout = self.children[0].children[1]
+            print mid_layout.children
+            child_first = mid_layout.children[0]
+            child_second = mid_layout.children[1]
+            mid_layout.remove_widget(child_first)
+            mid_layout.remove_widget(child_second)
+            self.counter_element = self.counter_element - 1
         
         grid = self.children[0].children[0].children[0].children[0]
         grid.add_widget(button)
@@ -755,7 +765,7 @@ class HomeScreen(Screen):
                         self.counter_element = self.counter_element - 1
         
         
-    counter_element = 0
+
 
     def unlockFile(self, *args):
 
@@ -764,11 +774,13 @@ class HomeScreen(Screen):
         file_name = args[0]
         mid_layout = self.children[0].children[1]
 
+        label = Label(text = complete_file_name, size_hint = (0.9,0.5))
+        button = Button(text = 'remove', size_hint = (0.1,0.5))
+        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button)) 
+
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
-            label = Label(text = complete_file_name, size_hint = (0.5,1))
-            button = Button(text = 'remove', size_hint = (0.5,1))
-            button.bind(on_press = partial(self.removeFile, grid, file_name,label, button)) 
+            
             mid_layout.add_widget(label)
             mid_layout.add_widget(button)
             self.counter_element = self.counter_element + 1
@@ -780,11 +792,10 @@ class HomeScreen(Screen):
 
                 mid_layout.remove_widget(previous_label)
                 mid_layout.remove_widget(previous_button)
-            else: 
-                label = Label(text = complete_file_name, size_hint = (0.5,1))
-                button = Button(text = 'remove', size_hint = (0.5,1))
-                button.bind(on_press = partial(self.removeFile, grid, file_name, label, button)) 
                 
+                mid_layout.add_widget(label)
+                mid_layout.add_widget(button)
+            else: 
                 mid_layout.add_widget(label)
                 mid_layout.add_widget(button)
                 self.counter_element = self.counter_element + 1
@@ -798,7 +809,7 @@ class HomeScreen(Screen):
 screenManager = ScreenManager( transition = FadeTransition() )
 
 # Add all screens to screen manager
-
+'''
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( PasswordScreen( name = 'passwordScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
@@ -808,7 +819,7 @@ screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
 screenManager.add_widget( PasswordRecover( name = 'passwordRecoverScreen' ) )
 screenManager.add_widget( RecoveryLevelThreeScreen( name = 'recoverylevelThreeScreen' ) )
 screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
-
+'''
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
 class ThreeLevelAuthApp(App):
