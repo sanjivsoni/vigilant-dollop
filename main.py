@@ -71,14 +71,13 @@ class PasswordReset(Screen):
     #else:
   #      L7.color = [0,1,0,1]
    #     self.flag10 += 1
-        
 
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
     attempt = 0
     invalidTime = 0
-    
+
     def check_username(self):
         if self.ids['username'].text ==  "":
             self.ids['loginButton'].disabled = True
@@ -121,7 +120,7 @@ class PasswordScreen(Screen):
     # Validate User Password input Event
     def passwordEvent(self):
         # Stub
-        self.password.text = "123456"
+        self.password.text = "Qwe@1234"
         global verifyUser
         global choice
         passwordMatched = verifyUser.checkUserLevel1(self.password.text)
@@ -206,7 +205,7 @@ class PasswordRecover(Screen):
         global generatedOTP
         generatedOTP = my_queue.get()
         print generatedOTP
-        
+
         App.get_running_app().root.current = 'recoverylevelTwoScreen'
         App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
 
@@ -217,9 +216,10 @@ class PasswordRecover(Screen):
     # Recover User name Event
     def recoverUsernameEvent(self):
         pass
+
 class RecoverySecQuestion(Screen):
     pathValue = 0
-    
+
     def parameter(self, x):
         self.pathValue = x
     def questionEvent(self):
@@ -244,7 +244,7 @@ class RecoverySecQuestion(Screen):
             QValue = 4
         else:
             QValue = -1
-        if QValue == "": #Comparison for Question 
+        if QValue == "": #Comparison for Question
             if Answer.text == "":#Comparison for Answer
                 pass
             else:
@@ -258,6 +258,7 @@ class RecoverySecQuestion(Screen):
             pass
     def parameter(self,x):
         self.pathValue = x
+        
 class RecoveryLevelThreeScreen(Screen):
 
     pathValue = 0
@@ -296,7 +297,6 @@ class RecoveryLevelTwoScreen(Screen):
     def parameter(self,x):
         self.pathValue = x
 
-
     def sendOtp(self):
         pass
 
@@ -312,6 +312,7 @@ class RecoveryLevelTwoScreen(Screen):
         for i in range(0,6):
             label[i].background_color = [1,1,1,1]
             label[i].text = ""
+
     def compareOTP(self):
         global generatedOTP
         label= []
@@ -363,6 +364,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp.focus = False
                 otp2.focus = True
+
     def check2_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -377,6 +379,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp2.focus = False
                 otp3.focus = True
+
     def check3_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -391,6 +394,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp3.focus = False
                 otp4.focus = True
+
     def check4_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -405,6 +409,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp4.focus = False
                 otp5.focus = True
+
     def check5_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -419,6 +424,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp5.focus = False
                 otp6.focus = True
+
     def check6_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -432,6 +438,7 @@ class RecoveryLevelTwoScreen(Screen):
                 otp6.text = ""
             else:
                 self.compareOTP()
+
     def updateButtonLabel(self, choice):
         if choice == 1:
             self.ids.send.text = "Send OTP to Email"
@@ -463,7 +470,6 @@ class RecoveryLevelTwoScreen(Screen):
 
     def endTimer(self):
         pass
-
     # Save OTP to database incase of app crash
     def saveTimer(self):
         pass
@@ -500,7 +506,7 @@ class LevelTwoScreen(Screen):
     correctOTP = ""
 
     def updateLabel(self, choice2):
-        _instruction = self.ids['instruction'] 
+        _instruction = self.ids['instruction']
         if choice2 == 0:
             _instruction.text = "OTP to Email"
         elif choice2 == 1:
@@ -521,7 +527,7 @@ class LevelTwoScreen(Screen):
             self.ids.send.text = "Send OTP to Email"
         else:
             self.ids.send.text = "Send OTP to Mobile"
-    
+
     def updateScreen(self, choice, choice2):
         self.updateButtonLabel(choice)
         self.updateLabel(choice2)
