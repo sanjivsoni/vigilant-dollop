@@ -173,10 +173,10 @@ class UserRecovery:
 
         return generatedOTP
 
-    def recoverUserLeveL2(self,ssn_type,ssnid):
+    def recoverUserLeveL2(self,ssnid):
         establishConnection()
 
-        sql = "SELECT ssnid,ssn_type FROM personal WHERE userid =" + "'" + self.userID + "'"
+        sql = "SELECT ssnid FROM personal WHERE userid =" + "'" + self.userID + "'"
         print sql
 
         try:
@@ -184,14 +184,13 @@ class UserRecovery:
             results = config.statement.fetchall()
             for row in results:
                 correctSSnId = aesDecrypt(row[0])
-                correctSSntype = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
             config.conn.rollback()
             flag = 0
 
-        if((correctSSnId == ssnid) and (correctSSntype == ssn_type)):
+        if(correctSSnId == ssnid):
             self.Level2 = True
             return 1
         else:
