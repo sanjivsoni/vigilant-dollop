@@ -16,15 +16,76 @@ userID = ""
 attempt = 0
 generatedOTP = 0
 # Classes for seperate screens
-class ChangePassword(Screen):
-    pass
+class PasswordReset(Screen):
+    def check_validity(self):
+        pass_w = self.ids['pass_reset']
+        L7 = self.ids['Message']
+        uCase = 0
+        lCase = 0
+        num = 0
+        splChar = 0
+        lent = 0
+        flag = 0
+        self.flag10 = 0
+        VAL = pass_w.text
+        _suggest = "\n"
+        if len(VAL)<8 or len(VAL)>16:
+            lent = 0
+        else:
+            lent = 1
+        for i in range (0,len(VAL)):
+            if VAL[i].isupper():
+                uCase = 1
+            if VAL[i].islower():
+                lCase = 1
+            if VAL[i].isdigit():
+                num = 1
+            if (not(VAL[i].isupper()) and not(VAL[i].islower()) and not(VAL[i].isdigit())):
+                splChar = 1
+        if not(uCase):
+            _suggest = _suggest + "Must Have One Upper Case Char.\n"
+            flag +=1
+        else :
+            _suggest = _suggest + ""
+        if not(lCase):
+            _suggest = _suggest + "Must Have One Lower Case Char.\n"
+            flag +=1
+        if not(num):
+            _suggest = _suggest + "Must Have One Digit.\n"
+            flag += 1
+        if not(splChar):
+            _suggest = _suggest + "Must Have One Special Char.\n"
+            flag += 1
+        if not(lent):
+            _suggest = _suggest + "Must Be Between 8 and 16 characters long.\n"
+            flag += 1
+        if(not(len(VAL))):
+            flag +=1
+            _suggest =  "\n"
+        L7.text = _suggest
+    # if(flag):
+    #     if pass_w.text == "":
+    #         L7.color = [1,1,1,1]
+    #     else:
+    #         L7.color = [1,0,0,1]
+    #else:
+  #      L7.color = [0,1,0,1]
+   #     self.flag10 += 1
+        
 
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
     attempt = 0
     invalidTime = 0
+    
+    def check_username(self):
+        if self.ids['username'].text ==  "":
+            self.ids['loginButton'].disabled = True
+        else:
+            self.ids['loginButton'].disabled = False
     # Validate User input Event
+
     def usernameEvent(self):
         # Stub
         self.username.text  = "bhatshubhs"
@@ -52,6 +113,11 @@ class PasswordScreen(Screen):
     password = ObjectProperty(None)
     message = ObjectProperty(None)
 
+    def check_password(self):
+        if self.ids['password'].text ==  "":
+            self.ids['passwordButton'].disabled = True
+        else:
+            self.ids['passwordButton'].disabled = False
     # Validate User Password input Event
     def passwordEvent(self):
         # Stub
@@ -109,9 +175,6 @@ class UsernameRecover(Screen):
             x = 2
         generatedOTP = my_queue.get()
 
-
-
-
     def parameter(self,x):
         self.pathValue = x
     # Recover User name Event
@@ -157,6 +220,8 @@ class PasswordRecover(Screen):
 class RecoverySecQuestion(Screen):
     pathValue = 0
     
+    def parameter(self, x):
+        self.pathValue = x
     def questionEvent(self):
         QValue = -1
         Question = self.ids['recoveryQuestion']
@@ -183,7 +248,12 @@ class RecoverySecQuestion(Screen):
             if Answer.text == "":#Comparison for Answer
                 pass
             else:
-                pass
+                pass # Case where no answer or wrong answer has been entered
+        else:
+            pass
+
+        if self.pathValue == 2:
+            App.get_running_app().root.current = 'passwordReset'
         else:
             pass
     def parameter(self,x):
@@ -198,13 +268,11 @@ class RecoveryLevelThreeScreen(Screen):
         self.contactValue = y
     def renderSecurityQues(self):
         ssn = self.ids['ssn_Value']
-        ssnType = 0
-        message = "Please Enter Your" + str(ssnType) + "Number"
         # Stub
-        if 1:#compare SSN with Database Value
+        if ssn.text == "":#compare SSN with Database Value. SSN Value entered by user while recovery is stored in ssn.text
             App.get_running_app().root.current = 'recoverysecQuestion'
             App.get_running_app().root.get_screen('recoverysecQuestion').parameter(self.pathValue)
-        else:
+        else: #Case where no value or wrong value has been eneterd
             pass
         # Invalid OTP
 
@@ -431,6 +499,245 @@ class LevelTwoScreen(Screen):
     _otp_choice = 0
     correctOTP = ""
 
+    def updateLabel(self, choice2):
+        _instruction = self.ids['instruction'] 
+        if choice2 == 0:
+            _instruction.text = "OTP to Email"
+        elif choice2 == 1:
+            _instruction.text = "OTP to Mobile"
+        elif choice2 == 2:
+            _instruction.text = "OTP + First Name"
+        elif choice2 == 3:
+            _instruction.text = "OTP + Last Name"
+        elif choice2 == 4:
+            _instruction.text = "OTP + Random Number"
+        elif choice2 == 5:
+            _instruction.text = "Security Question 1"
+        else:
+            _instruction.text = "Security Question 2"
+
+    def updateButtonLabel(self, choice):
+        if choice == 1:
+            self.ids.send.text = "Send OTP to Email"
+        else:
+            self.ids.send.text = "Send OTP to Mobile"
+    
+    def updateScreen(self, choice, choice2):
+        self.updateButtonLabel(choice)
+        self.updateLabel(choice2)
+
+    def color_white(self,dt):
+        label= []
+        label.append(self.ids['otp'])
+        label.append(self.ids['otp_2'])
+        label.append(self.ids['otp_3'])
+        label.append(self.ids['otp_4'])
+        label.append(self.ids['otp_5'])
+        label.append(self.ids['otp_6'])
+
+        for i in range(0,6):
+            label[i].background_color = [1,1,1,1]
+            label[i].text = ""
+    def compareOTP(self):
+        label= []
+        label.append(self.ids['otp'])
+        label.append(self.ids['otp_2'])
+        label.append(self.ids['otp_3'])
+        label.append(self.ids['otp_4'])
+        label.append(self.ids['otp_5'])
+        label.append(self.ids['otp_6'])
+
+        tempPass = ""
+        for i in range(0,6):
+            tempPass += label[i].text
+
+        otpFlag = 0
+
+        for i in range(0,6):
+            if not(label[i].text ==""):
+                continue
+            else:
+                otpFlag = 1
+                break
+        if otpFlag == 0:
+            if tempPass == self.correctOTP:
+                for i in range(0,6):
+                    label[i].background_color = [0,1,0,1]
+                App.get_running_app().root.current = 'levelThreeScreen'
+            else:
+                for i in range(0,6):
+                    label[i].background_color = [1,0,0,1]
+
+                Clock.schedule_once(self.color_white, 1)
+                label[0].focus = True
+
+    def check1_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp.text == ""):
+            if not(otp.text.isdigit()):
+                otp.text = ""
+            else:
+                self.compareOTP()
+                otp.focus = False
+                otp2.focus = True
+    def check2_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp2.text == ""):
+            if not(otp2.text.isdigit()):
+                otp.text = ""
+            else:
+                self.compareOTP()
+                otp2.focus = False
+                otp3.focus = True
+    def check3_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp3.text == ""):
+            if not(otp3.text.isdigit()):
+                otp3.text = ""
+            else:
+                self.compareOTP()
+                otp3.focus = False
+                otp4.focus = True
+    def check4_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp4.text == ""):
+            if not(otp4.text.isdigit()):
+                otp4.text = ""
+            else:
+                self.compareOTP()
+                otp4.focus = False
+                otp5.focus = True
+    def check5_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+        if not(otp5.text == ""):
+            if not(otp5.text.isdigit()):
+                otp5.text = ""
+            else:
+                self.compareOTP()
+                otp5.focus = False
+                otp6.focus = True
+    def check6_otp(self):
+        otp = self.ids['otp']
+        otp2 = self.ids['otp_2']
+        otp3 = self.ids['otp_3']
+        otp4 = self.ids['otp_4']
+        otp5 = self.ids['otp_5']
+        otp6 = self.ids['otp_6']
+
+        if not(otp6.text == ""):
+            if not(otp6.text.isdigit()):
+                otp6.text = ""
+            else:
+                self.compareOTP()
+
+    def sendOtp(self):
+        pass
+
+    # def updateButtonLabel(self):
+    #     global choice
+    #     if choice == 1:
+    #         self.ids.send.text = "Send OTP to Email"
+    #     else:
+    #         self.ids.send.text = "Send OTP to Mobile"
+
+    # Update Timer after One Second
+    def updateTimer(self, dt):
+        if self._minutes >= 0 and self._seconds > 0:
+            self._seconds = self._seconds - 1
+            if self._minutes > 0 and self._seconds == 0:
+                self._seconds = 60
+                self._minutes = self._minutes - 1
+
+            elif self._minutes == 0 and self._seconds == 0:
+                Clock.unschedule(self._time_event)
+                self.ids.send.disabled = False
+
+                # Resend OTP after Timeout
+
+            if self._minutes > 9:
+                self.minutes.text = str(self._minutes) + ':'
+            else:
+                self.minutes.text = '0' + str(self._minutes) + ':'
+
+            if self._seconds > 9:
+                self.seconds.text = str(self._seconds)
+            else:
+                self.seconds.text = '0' + str(self._seconds)
+
+    def endTimer(self):
+        pass
+
+    # Save OTP to database incase of app crash
+    def saveTimer(self):
+        pass
+
+    def validOtpEvent(self):
+        validOtp = ""
+        global choice
+        global userID
+        my_queue = Queue.Queue()
+        sendOTP = OTP(hashEncrypt(userID))
+
+        self._seconds = self._total_seconds
+        self._minutes = self._total_minutes
+
+        self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
+        self.ids.send.disabled = True
+
+        if(choice == 1):
+            print "email"
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (my_queue,))
+            thread1.start()
+        else:
+            print "mobile"
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (my_queue,))
+            thread1.start()
+
+        self.correctOTP = my_queue.get()
+
+
+class LevelThreeScreen(Screen):
+
+    otp = ObjectProperty(None)
+    send = ObjectProperty(None)
+    minutes = ObjectProperty(None)
+    seconds = ObjectProperty(None)
+    # 5 minutes timer
+    _total_seconds = 60
+    _total_minutes = 0
+    _minutes = _total_seconds
+    _seconds = _total_minutes
+    _otp_expired = 0
+
+    _time_event = 0
+    _otp_choice = 0
+    correctOTP = ""
+
 
     def color_white(self,dt):
         label= []
@@ -625,6 +932,7 @@ class LevelTwoScreen(Screen):
 
         self.correctOTP = my_queue.get()
 
+
 class HomeScreen(Screen):
 
     elementCounter = 0
@@ -803,17 +1111,16 @@ class HomeScreen(Screen):
 screenManager = ScreenManager( transition = FadeTransition() )
 
 # Add all screens to screen manager
-'''
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( PasswordScreen( name = 'passwordScreen' ) )
 screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
-screenManager.add_widget( LevelTwoScreen( name = 'levelThreeScreen' ) )
+screenManager.add_widget( LevelThreeScreen( name = 'levelThreeScreen' ) )
 screenManager.add_widget( RecoveryLevelTwoScreen( name = 'recoverylevelTwoScreen' ) )
 screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
 screenManager.add_widget( PasswordRecover( name = 'passwordRecoverScreen' ) )
 screenManager.add_widget( RecoveryLevelThreeScreen( name = 'recoverylevelThreeScreen' ) )
 screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
-'''
+screenManager.add_widget( PasswordReset( name = 'passwordReset' ) )
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
 class ThreeLevelAuthApp(App):
