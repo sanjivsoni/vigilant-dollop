@@ -1,7 +1,7 @@
 from libraries import *
 
 
-def aesEncrypt(key,plaintextArray):
+def aesEncrypt(plaintextArray):
 
     plaintexts = plaintextArray.split()
     totalWords = len(plaintexts)
@@ -14,20 +14,20 @@ def aesEncrypt(key,plaintextArray):
 
     EncryptAES = lambda c, s: base64.b64encode(c.encrypt(pad(s)))
 
-    cipher = AES.new(key[0:16])
+    cipher = AES.new(config.key[0:16])
 
     for i in plaintexts:
         encrypted = encrypted + " " + EncryptAES(cipher,i)
 
     return encrypted.strip()
 
-def aesDecrypt(key,encryptedText):
+def aesDecrypt(encryptedText):
     blockSize = config.BLOCK_SIZE
     PADDING = '{'
 
     DecryptAES = lambda c, e: c.decrypt(base64.b64decode(e)).rstrip(PADDING)
 
-    cipher = AES.new(key[0:16])
+    cipher = AES.new(config.key[0:16])
 
     decrypted = DecryptAES(cipher, encryptedText)
     return decrypted
@@ -46,9 +46,9 @@ def createCaptcha():
     data = image.generate(captcha)
     image.write(captcha, 'captcha.png')
 
-def lock(path,key,encryptedSudoPwd):
+def lock(path,encryptedSudoPwd):
 
-    sudoPwd = aesDecrypt(key,encryptedSudoPwd)
+    sudoPwd = aesDecrypt(config.key,encryptedSudoPwd)
 
     command = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
     print command
@@ -57,12 +57,12 @@ def lock(path,key,encryptedSudoPwd):
     print command
     os.system(command)
 
-def unlock(path,key,encryptedSudoPwd):
-    sudoPwd = aesDecrypt(key,encryptedSudoPwd)
+def unlock(path,encryptedSudoPwd):
+    sudoPwd = aesDecrypt(config.key,encryptedSudoPwd)
 
-    command = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
-    os.system(command)
     command = config.changeDirectory + sudoPwd + config.unlockCommand + path
+    os.system(command)
+    command = config.changeDirectory + sudoPwd + config.changeOwnerToUser + path
     os.system(command)
 
 def currentUTC():
@@ -86,3 +86,29 @@ def getUserDetails():
 
 def generateOTP():
     return ''.join(random.choice(string.digits) for j in range(6))
+
+def fetchLocation():
+    send_url = 'http://freegeoip.net/json'
+    r = requests.get(send_url)
+    j = json.loads(r.text)
+    details = "\nIP address: " + j['ip'] + "\n" + "Location: " + j['city'] + "," + j['region_name'] + "," + j['country_name']
+    return details
+
+def getUserName(userID):
+
+    establishConnection()
+    sql = "SELECT first_name FROM personal WHERE userid =" + "'" + userID + "'"
+    #print sql
+    try:
+        config.statement.execute(sql)
+        results = config.statement.fetchall()
+        for row in results:
+            userName = aesDecrypt(row[0])
+
+    except Exception, e:
+        print repr(e)
+        config.conn.rollback()
+        flag = 0
+
+    closeConnection()
+    return userName

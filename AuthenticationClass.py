@@ -61,10 +61,7 @@ class Authentication:
         else:
             return 0
 
-
-
-
-    def lockItem(self,path):
+    def lockItem(self,filePath,fileName):
         if(self.authenticationComplete):
             encryptedSudoPwd = ""
             establishConnection()
@@ -81,10 +78,23 @@ class Authentication:
                 config.conn.rollback()
                 flag = 0
 
-            status = lock(path,self.userPwd,encryptedSudoPwd)
+            status = lock(filePath + fileName,encryptedSudoPwd)
+            if status == 0 :
+                encryptedData = aesEncrypt(filePath + " " + fileName)
+                sql = "INSERT INTO lockedFiles(filepath,filename) VALUES " + insertQueryHelper(encryptedData)
+                try:
+                    config.statement.execute(sql)
+
+                except Exception, e:
+                    print repr(e)
+                    config.conn.rollback()
+                    flag = 0
+
+                return 1
+
             closeConnection()
 
-    def unlockItem(self,path):
+    def unlockItem(self,filePath,fileName):
         if(self.authenticationComplete):
             encryptedSudoPwd = ""
             establishConnection()
@@ -102,12 +112,25 @@ class Authentication:
                 config.conn.rollback()
                 flag = 0
 
-            status = unlock(path,self.userPwd,encryptedSudoPwd)
+            status = unlock(path,encryptedSudoPwd)
+
+            if status == 0:
+                sql = "DELETE FROM lockedFiles WHERE filepath = '" + filePath + "' AND filename = '" + fileName + "'"
+                try:
+                    config.statement.execute(sql)
+
+                except Exception, e:
+                    print repr(e)
+                    config.conn.rollback()
+                    flag = 0
+
+                return 1
+
             closeConnection()
 
 class OTP:
     def __init__(self,userID = ""):
-        self.userID = hashEncrypt(userID)
+        self.userID = userID
 
     def sendOTPforAuth_mobile(self,out_queue):
         login_stats = LoginDetails(self.userID)
@@ -119,7 +142,7 @@ class OTP:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                userMobile = aesDecrypt(config.key,row[0])
+                userMobile = aesDecrypt(row[0])
 
         except Exception, e:
             print repr(e)
@@ -134,15 +157,17 @@ class OTP:
 
 
 
-    def sendOTPforAuth_email(self,out_queue):
+    def sendOTPforAuth_email(self,output_queue):
         userEmail = ""
         establishConnection()
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                userEmail = aesDecrypt(config.key,row[0])
+                userEmail = aesDecrypt(row[0])
+                #print userEmail
 
         except Exception, e:
             print repr(e)
@@ -150,9 +175,9 @@ class OTP:
             print "error"
 
         generatedOTP = generateOTP()
-        out_queue.put(generatedOTP)
+        output_queue.put(generatedOTP)
         msg = MIMEMultipart()
-        msg['From'] = config.emailid
+        msg['From'] = "Team Vigilant Dollop"
         msg['To'] = userEmail
         msg['Subject'] = config.email_subject
         body = config.email_msg + generatedOTP
@@ -166,18 +191,19 @@ class OTP:
         server.quit()
 
 
-    def sendOTPforRecovery_mobile(self,sendToMobile):
+    def sendOTPforRecovery_mobile(self,sendToMobile,out_queue):
 
         generatedOTP = generateOTP()
+        out_queue.put(generatedOTP)
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = sendToMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
-        return generatedOTP
 
-    def sendOTPforRecovery_email(self,sendToEmail):
+    def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
         generatedOTP = generateOTP()
+        out_queue.put(generatedOTP)
         msg = MIMEMultipart()
-        msg['From'] = config.emailid
+        msg['From'] = "Team Vigilant Dollop"
         msg['To'] = sendToEmail
         msg['Subject'] = config.email_subject
         body = config.email_msg + generatedOTP
@@ -189,5 +215,3 @@ class OTP:
         text = msg.as_string()
         server.sendmail(config.emailid, sendToEmail, text)
         server.quit()
-
-        return generatedOTP

@@ -21,9 +21,22 @@ smtp_port = 587
 email_msg = "Your OneTimePassword(OTP) is "
 email_subject = "Your Vigilant Dollop OTP"
 
+succesfulLoginMessageText = "You have been logged on from "
+succesfulLoginMessageTextEmail_part1 = "\nYour Vigilant Dollop account was recently signed in from \n\n"
+succesfulLoginMessageTextEmail_part2 = "\n\n\n\nDon't recognise this activity? \n Reveiw your security credentials immediately\n"
+succesfulLoginMessageTextEmail_part3 = "\nWhy are we sending this? \nWe take security very seriously and we want to keep you in the loop on important actions in your account."
+messageTextSignature = " \n\n\nBest,\nTeam Vigilant Dollop"
+
+failedLoginMessageText = "There was a failed login attempt from "
+failedLoginMessageText_part2 = "\n\n\nIf you don't recognise this activity, we urge you to please reveiw your security credentials immediately\n"
+
+
+
+
 #Lock & Unlock commands
 changeDirectory = "cd && echo "
 changeOwnerToRoot = " | sudo -S chown -R root "
+changeOwnerToUser = " | sudo -S chown -R $USER "
 lockCommand = "  | sudo -S chmod 000 "
 unlockCommand = " | sudo -S chmod 755 "
 
