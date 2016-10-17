@@ -627,35 +627,31 @@ class LevelTwoScreen(Screen):
 
 class HomeScreen(Screen):
 
-    counter = 0
-    second_counter = 0
-    counter_element = 0
-
+    elementCounter = 0
+    first_time_add_button = 1
 
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
 
         layout = BoxLayout(orientation = 'vertical')
         
-        top_layout = BoxLayout(orientation= 'horizontal', size_hint=(1, 0.05), height = 10 )
+        topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
 
-        button = Button(text="Lock Files", id='lock_button')
-	button.bind(on_press = self.show_load)
-
+        lockFileButton = Button(text = "Lock Files", id = 'lock_button')
+	lockFileButton.bind(on_press = self.showLoadPopup)
         
-        top_layout.add_widget(button)
-        mid_layout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
-        bottom_layout = BoxLayout(size_hint = (1, 0.9), padding = 20)
+        topLayout.add_widget(lockFileButton)
+        midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
+        bottomLayout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
-        grid = GridLayout(id='unlocked_files', cols=6, padding=5, spacing=20,
-                size_hint=(None, None), width=650,  pos_hint={'center_x': .5, 'center_y': .5})
+        grid = GridLayout(id = 'unlocked_files', cols = 6, padding = 5, spacing = 20,
+                size_hint = (None, None), width = 650,  pos_hint = {'center_x': .5, 'center_y': .5})
 
         grid.bind(minimum_height=grid.setter('height'))
 
 
-        # add button into that grid
+        # add button into that gridi from database
         '''
->>>>>>> e494b1ccd9b5c149407f11f94db0549fdc02fb0a
         for i in range(8):
             btn = Button(text = "file" + str(i), size = (30, 30),
                          size_hint = (None, None), id = str(i))
@@ -670,85 +666,83 @@ class HomeScreen(Screen):
         scroll = ScrollView(size_hint = (None, None), size = (650, 500),
                 pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
 	scroll.add_widget(grid)
-	bottom_layout.add_widget(scroll)
-	layout.add_widget(top_layout)
-	layout.add_widget(mid_layout)
-	layout.add_widget(bottom_layout)
+
+	bottomLayout.add_widget(scroll)
+
+	layout.add_widget(topLayout)
+	layout.add_widget(midLayout)
+	layout.add_widget(bottomLayout)
+
         self.add_widget(layout)
 
-        content = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
+        popupContent = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
         fileView = FileChooserListView(id = 'filechooser')
 
-        buttons = BoxLayout(size_hint_y = None, height = 20)
+        popupManagerButtons = BoxLayout(size_hint_y = None, height = 20)
 
-        cancel_button = Button(text = 'cancel')
-        cancel_button.bind(on_press = self.cancel)
+        cancelButton = Button(text = 'cancel')
+        cancelButton.bind(on_press = self.cancel)
 
-        load_button = Button(text = 'load')
-        load_button.bind(on_press = partial(self.load,fileView))
+        loadButton = Button(text = 'load')
+        loadButton.bind(on_press = partial(self.load,fileView))
 
-        buttons.add_widget(cancel_button)
-        buttons.add_widget(load_button)
-        content.add_widget(fileView)
-        content.add_widget(buttons)
+        popupManagerButtons.add_widget(cancelButton)
+        popupManagerButtons.add_widget(loadButton)
 
-        self._popup = Popup(title="Select Files to lock", content=content,
-                            size_hint=(0.9, 0.9))
+        popupContent.add_widget(fileView)
+        popupContent.add_widget(popupManagerButtons)
+
+        self._popup = Popup(title = "Select Files to lock", content = popupContent,
+                            size_hint = (0.9, 0.9))
+
     def cancel(self, *args):
         self._popup.dismiss()
 
     def load(self, *args):
-        print args[0].path, args[0].selection[0]
-        path = str(args[0].path).split('/')
-#        print path
-        complete_path = str(args[0].selection[0]).split('/')
-#        print complete_path
+        #print args[0].path, args[0].selection[0]
+        filePath = str(args[0].path).split('/')
+        completeFilePath = str(args[0].selection[0]).split('/')
 
-        for name in path:
+        for name in filePath:
             try:
-                complete_path.remove(name)
+                completeFilePath.remove(name)
             except ValueError:
                 pass
 
-        self.lockFile(args[0].path, complete_path[0])
+        self.lockFile(args[0].path, completeFilePath[0])
         self.cancel()
 
 
     def lockFile(self, *args):
-        self.counter = self.counter + 1
-#        print args[0]
-#        print ("button pressed <%s> " %args[0])
-        button_id = str(args[1])
-        button = Button(text=' ', size=(40, 40),
-                         size_hint=(None, None), id = button_id)
+        buttonId = str(args[1])
+        fileButton = Button(text=' ', size=(40, 40),
+                         size_hint=(None, None), id = buttonId)
 
-        button.bind(on_press = partial(self.unlockFile, button_id, args[0]))
-        label = Label(text = button_id  , width = 70, halign = 'left',valign = 'middle', id="label"+button_id, font_size='15sp')
-        label.bind(size=label.setter('text_size'))
+        fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
+        fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='15sp')
+        fileLabel.bind(size=fileLabel.setter('text_size'))
         
-        if self.counter_element > 0:
+        if self.elementCounter > 0:
+            midLayout = self.children[0].children[1]
+            child_first = midLayout.children[0]
+            child_second = midLayout.children[1]
             
-            mid_layout = self.children[0].children[1]
-            print mid_layout.children
-            child_first = mid_layout.children[0]
-            child_second = mid_layout.children[1]
-            mid_layout.remove_widget(child_first)
-            mid_layout.remove_widget(child_second)
-            self.counter_element = self.counter_element - 1
+            midLayout.remove_widget(child_first)
+            midLayout.remove_widget(child_second)
+
+            self.elementCounter = self.elementCounter - 1
         
         grid = self.children[0].children[0].children[0].children[0]
-        grid.add_widget(button)
-        grid.add_widget(label)
+        grid.add_widget(fileButton)
+        grid.add_widget(fileLabel)
 
-    previous_remove_button_label = ''
-    first_time_add_button = 1
 
     def removeFile(self, *args):
         grid = args[0]
         file_name = args[1]
         label_previous = args[2]
         button_previous = args[3]
-        mid_layout = self.children[0].children[1]
+        midLayout = self.children[0].children[1]
 
         grid = self.children[0].children[0].children[0].children[0]
 #        print grid.children[int(args[0])]
@@ -760,9 +754,9 @@ class HomeScreen(Screen):
                 for label in grid.children:
                     if label.id == "label"+ str(file_name):
                         grid.remove_widget(label)
-                        mid_layout.remove_widget(button_previous)
-                        mid_layout.remove_widget(label_previous)
-                        self.counter_element = self.counter_element - 1
+                        midLayout.remove_widget(button_previous)
+                        midLayout.remove_widget(label_previous)
+                        self.elementCounter = self.elementCounter - 1
         
         
 
@@ -772,7 +766,7 @@ class HomeScreen(Screen):
         grid = self.children[0].children[0].children[0].children[0]
         complete_file_name = str(args[1]+'/'+ args[0])
         file_name = args[0]
-        mid_layout = self.children[0].children[1]
+        midLayout = self.children[0].children[1]
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
@@ -781,27 +775,27 @@ class HomeScreen(Screen):
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
             
-            mid_layout.add_widget(label)
-            mid_layout.add_widget(button)
-            self.counter_element = self.counter_element + 1
-            print 'A',self.counter_element
+            midLayout.add_widget(label)
+            midLayout.add_widget(button)
+            self.elementCounter = self.elementCounter + 1
+            print 'A',self.elementCounter
         else:
-            if self.counter_element > 0:
-                previous_label = mid_layout.children[0]
-                previous_button = mid_layout.children[1]
+            if self.elementCounter > 0:
+                previous_label = midLayout.children[0]
+                previous_button = midLayout.children[1]
 
-                mid_layout.remove_widget(previous_label)
-                mid_layout.remove_widget(previous_button)
+                midLayout.remove_widget(previous_label)
+                midLayout.remove_widget(previous_button)
                 
-                mid_layout.add_widget(label)
-                mid_layout.add_widget(button)
+                midLayout.add_widget(label)
+                midLayout.add_widget(button)
             else: 
-                mid_layout.add_widget(label)
-                mid_layout.add_widget(button)
-                self.counter_element = self.counter_element + 1
-                print 'B',self.counter_element
+                midLayout.add_widget(label)
+                midLayout.add_widget(button)
+                self.elementCounter = self.elementCounter + 1
+                print 'B',self.elementCounter
 
-    def show_load(self, *args):
+    def showLoadPopup(self, *args):
         self._popup.open()
 
 
