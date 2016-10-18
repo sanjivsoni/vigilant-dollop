@@ -1448,8 +1448,9 @@ class HomeScreen(Screen):
         fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='15sp')
         fileLabel.bind(size=fileLabel.setter('text_size'))
         
-        if self.elementCounter > 0:
-            midLayout = self.children[0].children[1]
+        midLayout = self.children[0].children[1]
+
+        if len(midLayout.children) > 0: 
             child_first = midLayout.children[0]
             child_second = midLayout.children[1]
             
@@ -1473,19 +1474,16 @@ class HomeScreen(Screen):
         grid = self.children[0].children[0].children[0].children[0]
 #        print grid.children[int(args[0])]
         inValidWidget = []
-
+        deleted = 1
         for child in grid.children:
             if child.id == file_name:
-                grid.remove_widget(child)
                 for label in grid.children:
-                    if label.id == "label"+ str(file_name):
+                    if label.id == "label"+ str(file_name) and deleted == 1:
+                        deleted = 0
+                        grid.remove_widget(child)
                         grid.remove_widget(label)
                         midLayout.remove_widget(button_previous)
                         midLayout.remove_widget(label_previous)
-                        self.elementCounter = self.elementCounter - 1
-        
-        
-
 
     def unlockFile(self, *args):
 
@@ -1503,10 +1501,8 @@ class HomeScreen(Screen):
             
             midLayout.add_widget(label)
             midLayout.add_widget(button)
-            self.elementCounter = self.elementCounter + 1
-            print 'A',self.elementCounter
         else:
-            if self.elementCounter > 0:
+            if len(midLayout.children) > 0 :
                 previous_label = midLayout.children[0]
                 previous_button = midLayout.children[1]
 
@@ -1518,8 +1514,6 @@ class HomeScreen(Screen):
             else: 
                 midLayout.add_widget(label)
                 midLayout.add_widget(button)
-                self.elementCounter = self.elementCounter + 1
-                print 'B',self.elementCounter
 
     def showLoadPopup(self, *args):
         self._popup.open()
@@ -1527,7 +1521,7 @@ class HomeScreen(Screen):
 
 # Screen Manager
 screenManager = ScreenManager( transition = FadeTransition() )
-
+'''
 # Add all screens to screen manager
 x = 2
 # Check For Comparison Here If A USer Exists Or Not 
@@ -1546,6 +1540,7 @@ screenManager.add_widget( UserRecoveryLevelThreeScreen( name = 'userrecoveryleve
 screenManager.add_widget( PasswordRecoveryLevelThreeScreen( name = 'passwordrecoverylevelThreeScreen' ) )
 screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )
 screenManager.add_widget( PasswordReset( name = 'passwordReset' ) )
+'''
 screenManager.add_widget( HomeScreen( name = 'homeScreen' ) )
 
 class ThreeLevelAuthApp(App):
