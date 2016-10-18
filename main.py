@@ -383,8 +383,8 @@ class SignupScreen(Screen):
                     _SSN = 4
                 else:
                     _SSN = 0
-                
-                
+
+
                 phoneNo = label[14].text+label[5].text
                 userCredentials = label[1].text + " " + label[2].text
                 userContactDetails = label[4].text + " " +phoneNo +  " " +"sudoPwd"
@@ -402,8 +402,6 @@ class SignupScreen(Screen):
                 #print _SSN
         else:
             print "No"
-
-
 
 class PasswordReset(Screen):
     def check_validity(self):
@@ -460,14 +458,13 @@ class PasswordReset(Screen):
     #else:
   #      L7.color = [0,1,0,1]
    #     self.flag10 += 1
-        
 
 class UsernameScreen(Screen):
     username = ObjectProperty(None)
     message = ObjectProperty(None)
     attempt = 0
     invalidTime = 0
-    
+
     def check_username(self):
         if self.ids['username'].text ==  "":
             self.ids['loginButton'].disabled = True
@@ -510,7 +507,7 @@ class PasswordScreen(Screen):
     # Validate User Password input Event
     def passwordEvent(self):
         # Stub
-        self.password.text = "123456"
+        self.password.text = "Qwe@1234"
         global verifyUser
         global choice
         passwordMatched = verifyUser.checkUserLevel1(self.password.text)
@@ -595,7 +592,7 @@ class PasswordRecover(Screen):
         global generatedOTP
         generatedOTP = my_queue.get()
         print generatedOTP
-        
+
         App.get_running_app().root.current = 'recoverylevelTwoScreen'
         App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
 
@@ -606,11 +603,16 @@ class PasswordRecover(Screen):
     # Recover User name Event
     def recoverUsernameEvent(self):
         pass
+
 class RecoverySecQuestion(Screen):
     pathValue = 0
-    
+<<<<<<< HEAD
+
+=======
+
     def reRender(self,dt):
         App.get_running_app().root.current = 'usernameScreen'
+>>>>>>> b19149c638493a24c2be5a3a30fa3b1fde55e493
     def parameter(self, x):
         self.pathValue = x
     def questionEvent(self):
@@ -635,7 +637,7 @@ class RecoverySecQuestion(Screen):
             QValue = 4
         else:
             QValue = -1
-        if QValue == "": #Comparison for Question 
+        if QValue == "": #Comparison for Question
             if Answer.text == "":#Comparison for Answer
                 pass
             else:
@@ -647,10 +649,11 @@ class RecoverySecQuestion(Screen):
             App.get_running_app().root.current = 'passwordReset'
             self.ids['recoverMessage'].text = ""
         else:
-            self.ids['recoverMessage'].text = "Username Has Been Mailed To You On Your Registered Mail ID" 
+            self.ids['recoverMessage'].text = "Username Has Been Mailed To You On Your Registered Mail ID"
             Clock.schedule_once(self.reRender, 2)
     def parameter(self,x):
         self.pathValue = x
+
 class UserRecoveryLevelThreeScreen(Screen):
 
     pathValue = 0
@@ -707,7 +710,6 @@ class RecoveryLevelTwoScreen(Screen):
     def parameter(self,x):
         self.pathValue = x
 
-
     def sendOtp(self):
         pass
 
@@ -723,6 +725,7 @@ class RecoveryLevelTwoScreen(Screen):
         for i in range(0,6):
             label[i].background_color = [1,1,1,1]
             label[i].text = ""
+
     def compareOTP(self):
         global generatedOTP
         label= []
@@ -750,7 +753,7 @@ class RecoveryLevelTwoScreen(Screen):
             if tempPass == generatedOTP:
                 for i in range(0,6):
                     label[i].background_color = [0,1,0,1]
-                
+
                 if self.pathValue == 1:
                     print "1"
                     App.get_running_app().root.current = 'userrecoverylevelThreeScreen'
@@ -781,6 +784,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp.focus = False
                 otp2.focus = True
+
     def check2_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -795,6 +799,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp2.focus = False
                 otp3.focus = True
+
     def check3_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -809,6 +814,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp3.focus = False
                 otp4.focus = True
+
     def check4_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -823,6 +829,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp4.focus = False
                 otp5.focus = True
+
     def check5_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -837,6 +844,7 @@ class RecoveryLevelTwoScreen(Screen):
                 self.compareOTP()
                 otp5.focus = False
                 otp6.focus = True
+
     def check6_otp(self):
         otp = self.ids['otp']
         otp2 = self.ids['otp_2']
@@ -850,6 +858,7 @@ class RecoveryLevelTwoScreen(Screen):
                 otp6.text = ""
             else:
                 self.compareOTP()
+
     def updateButtonLabel(self, choice):
         if choice == 1:
             self.ids.send.text = "Send OTP to Email"
@@ -881,7 +890,6 @@ class RecoveryLevelTwoScreen(Screen):
 
     def endTimer(self):
         pass
-
     # Save OTP to database incase of app crash
     def saveTimer(self):
         pass
@@ -918,7 +926,7 @@ class LevelTwoScreen(Screen):
     correctOTP = ""
 
     def updateLabel(self, choice2):
-        _instruction = self.ids['instruction'] 
+        _instruction = self.ids['instruction']
         if choice2 == 0:
             _instruction.text = "OTP to Email"
         elif choice2 == 1:
@@ -939,7 +947,7 @@ class LevelTwoScreen(Screen):
             self.ids.send.text = "Send OTP to Email"
         else:
             self.ids.send.text = "Send OTP to Mobile"
-    
+
     def updateScreen(self, choice, choice2):
         self.updateButtonLabel(choice)
         self.updateLabel(choice2)
@@ -1360,12 +1368,12 @@ class HomeScreen(Screen):
         super(HomeScreen, self).__init__(**kwargs)
 
         layout = BoxLayout(orientation = 'vertical')
-        
+
         topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
 
         lockFileButton = Button(text = "Lock Files", id = 'lock_button')
 	lockFileButton.bind(on_press = self.showLoadPopup)
-        
+
         topLayout.add_widget(lockFileButton)
         midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
         bottomLayout = BoxLayout(size_hint = (1, 0.9), padding = 20)
@@ -1390,7 +1398,7 @@ class HomeScreen(Screen):
         '''
         # create a scroll view, with a size < size of the grid
         scroll = ScrollView(size_hint = (None, None), size = (650, 500),
-                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)	
+                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)
 	scroll.add_widget(grid)
 
 	bottomLayout.add_widget(scroll)
@@ -1447,18 +1455,17 @@ class HomeScreen(Screen):
         fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
         fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='15sp')
         fileLabel.bind(size=fileLabel.setter('text_size'))
-        
         midLayout = self.children[0].children[1]
 
         if len(midLayout.children) > 0: 
             child_first = midLayout.children[0]
             child_second = midLayout.children[1]
-            
+
             midLayout.remove_widget(child_first)
             midLayout.remove_widget(child_second)
 
             self.elementCounter = self.elementCounter - 1
-        
+
         grid = self.children[0].children[0].children[0].children[0]
         grid.add_widget(fileButton)
         grid.add_widget(fileLabel)
@@ -1494,11 +1501,11 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
-        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button)) 
+        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
 
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
-            
+
             midLayout.add_widget(label)
             midLayout.add_widget(button)
         else:
@@ -1508,10 +1515,10 @@ class HomeScreen(Screen):
 
                 midLayout.remove_widget(previous_label)
                 midLayout.remove_widget(previous_button)
-                
+
                 midLayout.add_widget(label)
                 midLayout.add_widget(button)
-            else: 
+            else:
                 midLayout.add_widget(label)
                 midLayout.add_widget(button)
 
@@ -1524,7 +1531,7 @@ screenManager = ScreenManager( transition = FadeTransition() )
 '''
 # Add all screens to screen manager
 x = 2
-# Check For Comparison Here If A USer Exists Or Not 
+# Check For Comparison Here If A USer Exists Or Not
 if x== 1:  #Case Where User Does Not Exist
     screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
 else:      #Case Where User Does Exists
