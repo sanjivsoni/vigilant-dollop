@@ -61,19 +61,21 @@ class Authentication:
         else:
             return 0
 
-    def fetchSecurityQuestion(self):
+    def fetchUserSecurityQuestion(self,questionNo):
 
-        ques1 = ""
-        ques2 = ""
+        ques = ""
         establishConnection()
-        sql = "SELECT ques1,ques2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+
+        if questionNo == 1:
+            sql = "SELECT ques1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+        else:
+            sql = "SELECT ques2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
 
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                ques1 = row[0]
-                ques2 = row[1]
+                ques = row[0]
 
         except Exception, e:
             print repr(e)
@@ -81,7 +83,11 @@ class Authentication:
 
         closeConnection()
 
-        return "ques" + str(randint(0,1,))
+        if questionNo == 1:
+            return config.securityQuestionsPart1[int(aesDecrypt(ques))]
+
+        else:
+            return config.securityQuestionsPart2[int(aesDecrypt(ques))]
 
 
     def lockItem(self,filePath,fileName):

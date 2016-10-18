@@ -16,6 +16,9 @@ class SignupScreen(Screen):
     flag10 = 0
     flag11 = 0
     flag12 = 0
+    SQ1 = 0
+    SQ2 = 0
+    ssnType = 0
 
 
 
@@ -285,20 +288,39 @@ class SignupScreen(Screen):
              self.flag12+=1
              name.color = [0,1,0,1]
 
-    def fetchSecurityQuestionPart1(self):
+    def populateSecurityQuestionPart1Spinner(self):
         my_list = []
         for i in range(1,5):
             my_list.append(config.securityQuestionsPart1[i])
         self.ids.Y.values = my_list
 
 
-    def fetchSecurityQuestionPart2(self):
+    def populateSecurityQuestionPart2Spinner(self):
         my_list = []
         for i in range(5,9):
             my_list.append(config.securityQuestionsPart2[i])
         self.ids.X.values = my_list
 
+    def populateSSN_Spinner(self):
+        my_list = []
+        for i in range(1,5):
+            my_list.append(config.ssnTypes[i])
+        self.ids['10'].values = my_list
 
+    def getIntValueForSecurityQues1(self):
+        for key in config.securityQuestionsPart1:
+            if config.securityQuestionsPart1[key] == self.ids.Y.text:
+                self.SQ1 = key
+
+    def getIntValueForSecurityQues2(self):
+        for key in config.securityQuestionsPart2:
+            if config.securityQuestionsPart2[key] == self.ids.X.text:
+                self.SQ2 = key
+
+    def getIntValueForSSNtype(self):
+        for key in config.ssnTypes:
+            if config.ssnTypes[key] == self.ids['10'].text:
+                self.ssnType = key
 
 
     # def secQues1(self):
@@ -309,9 +331,6 @@ class SignupScreen(Screen):
     #     else:
     #         ID2.color = [1,1,1,1]
     def buttonAction(self):
-        ID = self.ids['X']
-        ID2 = self.ids['Y']
-        ID3 = self.ids['10']
         label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13','14']
         label_b = self.ids['bar']
         label[1] = self.ids['1']
@@ -328,58 +347,20 @@ class SignupScreen(Screen):
         label[13] = self.ids['13']
         label[14] = self.ids['14']
 
-
-        Q1 = 0
-        Q2 = 0
-        _SSN = 0
-        if not(ID.text == "Security Question") and not(ID2.text == "Security Question") and not(ID3.text == "SSN Type") and not(label[14].text == "Country Code"):
+        if not(self.SQ1 == 0) and not(self.SQ2 == 0) and not(self.ssnType == 0) and not(label[14].text == "Country Code"):
             if self.flag5 and self.flag3 and self.flag11 and self.flag1 and self.flag10 and self.flag4 and self.flag9 and self.flag8 and self.flag6 and self.flag2 and self.flag12:
-                if ID.text == "Your Childhood Hero?":
-                    Q2 = 5
-                elif ID.text == "Time Of The Day Were You Born ?":
-                    Q2 = 6
-                elif ID.text == "The steet you grew up in?":
-                    Q2 = 7
-                elif ID.text == "Your Childhood Nickname?":
-                    Q2 = 8
-                else:
-                    Q2 = 0
-                if ID2.text == "Mother's Maiden Name ?":
-                    Q1 = 1
-                elif ID2.text == "Pet's Name ?":
-                    Q1 = 2
-                elif ID2.text ==  "First Teacher's Name ?":
-                    Q1 = 3
-                elif ID2.text == "Favourite Holiday Destination?":
-                    Q1 = 4
-                else:
-                    Q1 = 0
-                if ID3.text ==  "Voter ID":
-                    _SSN = 1
-                elif ID3.text == "PAN Card":
-                    _SSN = 2
-                elif ID3.text ==  "Aadhaar Card":
-                    _SSN = 3
-                elif ID3.text == "Driver's License":
-                    _SSN = 4
-                else:
-                    _SSN = 0
-
 
                 phoneNo = label[14].text+label[5].text
                 userCredentials = label[1].text + " " + label[2].text
                 userContactDetails = label[4].text + " " +phoneNo +  " " +"sudoPwd"
-                userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(_SSN) + " " +label[11].text
-                userSecurityQues = str(Q1) + " " +label[12].text + " " + str(Q2) + " " +label[13].text
-                print phoneNo
+                userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(self.ssnType) + " " +label[11].text
+                userSecurityQues = str(self.SQ1) + " " + str(self.SQ2) +  " " +label[12].text + " " +label[13].text
+
                 newUser = User(userCredentials)
                 newUser.createUser(userContactDetails)
                 newUser.addPersonalDetails(userPersonalDetails)
                 newUser.addSecurityQuestions(userSecurityQues)
                 App.get_running_app().root.current = 'usernameScreen'
 
-                #print Q1
-                #print Q2
-                #print _SSN
         else:
             print "No"

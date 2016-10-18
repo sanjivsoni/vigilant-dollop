@@ -247,7 +247,8 @@
                             background_color: 255,255,255,1
                             color: 0,0,0,1
                             text: "SSN Type"
-                            values: "Voter ID", "PAN Card", "Aadhaar Card", "Driver's License"
+                            self: root.populateSSN_Spinner()
+                            on_text: root.getIntValueForSSNtype()
                             size_hint: .6, None
                             size: 350,40
                         Label:
@@ -278,7 +279,8 @@
                             id: Y
                             color: 0,0,0,1
                             text: "Security Question"
-                            self: root.fetchSecurityQuestionPart1()
+                            self: root.populateSecurityQuestionPart1Spinner()
+                            on_text:root.getIntValueForSecurityQues1()
                             size_hint: .6, None
                             size: 350,40
                         Label:
@@ -308,7 +310,8 @@
                             background_color: 255,255,255,1
                             color: 0,0,0,1
                             text: "Security Question"
-                            self: root.fetchSecurityQuestionPart2()
+                            self: root.populateSecurityQuestionPart2Spinner()
+                            on_text:root.getIntValueForSecurityQues2()
                             size_hint: .6, None
                             size: 350,40
                         Label:
@@ -528,7 +531,10 @@
                 on_press: root.manager.current = 'main'
 
             Label:
-                size_hint:0.10,0.8
+				text: "Authentication Level One"
+				font_size: '50sp'
+                color: [0,0,0,1]
+                bold: True
 
         BoxLayout:
             orientation: 'horizontal'
@@ -539,6 +545,7 @@
                 size_hint: 0.3,0.5
             BoxLayout:
                 size_hint: 0.5,0.7
+
 
                 BoxLayout:
                     orientation: 'vertical'
@@ -993,8 +1000,10 @@
 			orientation: 'vertical'
 			size_hint: 1, 0.1
 			Label:
-				text: "Enter OTP"
-				font_size: '20sp'
+				text: "Authentication Level Two"
+				font_size: '50sp'
+                color: [0,0,0,1]
+                bold: True
 			BoxLayout:
 			    size_hint: 1,0.5
 			    orientation: 'horizontal'
@@ -1053,6 +1062,14 @@
 						padding:15,5,15,0
 						write_tab: False
                         on_text:root.check3_otp()
+
+                    Label:
+        			    id: design
+                        size_hint:0.25,1
+                        color: [0,0,0,1]
+                        text: "-"
+                        font_size: '60sp'
+
 					TextInput:
                         id: otp_4
 						size_hint: 0.2,1
