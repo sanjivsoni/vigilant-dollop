@@ -1,6 +1,6 @@
 from src.helperFunctions import*
-from src.kivy_files.LoginProcessClasses import *
-from src.kivy_files.SignUpClass import *
+from src.KivyClasses.LoginProcessClasses import *
+from src.KivyClasses.SignUpClass import *
 #from libraries import *
 
 Builder.load_file("GUI_builderForm.kv")

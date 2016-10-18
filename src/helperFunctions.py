@@ -117,11 +117,11 @@ def fetchSecurityQuestionPart1():
     for i in range(1,5):
         securityQues = securityQues +  "'" + config.securityQuestionsPart1[i] + "'" + ","
 
-    print securityQues[:-1] + "]"
+    return securityQues[:-1] + "]"
 
 def fetchSecurityQuestionPart2():
     securityQues = "["
     for i in range(5,9):
         securityQues = securityQues +  "'" + config.securityQuestionsPart2[i] + "'" + ","
 
-    print securityQues[:-1] + "]"
+    return securityQues[:-1] + "]"

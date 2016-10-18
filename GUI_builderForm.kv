@@ -277,8 +277,8 @@
                             background_color: 255,255,255,1
                             id: Y
                             color: 0,0,0,1
-                            values: root.s2
                             text: "Security Question"
+                            self: root.fetchSecurityQuestionPart1()
                             size_hint: .6, None
                             size: 350,40
                         Label:
@@ -307,8 +307,8 @@
                             id: X
                             background_color: 255,255,255,1
                             color: 0,0,0,1
-                            values: root.s1
                             text: "Security Question"
+                            self: root.fetchSecurityQuestionPart2()
                             size_hint: .6, None
                             size: 350,40
                         Label:

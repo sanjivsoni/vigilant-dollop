@@ -50,7 +50,7 @@ from functools import partial
 from kivy.app import App
 from kivy.app import Builder
 from kivy.uix.screenmanager import FadeTransition, ScreenManager, Screen
-from kivy.properties import ObjectProperty
+from kivy.properties import ObjectProperty, ListProperty
 
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
