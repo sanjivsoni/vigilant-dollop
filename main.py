@@ -8,12 +8,16 @@ Window.size = (700, 700)
 screenManager = ScreenManager( transition = FadeTransition() )
 #screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
-screenManager.add_widget( LevelOneScreen( name = 'levelOneScreen' ) )
+screenManager.add_widget( RecoverScreen( name = 'recoverScreen' ) )
+
 screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
+#screenManager.add_widget( UsernameRecoverScreen( name = 'usernameRecoverScreen' ) )
+#screenManager.add_widget( PasswordRecoverScreen( name = 'passwordRecoverScreen' ) )
+#screenManager.add_widget( RecoveryLevelTwoScreen( name = 'recoverylevelTwoScreen' ) )
+
 '''screenManager.add_widget( LevelThreeScreen( name = 'levelThreeScreen' ) )
-screenManager.add_widget( RecoveryLevelTwoScreen( name = 'recoverylevelTwoScreen' ) )
-screenManager.add_widget( UsernameRecover( name = 'usernameRecoverScreen' ) )
-screenManager.add_widget( PasswordRecover( name = 'passwordRecoverScreen' ) )
+
+
 screenManager.add_widget( UserRecoveryLevelThreeScreen( name = 'userrecoverylevelThreeScreen' ) )
 screenManager.add_widget( PasswordRecoveryLevelThreeScreen( name = 'passwordrecoverylevelThreeScreen' ) )
 screenManager.add_widget( RecoverySecQuestion( name = 'recoverysecQuestion' ) )

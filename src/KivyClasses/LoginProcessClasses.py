@@ -96,7 +96,6 @@ class UsernameScreen(Screen):
             choice2 = randint(0, 7)
             print choice2
             App.get_running_app().root.current = 'levelTwoScreen'
-            App.get_running_app().root.get_screen('levelTwoScreen').updateScreen(choice, choice2)
         else:
             # Unsuccessful match for Password 
             popup = Popup(title='Error',
@@ -105,20 +104,182 @@ class UsernameScreen(Screen):
             popup.open()
 
     def recoverUsernameEvent(self, callback):
-        pass
+        root = App.get_running_app().root
+        root.current = 'recoverScreen'
+        root.get_screen('recoverScreen').updateLabel(1)
 
     def recoverPasswordEvent(self, callback):
-        pass
+        root = App.get_running_app().root
+        root.current = 'recoverScreen'
+        root.get_screen('recoverScreen').updateLabel(2)
 
-    # Recover User name Event
-    def recoverPasswordEvent(self):
-        App.get_running_app().root.current = 'passwordRecoverScreen'
-        App.get_running_app().root.get_screen('passwordRecoverScreen').parameter(2)
 
-    
-    
 
 class LevelTwoScreen(Screen):
+    _total_seconds = 60
+    _total_minutes = 0
+    _minutes = _total_seconds
+    _seconds = _total_minutes
+    _otp_expired = 0
+
+    _time_event = 0
+    _otp_choice = 0
+    correctOTP = ""
+
+    headingLabel = Label( text = ' HEADING')
+    securityQuestionLabel = Label ()
+    otpSentLabel = Label ()
+    timerLabel = Label()
+    otpText = TextInput(size_hint = (0.3, 0.2),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+    
+    regenerateOtpButton = Button ( text = "Regenerate OTP")
+
+    layout = BoxLayout( orientation = 'vertical')
+
+    
+    
+    topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+    midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+    bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+    
+    def __init__(self, **kwargs):
+        super(LevelTwoScreen, self).__init__(**kwargs)
+
+        self.headingLabel.text = "Authentication Step 2"
+        self.topLayout.add_widget(self.headingLabel)
+
+        randomLevel = randint(0,1)
+        
+        # OTP
+        if randomLevel == 0:
+            random = randint(0,1)
+            # OTP on Email
+            if random == 1:
+                self.otpSentLabel.text = "OTP Sent to Email"
+            # OTP on Mobile
+            else:
+                self.otpSentLabel.text = "OTP Sent to Mobile"
+
+            self.timerLabel.text = "00:00"
+
+            self._seconds = self._total_seconds
+            self._minutes = self._total_minutes
+
+            self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
+
+        # Security Question
+        else:
+            self.securityQuestionLabel.text = "Who is you favourite super hero ?"
+
+
+        self.topLayout.add_widget(self.otpSentLabel)
+        
+        self.midLayout.add_widget(self.securityQuestionLabel)
+        self.midLayout.add_widget(self.otpText)
+
+        self.bottomLayout.add_widget(self.timerLabel)
+        
+        self.layout.add_widget(self.topLayout)
+        self.layout.add_widget(self.midLayout)
+        self.layout.add_widget(self.bottomLayout)
+
+        self.add_widget(self.layout)
+
+    # Update Timer after One Second
+    def updateTimer(self, dt):
+        if self._minutes >= 0 and self._seconds > 0:
+            self._seconds = self._seconds - 1
+            if self._minutes > 0 and self._seconds == 0:
+                self._seconds = 60
+                self._minutes = self._minutes - 1
+
+            elif self._minutes == 0 and self._seconds == 0:
+                Clock.unschedule(self._time_event)
+                self.ids.send.disabled = False
+
+                # Resend OTP after Timeout
+            clockState = ""
+
+            if self._minutes > 9:
+                clockState = str(self._minutes) + ':'
+            else:
+                clockState = '0' + str(self._minutes) + ':'
+
+            if self._seconds > 9:
+                clockState =  clockState + str(self._seconds)
+            else:
+                clockState = clockState + '0' + str(self._seconds)
+
+            self.timerLabel.text = clockState
+        
+class RecoverScreen(Screen):
+
+    layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.20),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
+
+    recoverLabel = Label( text = 'Recover by Email or phone')
+
+    recoverMedium = TextInput(hint_text = 'email or Mobile No.')
+    submitButton = Button( text = 'submit' )
+    usernameOrPasswordFlag = 0
+    mobileOrEmailFlag = 0
+
+    def __init__(self, **kwargs):
+        super(RecoverScreen, self).__init__(**kwargs)    
+        self.layout.add_widget(self.recoverLabel)
+        self.layout.add_widget(self.recoverMedium)
+        self.layout.add_widget(self.submitButton)
+        self.add_widget(self.layout)
+
+
+    def recoverUsernameByEmail(self, callback):
+        pass
+
+    def recoverUsernameByMobile(self, callback):
+        pass
+    def recoverPasswordByEmail(self, callback):
+        pass
+    def recoverPasswordByMobile(self, callback):
+        pass
+
+    def recoverStepTwoEvent(self, callback):
+        global generatedOTP
+        my_queue = Queue.Queue()
+        recoverUser = UserRecovery()
+        contact = self.recoverMedium
+
+        x = 0
+        if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
+            print "Email"
+            thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
+            thread1.start()
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+            x = 1
+
+        else:
+            print "Phone"
+            thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
+            thread1.start()
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+            x = 2
+        generatedOTP = my_queue.get()
+
+
+    def updateLabel(self, choice):
+        if choice == 1:
+            self.choice = 1
+            self.recoverLabel.text = 'Recover Username by email or phone number'
+            self.submitButton.bind(on_press = self.recoverStepTwoEvent)
+
+        else:
+            self.choice = 0
+            self.recoverLabel.text = 'Recover Password by email or phone number'    
+            self.submitButton.bind(on_press = self.recoverStepTwoEvent)
+
+class LevelTwoScreen2(Screen):
 
     otp = ObjectProperty(None)
     send = ObjectProperty(None)

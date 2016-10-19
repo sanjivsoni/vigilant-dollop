@@ -440,70 +440,6 @@
             size_hint: 0.3,0.5
 
 
-<UsernameScreen1>:
-    username: username
-    message: message
-
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 20
-        spacing: 10
-
-        canvas:
-            Rectangle:
-                source: 'src/images/blue.png'
-                pos: self.pos
-                size: self.size
-
-        BoxLayout:
-            size_hint: 1,0.25
-            orientation: 'vertical'
-            Button:
-                text:'back'
-                size_hint:0.10,0.2
-                on_press: root.manager.current = 'main'
-
-            Label:
-                size_hint:0.10,0.8
-
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1,0.25
-            spacing: 10
-
-            BoxLayout:
-                size_hint: 0.3,0.5
-            BoxLayout:
-                size_hint: 0.5,0.7
-
-                BoxLayout:
-                    orientation: 'vertical'
-                    spacing: 10
-                    Label:
-                        id: message
-
-                    TextInput:
-                        id: username
-                        hint_text: 'username'
-                        on_text: root.check_username()
-                    BoxLayout:
-                        orientation: 'horizontal'
-                        Button:
-                            id: loginButton
-                            text: 'Next'
-                            on_release: root.usernameEvent()
-                        Button:
-                            id: recoverButton
-                            text: 'Recover Username'
-                            on_release: root.recoverUsernameEvent()
-
-            BoxLayout:
-                size_hint: 0.3,0.5
-        BoxLayout:
-            size_hint:1,0.25
-        BoxLayout:
-            size_hint:1,0.25
-
 <LevelOneScreen>:
     password: password
     message: message
@@ -976,7 +912,7 @@
             BoxLayout:
                 size_hint: 1, 0.25
 
-<LevelTwoScreen>:
+<LevelTwoScreen2>:
 	otp:otp
 	send:send
 	minutes: minutes
@@ -1232,21 +1168,6 @@
         spacing: 20
         size_hint: None, None
         width: 400
-
-<HomeScreen>:
-
-#    BoxLayout:
-#       orientation: 'vertical'
- #       BoxLayout:
-  #          size_hint_y: None
-   #         height:30
-#            Button:
- #               text: 'Lock Files'
-  #          Button:
-   #             text: 'Unlock Files'
-#
- #       BoxLayout:
-  #          Label:
 
 <LoadDialog>:
     BoxLayout:
