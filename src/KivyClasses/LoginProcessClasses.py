@@ -8,44 +8,39 @@ attempt = 0
 generatedOTP = 0
 
 class UsernameScreen(Screen):
-    username = ObjectProperty(None)
-    message = ObjectProperty(None)
-    attempt = 0
-    invalidTime = 0
+    usernameField = TextInput(hint_text = 'username')
+    recoverUserNameButton = Button( text = 'forgot Username', size = (20, 10))
+    nextButton  = Button(text = 'next', 
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+    statusLabel = Label(text = ' ')
 
-    def check_username(self):
-        if self.ids['username'].text ==  "":
-            self.ids['loginButton'].disabled = True
+    attempts = 0
+    timeout = 0
+
+    def __init__(self, **kwargs):
+        super(UsernameScreen, self).__init__(**kwargs)
+        layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.27),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
+        layout.add_widget(self.statusLabel)
+
+        layout.add_widget(self.usernameField)
+        layout.add_widget(self.nextButton)
+        layout.add_widget(self.recoverUserNameButton)
+
+        self.add_widget(layout)
+    
+    # Check if username is empty or not
+    def checkEmptyUserName(self):
+        if self.usernameField == "":
+            self.nextButton.disabled = True
         else:
-            self.ids['loginButton'].disabled = False
-    # Validate User input Event
+            self.nextButton.disabled = False
 
-    def usernameEvent(self):
-        # Stub
-        global attempt
-        global verifyUser
-        global userID
-
-        userExists = verifyUser.checkIfUserExists(self.username.text)
-        # Successful match for Username
-        if userExists:
-            # Change present screen to password screen.
-            App.get_running_app().root.current = 'levelOneScreen'
-            userID = self.username.text
-
-        # Unsuccessful match for Username
-        else:
-            popup = Popup(title='Error',
-            content=Label(text='Incorrect Username'),
-            size_hint=(None, None), size=(180, 100))
-            popup.open()
-
-
-    # Recover User name Event
-    def recoverUsernameEvent(self):
-        App.get_running_app().root.current = 'usernameRecoverScreen'
-        App.get_running_app().root.get_screen('usernameRecoverScreen').parameter(1)
-
+    def nextEvent(self):
+        print "Next Event"
+    
+    
+    
 class LevelOneScreen(Screen):
     password = ObjectProperty(None)
     message = ObjectProperty(None)
