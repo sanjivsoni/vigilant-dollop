@@ -9,16 +9,29 @@ generatedOTP = 0
 
 class UsernameScreen(Screen):
     usernameField = TextInput(hint_text = 'username')
+
     recoverUserNameButton = Button( text = 'forgot Username', size = (20, 10))
+
     nextButton  = Button(text = 'next', 
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+
     statusLabel = Label(text = ' ')
+
+    recoverPasswordButton = Button( text = 'forget password', size = (20, 10))
+    moveToLevelTwoButton  = Button(text = 'next', 
+                        pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
 
     attempts = 0
     timeout = 0
 
+
     def __init__(self, **kwargs):
         super(UsernameScreen, self).__init__(**kwargs)
+
+        self.recoverUserNameButton.bind(on_release = self.recoverUsernameEvent)
+        self.usernameField.bind(on_text = self.checkEmptyUserName) 
+        self.nextButton.bind( on_release = self.nextEvent )
+
         layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.27),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
         layout.add_widget(self.statusLabel)
@@ -28,54 +41,82 @@ class UsernameScreen(Screen):
         layout.add_widget(self.recoverUserNameButton)
 
         self.add_widget(layout)
+        self.usernameField.text = 'sonisanjiv'
+
+        self.recoverPasswordButton.bind(on_release = partial(self.recoverPasswordEvent))
+        self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
     
     # Check if username is empty or not
-    def checkEmptyUserName(self):
+    def checkEmptyUserName(self, callback):
         if self.usernameField == "":
             self.nextButton.disabled = True
         else:
             self.nextButton.disabled = False
 
-    def nextEvent(self):
-        print "Next Event"
-    
-    
-    
-class LevelOneScreen(Screen):
-    password = ObjectProperty(None)
-    message = ObjectProperty(None)
+    def nextEvent(self, callback):
+        global verifyUser
+        global userId
+        global attempt
 
-    def check_password(self):
-        if self.ids['password'].text ==  "":
-            self.ids['passwordButton'].disabled = True
+        userExists = verifyUser.checkIfUserExists(self.usernameField.text) 
+        
+        if userExists :
+            userID = self.usernameField.text
+
+            self.usernameField.password = True
+            self.usernameField.text = ''
+            self.usernameField.hint_text = 'Password'
+
+            self.usernameField.text = 'Test@1234'
+            
+            self.statusLabel.text = ' '
+            
+            self.children[0].remove_widget(self.recoverUserNameButton)
+            self.children[0].remove_widget(self.nextButton)
+
+            self.children[0].add_widget(self.moveToLevelTwoButton)
+            self.children[0].add_widget(self.recoverPasswordButton)
+
         else:
-            self.ids['passwordButton'].disabled = False
-    # Validate User Password input Event
-    def passwordEvent(self):
-        # Stub
+            # Unsuccessful match for Username
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Username'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+    
+    def verifyPasswordEvent(self, callback):
         global verifyUser
         global choice
-        passwordMatched = verifyUser.checkUserLevel1(self.password.text)
-        # Successful match for Password
-        if(passwordMatched):
-            # Change present screen to password screen.
+        passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
+
+        if passwordMatch:
+            self.statusLabel.text = 'Password Matched'
+
             choice = randint(0, 1)
             choice2 = randint(0, 7)
             print choice2
             App.get_running_app().root.current = 'levelTwoScreen'
             App.get_running_app().root.get_screen('levelTwoScreen').updateScreen(choice, choice2)
-
         else:
-            # Unsuccessful match for Username
+            # Unsuccessful match for Password 
             popup = Popup(title='Error',
             content=Label(text='Incorrect Password'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
 
+    def recoverUsernameEvent(self, callback):
+        pass
+
+    def recoverPasswordEvent(self, callback):
+        pass
+
     # Recover User name Event
     def recoverPasswordEvent(self):
         App.get_running_app().root.current = 'passwordRecoverScreen'
         App.get_running_app().root.get_screen('passwordRecoverScreen').parameter(2)
+
+    
+    
 
 class LevelTwoScreen(Screen):
 
