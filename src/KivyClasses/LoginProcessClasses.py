@@ -28,11 +28,7 @@ class UsernameScreen(Screen):
 
         userExists = verifyUser.checkIfUserExists(self.username.text)
         # Successful match for Username
-<<<<<<< HEAD
         if userExists:
-=======
-        if(userExists):
->>>>>>> 576bc827192a40bb4be2a4636ce619a69742b92a
             # Change present screen to password screen.
             App.get_running_app().root.current = 'levelOneScreen'
             userID = self.username.text
