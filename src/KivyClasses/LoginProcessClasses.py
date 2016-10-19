@@ -22,14 +22,13 @@ class UsernameScreen(Screen):
 
     def usernameEvent(self):
         # Stub
-        self.username.text  = "bhatshubhs"
         global attempt
         global verifyUser
         global userID
 
         userExists = verifyUser.checkIfUserExists(self.username.text)
         # Successful match for Username
-        if(self.username.text  == "bhatshubhs"):
+        if userExists:
             # Change present screen to password screen.
             App.get_running_app().root.current = 'levelOneScreen'
             userID = self.username.text
@@ -55,7 +54,6 @@ class LevelOneScreen(Screen):
     # Validate User Password input Event
     def passwordEvent(self):
         # Stub
-        self.password.text = "Qwe@1234"
         global verifyUser
         global choice
         passwordMatched = verifyUser.checkUserLevel1(self.password.text)
