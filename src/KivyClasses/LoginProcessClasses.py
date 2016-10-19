@@ -133,26 +133,108 @@ class LevelTwoScreen(Screen):
     otpText = TextInput(size_hint = (0.3, 0.2),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
     
+    otpTextSecond = TextInput(size_hint = (0.3, 0.2),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
     regenerateOtpButton = Button ( text = "Regenerate OTP")
 
     layout = BoxLayout( orientation = 'vertical')
 
     
+    submitButton = Button(text = 'Submit', size_hint = (0.3,0.2),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
     
     topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
-    midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+    midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
     bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
     
     def __init__(self, **kwargs):
         super(LevelTwoScreen, self).__init__(**kwargs)
 
-        self.headingLabel.text = "Authentication Step 2"
         self.topLayout.add_widget(self.headingLabel)
+        self.topLayout.add_widget(self.otpSentLabel)
+        
+        self.midLayout.add_widget(self.securityQuestionLabel)
+        self.midLayout.add_widget(self.otpText)
+
+        self.bottomLayout.add_widget(self.timerLabel)
+        
+        self.layout.add_widget(self.topLayout)
+        self.layout.add_widget(self.midLayout)
+        self.layout.add_widget(self.bottomLayout)
+
+        self.add_widget(self.layout)
+        self.headingLabel.text = "Authentication Step 2"
 
         randomLevel = randint(0,1)
+
+        # Stub
+        randomLevel = 0
         
         # OTP
         if randomLevel == 0:
+            self.otpLevelOne()
+
+        # Security Question
+        else:
+            self.securityQuestionLevelOne()
+
+    def startTimer(self):
+        self.timerLabel.text = "00:00"
+
+        self._seconds = self._total_seconds
+        self._minutes = self._total_minutes
+
+        self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
+
+    def otpLevelOne(self):
+        random = randint(0,1)
+        # OTP on Email
+        if random == 1:
+            self.otpSentLabel.text = "OTP Sent to Email"
+        # OTP on Mobile
+        else:
+            self.otpSentLabel.text = "OTP Sent to Mobile"
+
+        self.otpText.bind(on_text = self.securityQuestionLevelTwo)
+        print self.otpText
+        self.startTimer()
+
+    def otpLevelTwo(self):
+        pass
+
+    def securityQuestionLevelOne(self):
+        self.securityQuestionLabel.text = "Who is you favourite super hero ? (answer is iron :) )"
+
+        self.submitButton.bind( on_press = self.checkSecurityQuestionAnswer )
+        self.midLayout.add_widget(self.submitButton)
+        pass
+
+    def securityQuestionLevelTwo(self):
+        print 'helo;;'
+        pass
+
+
+    def checkOtp(self):
+        if self.otpText.text == '123456':
+            Clock.unschedule(self._time_event)
+            self.timerLabel.text = ' '
+            self.otpSentLabel.text = ' '
+
+            self.midLayout.remove_widget(self.otpText)
+            self.otpText = otpTextSecond
+            self.midLayout.add_widget(self.otpText)
+            
+            self.securityQuestionLabel.text = "Who is you favourite super hero ? (answer is iron :) )"
+
+            self.submitButton.bind( on_press = self.checkSecurityQuestionAnswer )
+            self.midLayout.add_widget(self.submitButton)
+
+    def checkSecurityQuestionAnswer(self, callback):
+        if self.otpText.text == 'iron':
+            self.midLayout.remove_widget(self.submitButton)
+            self.headingLabel.text = 'Authentication Step 3'
+
+            self.securityQuestionLabel.text = ' '
             random = randint(0,1)
             # OTP on Email
             if random == 1:
@@ -166,25 +248,16 @@ class LevelTwoScreen(Screen):
             self._seconds = self._total_seconds
             self._minutes = self._total_minutes
 
+            self.midLayout.remove_widget(self.otpText)
+            self.otpText = otpTextSecond
+            self.midLayout.add_widget(self.otpText)
+
+            self.otpText.bind(on_text = self.checkOtp)
+
             self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
 
-        # Security Question
         else:
-            self.securityQuestionLabel.text = "Who is you favourite super hero ?"
-
-
-        self.topLayout.add_widget(self.otpSentLabel)
-        
-        self.midLayout.add_widget(self.securityQuestionLabel)
-        self.midLayout.add_widget(self.otpText)
-
-        self.bottomLayout.add_widget(self.timerLabel)
-        
-        self.layout.add_widget(self.topLayout)
-        self.layout.add_widget(self.midLayout)
-        self.layout.add_widget(self.bottomLayout)
-
-        self.add_widget(self.layout)
+            pass
 
     # Update Timer after One Second
     def updateTimer(self, dt):
