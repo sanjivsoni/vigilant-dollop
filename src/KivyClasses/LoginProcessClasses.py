@@ -28,14 +28,22 @@ class UsernameScreen(Screen):
 
         userExists = verifyUser.checkIfUserExists(self.username.text)
         # Successful match for Username
+<<<<<<< HEAD
         if userExists:
+=======
+        if(userExists):
+>>>>>>> 576bc827192a40bb4be2a4636ce619a69742b92a
             # Change present screen to password screen.
             App.get_running_app().root.current = 'levelOneScreen'
             userID = self.username.text
 
         # Unsuccessful match for Username
         else:
-            self.message.text = 'Invalid Username'
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Username'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+
 
     # Recover User name Event
     def recoverUsernameEvent(self):
@@ -60,14 +68,18 @@ class LevelOneScreen(Screen):
         # Successful match for Password
         if(passwordMatched):
             # Change present screen to password screen.
-            App.get_running_app().root.current = 'levelTwoScreen'
             choice = randint(0, 1)
-            choice2 = randint(0, 6)
+            choice2 = randint(0, 7)
+            print choice2
+            App.get_running_app().root.current = 'levelTwoScreen'
             App.get_running_app().root.get_screen('levelTwoScreen').updateScreen(choice, choice2)
 
         else:
             # Unsuccessful match for Username
-            self.message.text = 'Invalid Password'
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Password'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
 
     # Recover User name Event
     def recoverPasswordEvent(self):
@@ -92,6 +104,7 @@ class LevelTwoScreen(Screen):
     correctOTP = ""
 
     def updateLabel(self, choice2):
+
         _instruction = self.ids['instruction']
         if choice2 == 0:
             _instruction.text = "Please Enter the OTP sent to your registered Email"
@@ -106,9 +119,10 @@ class LevelTwoScreen(Screen):
         elif choice2 == 5:
             _instruction.text = "Enter the OTP sent on your registered email followed by First Three Letters of your last Name"
         elif choice2 == 6:
-            _instruction.text = "sd"
+            _instruction.text = verifyUser.fetchUserSecurityQuestion(1)
         elif choice2 == 7:
-            _instruction.text = "Security Question 2"
+            _instruction.text = verifyUser.fetchUserSecurityQuestion(2)
+
 
 
     def updateButtonLabel(self, choice):

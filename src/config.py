@@ -54,3 +54,6 @@ key = "*BA@Jy*uHur&v5B7WX%^Ecobv@D&WY#%"
 #Secuity_Questions
 securityQuestionsPart1 = {1:"Mother's Maiden Name ?",2:"Pet's Name ?",3:"First Teacher's Name ?",4:"Favourite Holiday Destination?"}
 securityQuestionsPart2 = {5: "Your Childhood Hero?",6:"Time Of The Day Were You Born ?",7:"The steet you grew up in?",8:"Your Childhood Nickname?"}
+
+#Social Security ID Types
+ssnTypes = {1:"Voter ID", 2:"PAN Card", 3:"Aadhaar Card", 4:"Driver's License"}
