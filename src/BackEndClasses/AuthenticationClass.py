@@ -41,7 +41,7 @@ class Authentication:
 
         establishConnection()
         sql = "SELECT password FROM user WHERE userid =" + "'" + self.userID + "'"
-        print sql
+        #print sql
 
         try:
             config.statement.execute(sql)

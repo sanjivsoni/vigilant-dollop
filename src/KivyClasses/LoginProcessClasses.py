@@ -40,7 +40,7 @@ class UsernameScreen(Screen):
         layout.add_widget(self.recoverUserNameButton)
 
         self.add_widget(layout)
-        self.usernameField.text = 'sonisanjiv'
+        #self.usernameField.text = 'sonisanjiv'
 
         self.recoverPasswordButton.bind(on_release = partial(self.recoverPasswordEvent))
         self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
@@ -64,7 +64,7 @@ class UsernameScreen(Screen):
             self.usernameField.text = ''
             self.usernameField.hint_text = 'Password'
 
-            self.usernameField.text = 'Test@1234'
+            #self.usernameField.text = 'Test@1234'
 
             self.statusLabel.text = ' '
 
@@ -170,7 +170,7 @@ class LevelTwoScreen(Screen):
 
         # Stub
 
-        #randomLevel = 1
+        randomLevel = 0
 
 
         # OTP
