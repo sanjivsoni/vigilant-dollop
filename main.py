@@ -11,6 +11,7 @@ screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( RecoverScreen( name = 'recoverScreen' ) )
 
 screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
+screenManager.add_widget( HomeScreen( name = 'HomeScreen' ))
 #screenManager.add_widget( UsernameRecoverScreen( name = 'usernameRecoverScreen' ) )
 #screenManager.add_widget( PasswordRecoverScreen( name = 'passwordRecoverScreen' ) )
 #screenManager.add_widget( RecoveryLevelTwoScreen( name = 'recoverylevelTwoScreen' ) )

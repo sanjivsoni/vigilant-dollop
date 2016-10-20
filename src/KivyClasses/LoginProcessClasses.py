@@ -94,8 +94,8 @@ class UsernameScreen(Screen):
 
             choice = randint(0, 1)
             choice2 = randint(0, 7)
-            print choice2
             App.get_running_app().root.current = 'levelTwoScreen'
+            App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
         else:
             # Unsuccessful match for Password 
             popup = Popup(title='Error',
@@ -116,7 +116,7 @@ class UsernameScreen(Screen):
 
 
 class LevelTwoScreen(Screen):
-    _total_seconds = 1
+    _total_seconds = 5
     _total_minutes = 0
     _minutes = _total_seconds
     _seconds = _total_minutes
@@ -125,6 +125,8 @@ class LevelTwoScreen(Screen):
     _time_event = 0
     _otp_choice = 0
     correctOTP = ""
+
+    otpOnLevelTwoFlag = 0
 
     headingLabel = Label( text = ' HEADING')
     securityQuestionLabel = Label ()
@@ -135,8 +137,8 @@ class LevelTwoScreen(Screen):
     
     otpTextSecond = TextInput(size_hint = (0.3, 0.2),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-    regenerateOtpButton = Button ( text = "Regenerate OTP", size_hint = (0.3, 0.6),
-                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 10)
+    regenerateOtpButton = Button ( text = "Regenerate OTP", size=(120,40),size_hint=(1, None),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 30)
 
     layout = BoxLayout( orientation = 'vertical')
 
@@ -146,7 +148,7 @@ class LevelTwoScreen(Screen):
     
     topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
     midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
-    bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
+    bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10, padding = 10)
     
     def __init__(self, **kwargs):
         super(LevelTwoScreen, self).__init__(**kwargs)
@@ -169,15 +171,20 @@ class LevelTwoScreen(Screen):
         randomLevel = randint(0,1)
 
         # Stub
-        randomLevel = 1
+        #randomLevel = 1
         
         # OTP
         if randomLevel == 0:
+            self.otpOnLevelTwoFlag = 1
             self.otpLevelOne()
 
         # Security Question
         else:
             self.securityQuestionLevelOne()
+
+    def startTimerIfOtp(self):
+        if self.otpOnLevelTwoFlag == 1:
+            self.startTimer()
 
     def startTimer(self):
         self.timerLabel.text = "00:00"
@@ -186,7 +193,6 @@ class LevelTwoScreen(Screen):
         self._minutes = self._total_minutes
 
         self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
-    
 
     def otpLevelOne(self):
         random = randint(0,1)
@@ -198,7 +204,6 @@ class LevelTwoScreen(Screen):
             self.otpSentLabel.text = "OTP Sent to Mobile"
 
         self.otpText.bind(text = self.securityQuestionLevelTwo)
-        self.startTimer()
 
     def otpLevelTwo(self, callback):
         if self.otpText.text == 'iron':
@@ -234,13 +239,15 @@ class LevelTwoScreen(Screen):
     def securityQuestionLevelOne(self):
         self.securityQuestionLabel.text = "Who is you favourite super hero ? (answer is iron :) )"
 
+        # Stub
+        self.otpText.text='iron'
+
         self.submitButton.bind( on_press = self.otpLevelTwo )
         self.midLayout.add_widget(self.submitButton)
         pass
 
     def securityQuestionLevelTwo(self, instance, value):
         if value == '123456':
-            print 'okay'
             Clock.unschedule(self._time_event)
             self.timerLabel.text = ' '
             self.otpSentLabel.text = ' '
@@ -257,10 +264,18 @@ class LevelTwoScreen(Screen):
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         if value == '123456':
             print 'access granted'
+            App.get_running_app().root.current = 'HomeScreen'
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
         if self.otpText.text == 'iron':
             print 'access granted'
+            App.get_running_app().root.current = 'HomeScreen'
+
+
+    def regenerateOtp(self, callback):
+        self.startTimer()
+        self.bottomLayout.remove_widget(self.regenerateOtpButton)
+        self.otpText.disabled = False
 
     # Update Timer after One Second
     def updateTimer(self, dt):
@@ -273,8 +288,8 @@ class LevelTwoScreen(Screen):
             elif self._minutes == 0 and self._seconds == 0:
                 Clock.unschedule(self._time_event)
                 self.timerLabel.text = ''
-
                 self.bottomLayout.add_widget(self.regenerateOtpButton)
+                self.regenerateOtpButton.bind(on_press = self.regenerateOtp)
                 return
 
                 # Resend OTP after Timeout
@@ -619,6 +634,7 @@ class LevelThreeScreen(Screen):
     correctOTP = ""
 
 
+
     def color_white(self,dt):
         label= []
         label.append(self.ids['otp'])
@@ -811,3 +827,172 @@ class LevelThreeScreen(Screen):
             thread1.start()
 
         self.correctOTP = my_queue.get()
+
+
+class HomeScreen(Screen):
+
+    elementCounter = 0
+    first_time_add_button = 1
+
+    def __init__(self, **kwargs):
+        super(HomeScreen, self).__init__(**kwargs)
+
+        layout = BoxLayout(orientation = 'vertical')
+
+        topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
+
+        lockFileButton = Button(text = "Lock Files", id = 'lock_button')
+	lockFileButton.bind(on_press = self.showLoadPopup)
+
+        topLayout.add_widget(lockFileButton)
+        midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
+        bottomLayout = BoxLayout(size_hint = (1, 0.9), padding = 20)
+
+        grid = GridLayout(id = 'unlocked_files', cols = 6, padding = 5, spacing = 20,
+                size_hint = (None, None), width = 650,  pos_hint = {'center_x': .5, 'center_y': .5})
+
+        grid.bind(minimum_height=grid.setter('height'))
+
+
+        # add button into that gridi from database
+        '''
+        for i in range(8):
+            btn = Button(text = "file" + str(i), size = (30, 30),
+                         size_hint = (None, None), id = str(i))
+            btn.bind(on_press = partial(self.unlockFile, str(i)))
+            label = Label(text = "file" + str(i), width=90, halign = 'left',valign = 'middle', id="label"+str(i))
+            label.bind(size=label.setter('text_size'))
+
+            grid.add_widget(btn)
+            grid.add_widget(label)
+        '''
+        # create a scroll view, with a size < size of the grid
+        scroll = ScrollView(size_hint = (None, None), size = (650, 500),
+                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)
+	scroll.add_widget(grid)
+
+	bottomLayout.add_widget(scroll)
+
+	layout.add_widget(topLayout)
+	layout.add_widget(midLayout)
+	layout.add_widget(bottomLayout)
+
+        self.add_widget(layout)
+
+        popupContent = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
+        fileView = FileChooserListView(id = 'filechooser')
+
+        popupManagerButtons = BoxLayout(size_hint_y = None, height = 20)
+
+        cancelButton = Button(text = 'cancel')
+        cancelButton.bind(on_press = self.cancel)
+
+        loadButton = Button(text = 'load')
+        loadButton.bind(on_press = partial(self.load,fileView))
+
+        popupManagerButtons.add_widget(cancelButton)
+        popupManagerButtons.add_widget(loadButton)
+
+        popupContent.add_widget(fileView)
+        popupContent.add_widget(popupManagerButtons)
+
+        self._popup = Popup(title = "Select Files to lock", content = popupContent,
+                            size_hint = (0.9, 0.9))
+
+    def cancel(self, *args):
+        self._popup.dismiss()
+
+    def load(self, *args):
+        #print args[0].path, args[0].selection[0]
+        filePath = str(args[0].path).split('/')
+        completeFilePath = str(args[0].selection[0]).split('/')
+
+        for name in filePath:
+            try:
+                completeFilePath.remove(name)
+            except ValueError:
+                pass
+
+        self.lockFile(args[0].path, completeFilePath[0])
+        self.cancel()
+
+
+    def lockFile(self, *args):
+        buttonId = str(args[1])
+        fileButton = Button(text=' ', size=(40, 40),
+                         size_hint=(None, None), id = buttonId)
+
+        fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
+        fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='15sp')
+        fileLabel.bind(size=fileLabel.setter('text_size'))
+        midLayout = self.children[0].children[1]
+
+        if len(midLayout.children) > 0: 
+            child_first = midLayout.children[0]
+            child_second = midLayout.children[1]
+
+            midLayout.remove_widget(child_first)
+            midLayout.remove_widget(child_second)
+
+            self.elementCounter = self.elementCounter - 1
+
+        grid = self.children[0].children[0].children[0].children[0]
+        grid.add_widget(fileButton)
+        grid.add_widget(fileLabel)
+
+
+    def removeFile(self, *args):
+        grid = args[0]
+        file_name = args[1]
+        label_previous = args[2]
+        button_previous = args[3]
+        midLayout = self.children[0].children[1]
+
+        grid = self.children[0].children[0].children[0].children[0]
+#        print grid.children[int(args[0])]
+        inValidWidget = []
+        deleted = 1
+        for child in grid.children:
+            if child.id == file_name:
+                for label in grid.children:
+                    if label.id == "label"+ str(file_name) and deleted == 1:
+                        deleted = 0
+                        grid.remove_widget(child)
+                        grid.remove_widget(label)
+                        midLayout.remove_widget(button_previous)
+                        midLayout.remove_widget(label_previous)
+
+    def unlockFile(self, *args):
+
+        grid = self.children[0].children[0].children[0].children[0]
+        complete_file_name = str(args[1]+'/'+ args[0])
+        file_name = args[0]
+        midLayout = self.children[0].children[1]
+
+        label = Label(text = complete_file_name, size_hint = (0.9,0.5))
+        button = Button(text = 'remove', size_hint = (0.1,0.5))
+        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
+
+        if  self.first_time_add_button == 1:
+            self.first_time_add_button = 0
+
+            midLayout.add_widget(label)
+            midLayout.add_widget(button)
+        else:
+            if len(midLayout.children) > 0 :
+                previous_label = midLayout.children[0]
+                previous_button = midLayout.children[1]
+
+                midLayout.remove_widget(previous_label)
+                midLayout.remove_widget(previous_button)
+
+                midLayout.add_widget(label)
+                midLayout.add_widget(button)
+            else:
+                midLayout.add_widget(label)
+                midLayout.add_widget(button)
+
+    def showLoadPopup(self, *args):
+        self._popup.open()
+
+
