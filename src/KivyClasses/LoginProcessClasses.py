@@ -116,7 +116,7 @@ class UsernameScreen(Screen):
 
 
 class LevelTwoScreen(Screen):
-    _total_seconds = 30
+    _total_seconds = 1
     _total_minutes = 0
     _minutes = _total_seconds
     _seconds = _total_minutes
@@ -135,7 +135,8 @@ class LevelTwoScreen(Screen):
     
     otpTextSecond = TextInput(size_hint = (0.3, 0.2),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-    regenerateOtpButton = Button ( text = "Regenerate OTP")
+    regenerateOtpButton = Button ( text = "Regenerate OTP", size_hint = (0.3, 0.6),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 10)
 
     layout = BoxLayout( orientation = 'vertical')
 
@@ -145,7 +146,7 @@ class LevelTwoScreen(Screen):
     
     topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
     midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
-    bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+    bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
     
     def __init__(self, **kwargs):
         super(LevelTwoScreen, self).__init__(**kwargs)
@@ -271,6 +272,10 @@ class LevelTwoScreen(Screen):
 
             elif self._minutes == 0 and self._seconds == 0:
                 Clock.unschedule(self._time_event)
+                self.timerLabel.text = ''
+
+                self.bottomLayout.add_widget(self.regenerateOtpButton)
+                return
 
                 # Resend OTP after Timeout
             clockState = ""
