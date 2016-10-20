@@ -41,7 +41,7 @@ class Authentication:
 
         establishConnection()
         sql = "SELECT password FROM user WHERE userid =" + "'" + self.userID + "'"
-        #print sql
+        print sql
 
         try:
             config.statement.execute(sql)
@@ -88,7 +88,6 @@ class Authentication:
 
         else:
             return config.securityQuestionsPart2[int(aesDecrypt(ques))]
-
 
     def lockItem(self,filePath,fileName):
         if(self.authenticationComplete):
@@ -157,12 +156,8 @@ class Authentication:
 
             closeConnection()
 
-class OTP:
-    def __init__(self,userID = ""):
-        self.userID = userID
-
     def sendOTPforAuth_mobile(self,out_queue):
-        login_stats = LoginDetails(self.userID)
+        #login_stats = LoginDetails(self.userID)
         userMobile = ""
         establishConnection()
         sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
@@ -183,14 +178,11 @@ class OTP:
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = userMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
 
-
-
-
     def sendOTPforAuth_email(self,output_queue):
         userEmail = ""
         establishConnection()
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
-        #print sql
+        print sql
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()

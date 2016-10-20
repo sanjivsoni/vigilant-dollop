@@ -3,7 +3,6 @@ from ..libraries import *
 
 verifyUser = Authentication()
 choice = -1
-userID = ""
 attempt = 0
 generatedOTP = 0
 
@@ -12,13 +11,13 @@ class UsernameScreen(Screen):
 
     recoverUserNameButton = Button( text = 'forgot Username', size = (20, 10))
 
-    nextButton  = Button(text = 'next', 
+    nextButton  = Button(text = 'next',
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
 
     statusLabel = Label(text = ' ')
 
     recoverPasswordButton = Button( text = 'forget password', size = (20, 10))
-    moveToLevelTwoButton  = Button(text = 'next', 
+    moveToLevelTwoButton  = Button(text = 'next',
                         pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
 
     attempts = 0
@@ -29,7 +28,7 @@ class UsernameScreen(Screen):
         super(UsernameScreen, self).__init__(**kwargs)
 
         self.recoverUserNameButton.bind(on_release = self.recoverUsernameEvent)
-        self.usernameField.bind(on_text = self.checkEmptyUserName) 
+        self.usernameField.bind(on_text = self.checkEmptyUserName)
         self.nextButton.bind( on_release = self.nextEvent )
 
         layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.27),
@@ -45,7 +44,7 @@ class UsernameScreen(Screen):
 
         self.recoverPasswordButton.bind(on_release = partial(self.recoverPasswordEvent))
         self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
-    
+
     # Check if username is empty or not
     def checkEmptyUserName(self, callback):
         if self.usernameField == "":
@@ -58,19 +57,17 @@ class UsernameScreen(Screen):
         global userId
         global attempt
 
-        userExists = verifyUser.checkIfUserExists(self.usernameField.text) 
-        
-        if userExists :
-            userID = self.usernameField.text
+        userExists = verifyUser.checkIfUserExists(self.usernameField.text)
 
+        if userExists :
             self.usernameField.password = True
             self.usernameField.text = ''
             self.usernameField.hint_text = 'Password'
 
             self.usernameField.text = 'Test@1234'
-            
+
             self.statusLabel.text = ' '
-            
+
             self.children[0].remove_widget(self.recoverUserNameButton)
             self.children[0].remove_widget(self.nextButton)
 
@@ -83,7 +80,7 @@ class UsernameScreen(Screen):
             content=Label(text='Incorrect Username'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-    
+
     def verifyPasswordEvent(self, callback):
         global verifyUser
         global choice
@@ -97,7 +94,7 @@ class UsernameScreen(Screen):
             App.get_running_app().root.current = 'levelTwoScreen'
             App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
         else:
-            # Unsuccessful match for Password 
+            # Unsuccessful match for Password
             popup = Popup(title='Error',
             content=Label(text='Incorrect Password'),
             size_hint=(None, None), size=(180, 100))
@@ -134,7 +131,7 @@ class LevelTwoScreen(Screen):
     timerLabel = Label()
     otpText = TextInput(size_hint = (0.3, 0.2),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-    
+
     otpTextSecond = TextInput(size_hint = (0.3, 0.2),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
     regenerateOtpButton = Button ( text = "Regenerate OTP", size=(120,40),size_hint=(1, None),
@@ -142,25 +139,26 @@ class LevelTwoScreen(Screen):
 
     layout = BoxLayout( orientation = 'vertical')
 
-    
+
     submitButton = Button(text = 'Submit', size_hint = (0.3,0.2),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-    
+
     topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
     midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
+
     bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10, padding = 10)
-    
+
     def __init__(self, **kwargs):
         super(LevelTwoScreen, self).__init__(**kwargs)
 
         self.topLayout.add_widget(self.headingLabel)
         self.topLayout.add_widget(self.otpSentLabel)
-        
+
         self.midLayout.add_widget(self.securityQuestionLabel)
         self.midLayout.add_widget(self.otpText)
 
         self.bottomLayout.add_widget(self.timerLabel)
-        
+
         self.layout.add_widget(self.topLayout)
         self.layout.add_widget(self.midLayout)
         self.layout.add_widget(self.bottomLayout)
@@ -171,8 +169,10 @@ class LevelTwoScreen(Screen):
         randomLevel = randint(0,1)
 
         # Stub
+
         #randomLevel = 1
-        
+
+
         # OTP
         if randomLevel == 0:
             self.otpOnLevelTwoFlag = 1
@@ -185,6 +185,7 @@ class LevelTwoScreen(Screen):
     def startTimerIfOtp(self):
         if self.otpOnLevelTwoFlag == 1:
             self.startTimer()
+            self.returnOTPEvent()
 
     def startTimer(self):
         self.timerLabel.text = "00:00"
@@ -194,11 +195,40 @@ class LevelTwoScreen(Screen):
 
         self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
 
+    def returnOTPEvent(self):
+        otpQueue = Queue.Queue()
+        print "retutn otpevevent"
+        global verifyUser
+        #choice = randint(0, 5)
+        choice  = 0
+        if choice == 0:
+            #_instruction.text = "Please Enter the OTP sent to your registered Email"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (otpQueue,))
+            thread1.start()
+            generatedOTP = otpQueue.get()
+
+        '''
+        elif choice == 1:
+            _instruction.text = "Please Enter the OTP sent to your registered Mobile"
+        elif choice == 2:
+            _instruction.text = "Enter the OTP sent on your registered mobile followed by First Three Letters of your first Name"
+        elif choice == 3:
+            _instruction.text = "Enter the OTP sent on your registered mobile followed by First Three Letters of your first Name"
+        elif choice == 4:
+            _instruction.text = "Enter the OTP sent on your registered email followed by First Three Letters of your last Name"
+        elif choice == 5:
+            _instruction.text = "Enter the OTP sent on your registered email followed by First Three Letters of your last Name"
+        '''
+
+
     def otpLevelOne(self):
-        random = randint(0,1)
+        #random = randint(0,1)
+        print "otp level 1"
+        random = 1
         # OTP on Email
         if random == 1:
             self.otpSentLabel.text = "OTP Sent to Email"
+
         # OTP on Mobile
         else:
             self.otpSentLabel.text = "OTP Sent to Mobile"
@@ -255,7 +285,7 @@ class LevelTwoScreen(Screen):
             self.midLayout.remove_widget(self.otpText)
             self.otpText = self.otpTextSecond
             self.midLayout.add_widget(self.otpText)
-            
+
             self.securityQuestionLabel.text = "Who is you favourite super hero ? (answer is iron :) )"
 
             self.submitButton.bind( on_press = self.accessGrantedAfterSecurityQuestionLevelThree )
@@ -307,7 +337,7 @@ class LevelTwoScreen(Screen):
                 clockState = clockState + '0' + str(self._seconds)
 
             self.timerLabel.text = clockState
-        
+
 class RecoverScreen(Screen):
 
     layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.20),
@@ -321,7 +351,7 @@ class RecoverScreen(Screen):
     mobileOrEmailFlag = 0
 
     def __init__(self, **kwargs):
-        super(RecoverScreen, self).__init__(**kwargs)    
+        super(RecoverScreen, self).__init__(**kwargs)
         self.layout.add_widget(self.recoverLabel)
         self.layout.add_widget(self.recoverMedium)
         self.layout.add_widget(self.submitButton)
@@ -371,7 +401,7 @@ class RecoverScreen(Screen):
 
         else:
             self.choice = 0
-            self.recoverLabel.text = 'Recover Password by email or phone number'    
+            self.recoverLabel.text = 'Recover Password by email or phone number'
             self.submitButton.bind(on_press = self.recoverStepTwoEvent)
 
 class LevelTwoScreen2(Screen):
@@ -928,7 +958,7 @@ class HomeScreen(Screen):
         fileLabel.bind(size=fileLabel.setter('text_size'))
         midLayout = self.children[0].children[1]
 
-        if len(midLayout.children) > 0: 
+        if len(midLayout.children) > 0:
             child_first = midLayout.children[0]
             child_second = midLayout.children[1]
 
@@ -995,5 +1025,3 @@ class HomeScreen(Screen):
 
     def showLoadPopup(self, *args):
         self._popup.open()
-
-
