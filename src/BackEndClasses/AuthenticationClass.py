@@ -89,6 +89,55 @@ class Authentication:
         else:
             return config.securityQuestionsPart2[int(aesDecrypt(ques))]
 
+    def checkSecurityQuesAnswer(self,questionNo):
+
+                ans = ""
+                establishConnection()
+
+                if questionNo == 1:
+                    sql = "SELECT ans1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+                else:
+                    sql = "SELECT ans2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+
+                try:
+                    config.statement.execute(sql)
+                    results = config.statement.fetchall()
+                    for row in results:
+                        ans = aesDecrypt(row[0])
+
+                except Exception, e:
+                    print repr(e)
+                    config.conn.rollback()
+
+                closeConnection()
+
+                return ans
+    def fetchDOBforAuth(self,dobType):
+        ques = ""
+        establishConnection()
+
+        sql = "SELECT dob FROM personal WHERE userid =" + "'" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                dob = row[0]
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+
+        closeConnection()
+
+        birthDate = aesDecrypt(dob).split("/")[0]
+        birthYear = aesDecrypt(dob).split("/")[2]
+
+        if(dobType == 1):
+            return birthYear
+        else:
+            return birthDate
+
     def lockItem(self,filePath,fileName):
         if(self.authenticationComplete):
             encryptedSudoPwd = ""
@@ -156,7 +205,7 @@ class Authentication:
 
             closeConnection()
 
-    def sendOTPforAuth_mobile(self,out_queue):
+    def sendOTPforAuth_mobile(self,length,out_queue):
         #login_stats = LoginDetails(self.userID)
         userMobile = ""
         establishConnection()
@@ -173,16 +222,16 @@ class Authentication:
             config.conn.rollback()
             flag = 0
 
-        generatedOTP = generateOTP()
+        generatedOTP = generateOTP(length)
         out_queue.put(generatedOTP)
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = userMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
 
-    def sendOTPforAuth_email(self,output_queue):
+    def sendOTPforAuth_email(self,length,out_queue,):
         userEmail = ""
         establishConnection()
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
-        print sql
+        #print sql
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
@@ -195,8 +244,8 @@ class Authentication:
             config.conn.rollback()
             print "error"
 
-        generatedOTP = generateOTP()
-        output_queue.put(generatedOTP)
+        generatedOTP = generateOTP(length)
+        out_queue.put(generatedOTP)
         msg = MIMEMultipart()
         msg['From'] = "Team Vigilant Dollop"
         msg['To'] = userEmail
@@ -211,17 +260,16 @@ class Authentication:
         server.sendmail(config.emailid, userEmail, text)
         server.quit()
 
-
     def sendOTPforRecovery_mobile(self,sendToMobile,out_queue):
 
-        generatedOTP = generateOTP()
+        generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
         client = TwilioRestClient(config.account_sid, config.auth_token)
         message = client.messages.create(to = sendToMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
 
     def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
-        generatedOTP = generateOTP()
+        generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
         msg = MIMEMultipart()
         msg['From'] = "Team Vigilant Dollop"

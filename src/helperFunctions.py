@@ -84,8 +84,13 @@ def insertQueryHelper(raw):
 def getUserDetails():
     return  "User:" + getpass.getuser() + "#MAC#Address#:#" + hex(get_mac())
 
-def generateOTP():
-    return ''.join(random.choice(string.digits) for j in range(6))
+def generateOTP(length):
+    if length == 6:
+        return ''.join(random.choice(string.digits + string.digits) for j in range(6))
+    elif length == 2:
+        return ''.join(random.choice(string.ascii_lowercase) for j in range(2))
+    else:
+        return ''.join(random.choice(string.ascii_lowercase + string.digits) for j in range(4))
 
 def fetchLocation():
     send_url = 'http://freegeoip.net/json'

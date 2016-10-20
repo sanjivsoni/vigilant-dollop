@@ -83,14 +83,11 @@ class UsernameScreen(Screen):
 
     def verifyPasswordEvent(self, callback):
         global verifyUser
-        global choice
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
             self.statusLabel.text = 'Password Matched'
 
-            choice = randint(0, 1)
-            choice2 = randint(0, 7)
             App.get_running_app().root.current = 'levelTwoScreen'
             App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
         else:
@@ -113,7 +110,7 @@ class UsernameScreen(Screen):
 
 
 class LevelTwoScreen(Screen):
-    _total_seconds = 5
+    _total_seconds = 60
     _total_minutes = 0
     _minutes = _total_seconds
     _seconds = _total_minutes
@@ -167,12 +164,7 @@ class LevelTwoScreen(Screen):
         self.headingLabel.text = "Authentication Step 2"
 
         randomLevel = randint(0,1)
-
-        # Stub
-
-        randomLevel = 0
-
-
+        randomLevel =1
         # OTP
         if randomLevel == 0:
             self.otpOnLevelTwoFlag = 1
@@ -183,9 +175,16 @@ class LevelTwoScreen(Screen):
             self.securityQuestionLevelOne()
 
     def startTimerIfOtp(self):
+        global choice
+        choice = randint(0,1)
+        print choice
         if self.otpOnLevelTwoFlag == 1:
             self.startTimer()
-            self.returnOTPEvent()
+            self.otpSentLabel.text = self.returnOTPEvent()
+
+        else:
+            self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
+
 
     def startTimer(self):
         self.timerLabel.text = "00:00"
@@ -197,57 +196,65 @@ class LevelTwoScreen(Screen):
 
     def returnOTPEvent(self):
         otpQueue = Queue.Queue()
-        print "retutn otpevevent"
         global verifyUser
-        #choice = randint(0, 5)
-        choice  = 0
+        global generatedOTP
+        msg = ""
+        choice = randint(0, 5)
+        #choice  = 0
         if choice == 0:
-            #_instruction.text = "Please Enter the OTP sent to your registered Email"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (otpQueue,))
+            msg = "Please Enter the OTP sent to your registered Email"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (6,otpQueue,))
             thread1.start()
             generatedOTP = otpQueue.get()
 
-        '''
         elif choice == 1:
-            _instruction.text = "Please Enter the OTP sent to your registered Mobile"
-        elif choice == 2:
-            _instruction.text = "Enter the OTP sent on your registered mobile followed by First Three Letters of your first Name"
-        elif choice == 3:
-            _instruction.text = "Enter the OTP sent on your registered mobile followed by First Three Letters of your first Name"
-        elif choice == 4:
-            _instruction.text = "Enter the OTP sent on your registered email followed by First Three Letters of your last Name"
-        elif choice == 5:
-            _instruction.text = "Enter the OTP sent on your registered email followed by First Three Letters of your last Name"
-        '''
+            msg = "Please Enter the OTP sent to your registered Mobile"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_mobile, args = (6,otpQueue,))
+            thread1.start()
+            generatedOTP = otpQueue.get()
 
+        elif choice == 2:
+            msg = "Enter the OTP sent on your registered mobile followed by birth year"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_mobile, args = (2,otpQueue,))
+            thread1.start()
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
+
+        elif choice == 3:
+            msg = "Enter the OTP sent on your registered mobile followed by birth year"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_mobile, args = (2,otpQueue,))
+            thread1.start()
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
+
+        elif choice == 4:
+            msg = "Enter the OTP sent on your registered email followed by birth date"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (4,otpQueue,))
+            thread1.start()
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
+
+        elif choice == 5:
+            msg = "Enter the OTP sent on your registered email followed by birth date"
+            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (4,otpQueue,))
+            thread1.start()
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
+
+
+        print generatedOTP
+
+        return msg
 
     def otpLevelOne(self):
-        #random = randint(0,1)
-        print "otp level 1"
-        random = 1
-        # OTP on Email
-        if random == 1:
-            self.otpSentLabel.text = "OTP Sent to Email"
-
-        # OTP on Mobile
-        else:
-            self.otpSentLabel.text = "OTP Sent to Mobile"
-
         self.otpText.bind(text = self.securityQuestionLevelTwo)
 
     def otpLevelTwo(self, callback):
-        if self.otpText.text == 'iron':
+        global choice
+
+        if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             self.midLayout.remove_widget(self.submitButton)
             self.headingLabel.text = 'Authentication Step 3'
 
             self.securityQuestionLabel.text = ' '
-            random = randint(0,1)
-            # OTP on Email
-            if random == 1:
-                self.otpSentLabel.text = "OTP Sent to Email"
-            # OTP on Mobile
-            else:
-                self.otpSentLabel.text = "OTP Sent to Mobile"
+
+            self.otpSentLabel.text = self.returnOTPEvent()
 
             self.timerLabel.text = "00:00"
 
@@ -267,17 +274,16 @@ class LevelTwoScreen(Screen):
 
 
     def securityQuestionLevelOne(self):
-        self.securityQuestionLabel.text = "Who is you favourite super hero ? (answer is iron :) )"
-
-        # Stub
-        self.otpText.text='iron'
-
-        self.submitButton.bind( on_press = self.otpLevelTwo )
+        global verifyUser
+        self.submitButton.bind( on_press = partial(self.otpLevelTwo))
         self.midLayout.add_widget(self.submitButton)
         pass
 
     def securityQuestionLevelTwo(self, instance, value):
-        if value == '123456':
+        global verifyUser
+        choice = randint(0,1)
+        global generatedOTP
+        if value == generatedOTP:
             Clock.unschedule(self._time_event)
             self.timerLabel.text = ' '
             self.otpSentLabel.text = ' '
@@ -286,18 +292,20 @@ class LevelTwoScreen(Screen):
             self.otpText = self.otpTextSecond
             self.midLayout.add_widget(self.otpText)
 
-            self.securityQuestionLabel.text = "Who is you favourite super hero ? (answer is iron :) )"
+            self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
 
-            self.submitButton.bind( on_press = self.accessGrantedAfterSecurityQuestionLevelThree )
+            self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree,choice) )
             self.midLayout.add_widget(self.submitButton)
 
     def accessGrantedAfterOtpLevelThree(self, callback, value):
-        if value == '123456':
+        global generatedOTP
+        if value == generatedOTP:
             print 'access granted'
             App.get_running_app().root.current = 'HomeScreen'
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
-        if self.otpText.text == 'iron':
+        global choice
+        if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             print 'access granted'
             App.get_running_app().root.current = 'HomeScreen'
 
