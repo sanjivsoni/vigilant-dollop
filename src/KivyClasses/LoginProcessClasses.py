@@ -320,6 +320,7 @@ class LevelTwoScreen(Screen):
                 self.timerLabel.text = ''
                 self.bottomLayout.add_widget(self.regenerateOtpButton)
                 self.regenerateOtpButton.bind(on_press = self.regenerateOtp)
+                self.otpText.disabled = True
                 return
 
                 # Resend OTP after Timeout
