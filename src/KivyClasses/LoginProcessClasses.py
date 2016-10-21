@@ -128,8 +128,6 @@ class UsernameScreen(Screen):
         root.current = 'recoverScreen'
         root.get_screen('recoverScreen').updateLabel(2)
 
-
-
 class LevelTwoScreen(Screen):
     _total_seconds = 60
     _total_minutes = 0
@@ -369,7 +367,7 @@ class LevelTwoScreen(Screen):
 
 class RecoverScreen(Screen):
 
-    layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.20),
+    layout = BoxLayout(orientation = 'vertical', size_hint = (0.40,0.20),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
     recoverLabel = Label( text = 'Recover by Email or phone')
@@ -403,22 +401,17 @@ class RecoverScreen(Screen):
         recoverUser = UserRecovery()
         contact = self.recoverMedium
 
-        x = 0
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
             print "Email"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
             thread1.start()
-            App.get_running_app().root.current = 'recoverylevelTwoScreen'
-            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
-            x = 1
 
         else:
             print "Phone"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
             thread1.start()
-            App.get_running_app().root.current = 'recoverylevelTwoScreen'
-            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
-            x = 2
+
+
         generatedOTP = my_queue.get()
         if generatedOTP == -1:
             print "Recovery Id doesn't exits"
