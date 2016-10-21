@@ -107,8 +107,6 @@ class UsernameScreen(Screen):
         root.current = 'recoverScreen'
         root.get_screen('recoverScreen').updateLabel(2)
 
-
-
 class LevelTwoScreen(Screen):
     _total_seconds = 60
     _total_minutes = 0
@@ -942,6 +940,7 @@ class HomeScreen(Screen):
         self._popup.dismiss()
 
     def load(self, *args):
+        global verifyUser
         #print args[0].path, args[0].selection[0]
         filePath = str(args[0].path).split('/')
         completeFilePath = str(args[0].selection[0]).split('/')
@@ -952,6 +951,8 @@ class HomeScreen(Screen):
             except ValueError:
                 pass
 
+        print args[0].path, completeFilePath[0]
+        verifyUser.lockItem(args[0].path, completeFilePath[0])
         self.lockFile(args[0].path, completeFilePath[0])
         self.cancel()
 
@@ -1010,6 +1011,7 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
+        
         button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
 
         if  self.first_time_add_button == 1:

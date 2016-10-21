@@ -46,24 +46,39 @@ def createCaptcha():
     data = image.generate(captcha)
     image.write(captcha, 'captcha.png')
 
+def checkSudoPwd(sudopwd):
+    if os.system("echo " + sudopwd + " | sudo -S -v") == 0:
+        return 1
+    else:
+        return 0
+
 def lock(path,encryptedSudoPwd):
 
-    sudoPwd = aesDecrypt(config.key,encryptedSudoPwd)
+    flag = 0
+    sudoPwd = aesDecrypt(encryptedSudoPwd)
 
-    command = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
-    print command
-    os.system(command)
-    command = config.changeDirectory + sudoPwd + config.lockCommand + path
-    print command
-    os.system(command)
+    command1 = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
+
+    if os.system(command1) == 0:
+        command2 = config.changeDirectory + sudoPwd + config.lockCommand + path
+        if os.system(command2) == 0:
+            flag = 1
+
+    return flag
+
 
 def unlock(path,encryptedSudoPwd):
-    sudoPwd = aesDecrypt(config.key,encryptedSudoPwd)
 
-    command = config.changeDirectory + sudoPwd + config.unlockCommand + path
-    os.system(command)
-    command = config.changeDirectory + sudoPwd + config.changeOwnerToUser + path
-    os.system(command)
+    flag = 0
+    sudoPwd = aesDecrypt(encryptedSudoPwd)
+
+    command1 = config.changeDirectory + sudoPwd + config.unlockCommand + path
+    if os.system(command) == 0:
+        command = config.changeDirectory + sudoPwd + config.changeOwnerToUser + path
+        if os.system(command) == 0:
+            flag = 1
+
+    return flag
 
 def currentUTC():
     return datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")

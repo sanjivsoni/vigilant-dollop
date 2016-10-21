@@ -112,6 +112,7 @@ class Authentication:
                 closeConnection()
 
                 return ans
+
     def fetchDOBforAuth(self,dobType):
         ques = ""
         establishConnection()
@@ -155,12 +156,14 @@ class Authentication:
                 config.conn.rollback()
                 flag = 0
 
-            status = lock(filePath + fileName,encryptedSudoPwd)
-            if status == 0 :
+            status = lock(filePath + "/" +  fileName ,encryptedSudoPwd)
+            if status == 1 :
                 encryptedData = aesEncrypt(filePath + " " + fileName)
-                sql = "INSERT INTO lockedFiles(filepath,filename) VALUES " + insertQueryHelper(encryptedData)
+                sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
+                print sql
                 try:
                     config.statement.execute(sql)
+                    config.conn.commit()
 
                 except Exception, e:
                     print repr(e)
@@ -189,9 +192,9 @@ class Authentication:
                 config.conn.rollback()
                 flag = 0
 
-            status = unlock(path,encryptedSudoPwd)
+            status = unlock(filePath + "/" +  fileName,encryptedSudoPwd)
 
-            if status == 0:
+            if status == 1:
                 sql = "DELETE FROM lockedFiles WHERE filepath = '" + filePath + "' AND filename = '" + fileName + "'"
                 try:
                     config.statement.execute(sql)
