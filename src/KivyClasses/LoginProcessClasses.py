@@ -122,11 +122,13 @@ class UsernameScreen(Screen):
         root = App.get_running_app().root
         root.current = 'recoverScreen'
         root.get_screen('recoverScreen').updateLabel(1)
+        root.get_screen('recoverScreen').usernameOrPasswordFlag = 1
 
     def recoverPasswordEvent(self, callback):
         root = App.get_running_app().root
         root.current = 'recoverScreen'
         root.get_screen('recoverScreen').updateLabel(2)
+        root.get_screen('recoverScreen').usernameOrPasswordFlag = 0
 
 class LevelTwoScreen(Screen):
     _total_seconds = 60
@@ -373,7 +375,7 @@ class RecoverScreen(Screen):
     recoverLabel = Label( text = 'Recover by Email or phone')
 
     recoverMedium = TextInput(hint_text = 'email or Mobile No.')
-    submitButton = Button( text = 'submit' )
+    submitButton = Button( text = 'Submit' )
     usernameOrPasswordFlag = 0
     mobileOrEmailFlag = 0
 
@@ -383,13 +385,21 @@ class RecoverScreen(Screen):
         self.layout.add_widget(self.recoverMedium)
         self.layout.add_widget(self.submitButton)
         self.add_widget(self.layout)
+        
+        # Stub
+        self.recoverMedium.text = 'sanjiv1994@gmail.com'
 
 
     def recoverUsernameByEmail(self, callback):
-        pass
+        print "Email"
+        thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
+        thread1.start()
 
     def recoverUsernameByMobile(self, callback):
-        pass
+        print "Phone"
+        thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
+        thread1.start()
+
     def recoverPasswordByEmail(self, callback):
         pass
     def recoverPasswordByMobile(self, callback):
@@ -402,19 +412,46 @@ class RecoverScreen(Screen):
         contact = self.recoverMedium
 
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
-            print "Email"
-            thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
-            thread1.start()
+            # Check if user id matches from backend
+            if 1 == 1:
+                #recoverUsernameByEmail()
+                self.stepTwoRecovery()
 
         else:
-            print "Phone"
-            thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
-            thread1.start()
+            # Add elif with regex for mobile number
+            # Check if phone number matches from backend
+            if 1 == 1:
+                #recoverUsernameByMobile()
+                self.stepTwoRecovery()
 
-
-        generatedOTP = my_queue.get()
+        #generatedOTP = my_queue.get()
         if generatedOTP == -1:
             print "Recovery Id doesn't exits"
+
+    def stepTwoRecovery(self):
+        self.recoverLabel.text = 'Enter Your SSN Number'
+        self.recoverMedium.hint_text = 'SSN Number'
+
+        self.layout.remove_widget(self.submitButton)
+        self.submitButton = Button( text = 'submit')
+        self.layout.add_widget(self.submitButton)
+
+        self.submitButton.bind( on_press = self.checkSSN )
+        self.recoverMedium.text = ''
+
+    def checkSSN(self, callback):
+        # Check valid SSN
+        if self.recoverMedium.text == '12345':
+            if self.usernameOrPasswordFlag == 1:
+                self.recoverUserName()
+            else:
+                self.recoverPassword()
+
+    def recoverUserName(self):
+        print 'Recover USer NAme'
+
+    def recoverPassword(self):
+        print 'Recover PAsssword)'
 
     def updateLabel(self, choice):
         if choice == 1:
