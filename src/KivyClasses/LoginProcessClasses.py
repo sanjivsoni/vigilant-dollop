@@ -420,7 +420,8 @@ class RecoverScreen(Screen):
             App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
             x = 2
         generatedOTP = my_queue.get()
-
+        if generatedOTP == -1:
+            print "Recovery Id doesn't exits"
 
     def updateLabel(self, choice):
         if choice == 1:
