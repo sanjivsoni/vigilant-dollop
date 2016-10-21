@@ -91,27 +91,27 @@ class Authentication:
 
     def checkSecurityQuesAnswer(self,questionNo):
 
-                ans = ""
-                establishConnection()
+        ans = ""
+        establishConnection()
 
-                if questionNo == 1:
-                    sql = "SELECT ans1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
-                else:
-                    sql = "SELECT ans2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+        if questionNo == 1:
+            sql = "SELECT ans1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+        else:
+            sql = "SELECT ans2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
 
-                try:
-                    config.statement.execute(sql)
-                    results = config.statement.fetchall()
-                    for row in results:
-                        ans = aesDecrypt(row[0])
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                ans = aesDecrypt(row[0])
 
-                except Exception, e:
-                    print repr(e)
-                    config.conn.rollback()
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
 
-                closeConnection()
+        closeConnection()
 
-                return ans
+        return ans
 
     def fetchDOBforAuth(self,dobType):
         ques = ""
@@ -246,6 +246,7 @@ class Authentication:
             print repr(e)
             config.conn.rollback()
             print "error"
+
 
         generatedOTP = generateOTP(length)
         out_queue.put(generatedOTP)

@@ -221,29 +221,56 @@ class UserRecovery:
         else:
             return 0
 
-    def recoverUserLeveL3(self,quesType, quesAnswer):
 
+    def fetchUserSecurityQuestion(self,questionNo):
+
+        ques = ""
         establishConnection()
-        if(int(quesType) <= 4):
-            sql = "SELECT ques1,ans1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
 
-        elif(int(quesType) > 4):
-            sql = "SELECT ques2,ans2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+        if questionNo == 1:
+            sql = "SELECT ques1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+        else:
+            sql = "SELECT ques2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
 
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctQuesType = aesDecrypt(row[0])
-                correctAnswer = aesDecrypt(row[1])
+                ques = row[0]
 
         except Exception, e:
             print repr(e)
             config.conn.rollback()
-            flag = 0
 
-        if((correctQuesType == quesType) and (correctAnswer == quesAnswer)):
-            self.Level3 = True
-            return 1
+        closeConnection()
+
+        if questionNo == 1:
+            return config.securityQuestionsPart1[int(aesDecrypt(ques))]
+
         else:
-            return 0
+            return config.securityQuestionsPart2[int(aesDecrypt(ques))]
+
+    def recoverUserLeveL3(self,questionNo):
+
+
+        ans = ""
+        establishConnection()
+
+        if questionNo == 1:
+            sql = "SELECT ans1 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+        else:
+            sql = "SELECT ans2 FROM security_ques WHERE userid =" + "'" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                ans = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+
+        closeConnection()
+
+        return ans
