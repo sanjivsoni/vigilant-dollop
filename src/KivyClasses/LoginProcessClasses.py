@@ -394,7 +394,6 @@ class RecoverScreen(Screen):
 
         #check if revovery id is valid
         generatedOTP = my_queue.get()
-
         if generatedOTP == -1:
             print "Recovery Id doesn't exits"
 
