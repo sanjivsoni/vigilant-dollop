@@ -431,7 +431,7 @@ class RecoverScreen(Screen):
         self.submitButton.bind( on_press = self.recoverStepTwoSsn )
         self.textInput.text = ''
         self.recoverLabel.text = 'Enter OTP'
-    
+
     def recoverStepTwoSsn(self, callback):
         global generatedOTP
         global recoverUser
@@ -448,9 +448,11 @@ class RecoverScreen(Screen):
 
     def checkSSN(self, callback):
         # Check valid SSN
+        global choice
+        choice = randint(0,1)
         global recoverUser
         if recoverUser.recoverUserLeveL2(self.textInput.text):
-            self.recoverLabel.text = 'Whos your fav super hero' 
+            self.recoverLabel.text = recoverUser.fetchUserSecurityQuestion(choice)
             self.textInput.hint_text = 'Answer'
 
             self.layout.remove_widget(self.submitButton)
@@ -461,12 +463,12 @@ class RecoverScreen(Screen):
             self.textInput.text = ''
 
     def checkSecurityQuesAnswer(self, callback):
-        if self.textInput.text == 'iron':
+        global choice
+        global recoverUser
+        if self.textInput.text == recoverUser.recoverUserLeveL3(choice):
             if self.usernameOrPasswordFlag == 1:
-                print "success"
                 self.recoverUserName()
             else:
-                print "failed"
                 self.recoverPassword()
 
     def recoverUserName(self):
