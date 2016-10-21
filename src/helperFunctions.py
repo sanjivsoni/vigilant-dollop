@@ -66,16 +66,15 @@ def lock(path,encryptedSudoPwd):
 
     return flag
 
-
 def unlock(path,encryptedSudoPwd):
 
     flag = 0
     sudoPwd = aesDecrypt(encryptedSudoPwd)
 
     command1 = config.changeDirectory + sudoPwd + config.unlockCommand + path
-    if os.system(command) == 0:
-        command = config.changeDirectory + sudoPwd + config.changeOwnerToUser + path
-        if os.system(command) == 0:
+    if os.system(command1) == 0:
+        command2 = config.changeDirectory + sudoPwd + config.changeOwnerToUser + path
+        if os.system(command2) == 0:
             flag = 1
 
     return flag
@@ -132,6 +131,7 @@ def getUserName(userID):
 
     closeConnection()
     return userName
+
 def fetchSecurityQuestionPart1():
     securityQues = "["
     for i in range(1,5):
@@ -145,3 +145,22 @@ def fetchSecurityQuestionPart2():
         securityQues = securityQues +  "'" + config.securityQuestionsPart2[i] + "'" + ","
 
     return securityQues[:-1] + "]"
+
+def userDoesNotExists():
+    establishConnection()
+    sql = "SELECT COUNT(*) FROM user"
+    flag = 1
+
+    try:
+        config.statement.execute(sql)
+        results = config.statement.fetchall()
+        for row in results:
+            if row[0] == 1:
+                flag = 0
+
+    except Exception, e:
+        print repr(e)
+        config.conn.rollback()
+        print "error"
+
+    return flag

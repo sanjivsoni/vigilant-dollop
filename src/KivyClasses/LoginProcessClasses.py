@@ -4,6 +4,7 @@ from ..helperFunctions import *
 
 verifyUser = Authentication()
 recoverUser = UserRecovery()
+sendOTP = 0
 choice = -1
 attempt = 0
 generatedOTP = 0
@@ -78,10 +79,12 @@ class UsernameScreen(Screen):
         global verifyUser
         global userId
         global attempt
+        global sendOTP
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
 
         if userExists :
+            sendOTP = OTP(verifyUser.returnUserID())
             self.usernameField.password = True
             self.usernameField.text = ''
             self.usernameField.hint_text = 'Password'
@@ -218,46 +221,46 @@ class LevelTwoScreen(Screen):
 
     def returnOTPEvent(self):
         otpQueue = Queue.Queue()
-        global verifyUser
+        global sendOTP
         global generatedOTP
         msg = ""
         choice = randint(0, 5)
         #choice  = 0
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (6,otpQueue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (6,otpQueue,))
             thread1.start()
             generatedOTP = otpQueue.get()
 
         elif choice == 1:
             msg = "Please Enter the OTP sent to your registered Mobile"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_mobile, args = (6,otpQueue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (6,otpQueue,))
             thread1.start()
             generatedOTP = otpQueue.get()
 
         elif choice == 2:
             msg = "Enter the OTP sent on your registered mobile followed by birth year"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_mobile, args = (2,otpQueue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (2,otpQueue,))
             thread1.start()
             generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
 
         elif choice == 3:
             msg = "Enter the OTP sent on your registered mobile followed by birth year"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_mobile, args = (2,otpQueue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (2,otpQueue,))
             thread1.start()
-            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
+            generatedOTP = otpQueue.get() + sendOTP.fetchDOBforAuth(1)
 
         elif choice == 4:
             msg = "Enter the OTP sent on your registered email followed by birth date"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (4,otpQueue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (4,otpQueue,))
             thread1.start()
-            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
+            generatedOTP = otpQueue.get() + sendOTP.fetchDOBforAuth(2)
 
         elif choice == 5:
             msg = "Enter the OTP sent on your registered email followed by birth date"
-            thread1 = Thread(target = verifyUser.sendOTPforAuth_email, args = (4,otpQueue,))
+            thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (4,otpQueue,))
             thread1.start()
-            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
+            generatedOTP = otpQueue.get() + sendOTP.fetchDOBforAuth(2)
 
 
         print generatedOTP
@@ -483,7 +486,8 @@ class RecoverScreen(Screen):
         self.submitButton.bind( on_press = self.updateUserName )
 
     def updateUserName(self, callback):
-        print self.textInput.text
+        global recoverUser
+        recoverUser.updateUserID(self.textInput.text)
 
     def recoverPassword(self):
         print 'Recover PAsssword)'
@@ -504,7 +508,8 @@ class RecoverScreen(Screen):
         self.submitButton.bind( on_press = self.updatePassword )
 
     def updatePassword(self, callback):
-        print self.textInput.text
+        global recoverUser
+        recoverUser.updateUserPassword(self.textInput.text)
 
     def updateLabel(self, choice):
         if choice == 1:
@@ -516,7 +521,6 @@ class RecoverScreen(Screen):
             self.choice = 0
             self.recoverLabel.text = 'Recover Password by email or phone number'
             self.submitButton.bind(on_press = self.recoverStepTwoEvent)
-
 
 class HomeScreen(Screen):
 
@@ -686,7 +690,7 @@ class HomeScreen(Screen):
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
         button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
-
+        verifyUser.unlockItem(filePath, fileName)
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
 

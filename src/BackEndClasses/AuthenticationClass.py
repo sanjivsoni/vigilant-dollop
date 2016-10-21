@@ -139,6 +139,9 @@ class Authentication:
         else:
             return birthDate
 
+    def returnUserID(self):
+        return self.userID
+
     def lockItem(self,filePath,fileName):
         if(self.authenticationComplete):
             flag = -1
@@ -161,7 +164,7 @@ class Authentication:
             if status == 1 :
                 encryptedData = aesEncrypt(filePath + " " + fileName)
                 sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
-                print sql
+
                 try:
                     config.statement.execute(sql)
                     config.conn.commit()
@@ -182,7 +185,6 @@ class Authentication:
             encryptedSudoPwd = ""
             establishConnection()
             sql = "SELECT sudoPwd FROM user WHERE userid =" + "'" + self.userID + "'"
-            print sql
 
             try:
                 config.statement.execute(sql)
@@ -198,10 +200,11 @@ class Authentication:
             status = unlock(filePath + "/" +  fileName,encryptedSudoPwd)
 
             if status == 1:
-                sql = "DELETE FROM lockedFiles WHERE filepath = '" + filePath + "' AND filename = '" + fileName + "'"
+                sql = "DELETE FROM lockedFiles WHERE filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
+                print sql
                 try:
                     config.statement.execute(sql)
-
+                    config.conn.commit()
                 except Exception, e:
                     print repr(e)
                     config.conn.rollback()
@@ -210,7 +213,6 @@ class Authentication:
                 return 1
 
             closeConnection()
-
 
     def fetchLockedFiles(self):
 
@@ -232,6 +234,10 @@ class Authentication:
 
         return results
 
+class OTP:
+
+    def __init__(self,userID = ""):
+        self.userID = userID
 
     def sendOTPforAuth_mobile(self,length,out_queue):
         #login_stats = LoginDetails(self.userID)

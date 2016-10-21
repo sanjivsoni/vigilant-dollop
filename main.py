@@ -6,8 +6,7 @@ from src.KivyClasses.SignUpClass import *
 Builder.load_file("GUI_builderForm.kv")
 Window.size = (700, 700)
 
-def userDoesNotExists(*args):
-    return 0
+
 
 screenManager = ScreenManager( transition = FadeTransition() )
 
