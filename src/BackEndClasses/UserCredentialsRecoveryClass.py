@@ -126,7 +126,7 @@ class UserRecovery:
     def recoverUserLevel1(self,recoveryType,recoveryID,out_queue):
         correctRecoveryID = ""
         generatedOTP = ""
-        otpAuthentication = OTP()
+        otpAuthentication = Authentication()
         flag = 0
         establishConnection()
 
@@ -156,22 +156,28 @@ class UserRecovery:
                 otpAuthentication.sendOTPforRecovery_email(recoveryID,out_queue)
                 sql = "SELECT userid FROM user WHERE email =" + "'" + aesEncrypt(recoveryID) + "'"
 
+
+            #Fetch userID
+            try:
+                config.statement.execute(sql)
+                results = config.statement.fetchall()
+                for row in results:
+                    self.userID = row[0]
+
+            except Exception, e:
+                print repr(e)
+                config.conn.rollback()
+                flag = 0
+
+            closeConnection()
+
+
         else:
             closeConnection()
-            return -1
-        #Fetch userID
-        try:
-            config.statement.execute(sql)
-            results = config.statement.fetchall()
-            for row in results:
-                self.userID = row[0]
+            out_queue.put(-1)
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
 
-        return generatedOTP
+
 
     def recoverUserLeveL2(self,ssnid):
         establishConnection()
