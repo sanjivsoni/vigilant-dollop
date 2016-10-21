@@ -322,14 +322,17 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         if value == generatedOTP:
             print 'access granted'
-            App.get_running_app().root.current = 'HomeScreen'
+            root = App.get_running_app().root
+            root.current = 'HomeScreen'
+            root.get_screen('HomeScreen').addFilesOnLogin()
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
         global choice
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             print 'access granted'
-            App.get_running_app().root.current = 'HomeScreen'
-
+            root = App.get_running_app().root
+            root.current = 'HomeScreen'
+            root.get_screen('HomeScreen').addFilesOnLogin()
 
     def regenerateOtp(self, callback):
         self.startTimer()
@@ -559,7 +562,6 @@ class HomeScreen(Screen):
         self._popup = Popup(title = "Select Files to lock", content = popupContent,
                             size_hint = (0.9, 0.9))
 
-        self.addFilesOnLogin()
 
     def addFilesOnLogin(self):
         grid = self.children[0].children[0].children[0].children[0]
