@@ -374,7 +374,7 @@ class RecoverScreen(Screen):
 
     recoverLabel = Label( text = 'Recover by Email or phone')
 
-    recoverMedium = TextInput(hint_text = 'email or Mobile No.')
+    textInput = TextInput(hint_text = 'email or Mobile No.')
     submitButton = Button( text = 'Submit' )
     usernameOrPasswordFlag = 0
     mobileOrEmailFlag = 0
@@ -382,12 +382,12 @@ class RecoverScreen(Screen):
     def __init__(self, **kwargs):
         super(RecoverScreen, self).__init__(**kwargs)
         self.layout.add_widget(self.recoverLabel)
-        self.layout.add_widget(self.recoverMedium)
+        self.layout.add_widget(self.textInput)
         self.layout.add_widget(self.submitButton)
         self.add_widget(self.layout)
         
         # Stub
-        self.recoverMedium.text = 'sanjiv1994@gmail.com'
+        self.textInput.text = 'sanjiv1994@gmail.com'
 
 
     def recoverUsernameByEmail(self, callback):
@@ -409,7 +409,7 @@ class RecoverScreen(Screen):
         global generatedOTP
         my_queue = Queue.Queue()
         recoverUser = UserRecovery()
-        contact = self.recoverMedium
+        contact = self.textInput
 
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
             # Check if user id matches from backend
@@ -430,18 +430,18 @@ class RecoverScreen(Screen):
 
     def stepTwoRecovery(self):
         self.recoverLabel.text = 'Enter Your SSN Number'
-        self.recoverMedium.hint_text = 'SSN Number'
+        self.textInput.hint_text = 'SSN Number'
 
         self.layout.remove_widget(self.submitButton)
         self.submitButton = Button( text = 'submit')
         self.layout.add_widget(self.submitButton)
 
         self.submitButton.bind( on_press = self.checkSSN )
-        self.recoverMedium.text = ''
+        self.textInput.text = ''
 
     def checkSSN(self, callback):
         # Check valid SSN
-        if self.recoverMedium.text == '12345':
+        if self.textInput.text == '12345':
             if self.usernameOrPasswordFlag == 1:
                 self.recoverUserName()
             else:
@@ -449,9 +449,38 @@ class RecoverScreen(Screen):
 
     def recoverUserName(self):
         print 'Recover USer NAme'
+        self.textInput.text  = ''
+        self.textInput.hint_text = 'USername'
+        self.recoverLabel.text = "Enter Your new Username"
+
+        self.layout.remove_widget(self.submitButton)
+        self.submitButton = Button( text = 'submit')
+        self.layout.add_widget(self.submitButton)
+        self.submitButton.bind( on_press = self.updateUserName )
+        
+    def updateUserName(self, callback):
+        print self.textInput.text
 
     def recoverPassword(self):
         print 'Recover PAsssword)'
+        self.layout.size_hint = (0.4,0.25)
+        self.textInput.text  = ''
+        self.textInput.hint_text = 'Password'
+        self.textInput.password = True
+        self.recoverLabel.text = "Enter Your new Password"
+
+        self.layout.remove_widget(self.submitButton)
+
+        confirmPasswordField =TextInput(hint_text = 'Confirm Password')
+        confirmPasswordField.password = True
+        
+        self.layout.add_widget(confirmPasswordField)
+        self.submitButton = Button( text = 'submit')
+        self.layout.add_widget(self.submitButton)
+        self.submitButton.bind( on_press = self.updatePassword )
+
+    def updatePassword(self, callback):
+        print self.textInput.text
 
     def updateLabel(self, choice):
         if choice == 1:
