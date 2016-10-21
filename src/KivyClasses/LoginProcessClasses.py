@@ -8,7 +8,7 @@ attempt = 0
 generatedOTP = 0
 
 class SudoPasswordScreen(Screen):
-    sudoPassword = TextInput(hint_text = 'sudo password', password = True)
+    sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
     submitButton = Button( text = 'Submit')
     label = Label( text = 'Please Enter your sudo password.')
     layout = BoxLayout( orientation = 'vertical',

@@ -7,13 +7,13 @@ Builder.load_file("GUI_builderForm.kv")
 Window.size = (700, 700)
 
 def userDoesNotExists(*args):
-    return 1
+    return 0
+
+screenManager = ScreenManager( transition = FadeTransition() )
 
 if userDoesNotExists():
-    screenManager = ScreenManager( transition = FadeTransition() )
     screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
     screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
-
 
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( RecoverScreen( name = 'recoverScreen' ) )
