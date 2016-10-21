@@ -418,30 +418,56 @@ class RecoverScreen(Screen):
         print generatedOTP
         if generatedOTP == -1:
             print "Recovery Id doesn't exists"
-        elif generatedOTP == self.textInput.text:
-            self.recoverStepTwoSsn()
+        else:
+            self.enterOtp()
 
-    def recoverStepTwoSsn(self):
-        self.recoverLabel.text = self.recoverUser.fetchSSNType()
-        self.textInput.hint_text = 'SSN Number'
+    def enterOtp(self):
+        self.textInput.hint_text = 'Enter OTP'
 
         self.layout.remove_widget(self.submitButton)
         self.submitButton = Button( text = 'submit')
         self.layout.add_widget(self.submitButton)
 
-        self.submitButton.bind( on_press = self.checkSSN )
+        self.submitButton.bind( on_press = self.recoverStepTwoSsn )
         self.textInput.text = ''
+        self.recoverLabel.text = 'Enter OTP'
+    
+    def recoverStepTwoSsn(self, callback):
+        global generatedOTP
+        global recoverUser
+        if generatedOTP  == self.textInput.text:
+            self.recoverLabel.text = recoverUser.fetchSSNType()
+            self.textInput.hint_text = 'SSN Number'
+
+            self.layout.remove_widget(self.submitButton)
+            self.submitButton = Button( text = 'submit')
+            self.layout.add_widget(self.submitButton)
+
+            self.submitButton.bind( on_press = self.checkSSN )
+            self.textInput.text = ''
 
     def checkSSN(self, callback):
         # Check valid SSN
         global recoverUser
         if recoverUser.recoverUserLeveL2(self.textInput.text):
+            self.recoverLabel.text = 'Whos your fav super hero' 
+            self.textInput.hint_text = 'Answer'
+
+            self.layout.remove_widget(self.submitButton)
+            self.submitButton = Button( text = 'submit')
+            self.layout.add_widget(self.submitButton)
+
+            self.submitButton.bind( on_press = self.checkSecurityQuesAnswer )
+            self.textInput.text = ''
+
+    def checkSecurityQuesAnswer(self, callback):
+        if self.textInput.text == 'iron':
             if self.usernameOrPasswordFlag == 1:
                 print "success"
-                #self.recoverUserName()
+                self.recoverUserName()
             else:
                 print "failed"
-                #self.recoverPassword()
+                self.recoverPassword()
 
     def recoverUserName(self):
         print 'Recover USer NAme'
