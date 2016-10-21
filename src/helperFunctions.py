@@ -101,7 +101,7 @@ def getUserDetails():
 
 def generateOTP(length):
     if length == 6:
-        return ''.join(random.choice(string.digits + string.digits) for j in range(6))
+        return ''.join(random.choice(string.ascii_lowercase + string.digits) for j in range(6))
     elif length == 2:
         return ''.join(random.choice(string.ascii_lowercase) for j in range(2))
     else:
