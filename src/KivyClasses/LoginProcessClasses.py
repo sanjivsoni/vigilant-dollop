@@ -559,6 +559,23 @@ class HomeScreen(Screen):
         self._popup = Popup(title = "Select Files to lock", content = popupContent,
                             size_hint = (0.9, 0.9))
 
+        self.addFilesOnLogin()
+
+    def addFilesOnLogin(self):
+        grid = self.children[0].children[0].children[0].children[0]
+        for i in range(8):
+            fileName = str(i)
+            filePath = str(i)
+            fileButton = Button(text=' ', size=(40, 40),
+                             size_hint=(None, None), id = str(i))
+
+            fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
+            fileLabel = Label(text = str(i), width = 70, halign = 'left',valign = 'middle', id="label"+str(i), font_size='15sp')
+            fileLabel.bind(size=fileLabel.setter('text_size'))
+
+            grid.add_widget(fileButton)
+            grid.add_widget(fileLabel)
+
     def cancel(self, *args):
         self._popup.dismiss()
 
@@ -622,11 +639,11 @@ class HomeScreen(Screen):
                         midLayout.remove_widget(button_previous)
                         midLayout.remove_widget(label_previous)
 
-    def unlockFile(self, *args):
+    def unlockFile(self, fileName, filePath, callback):
 
         grid = self.children[0].children[0].children[0].children[0]
-        complete_file_name = str(args[1]+'/'+ args[0])
-        file_name = args[0]
+        complete_file_name = str(filePath + '/' + fileName)
+        file_name = fileName 
         midLayout = self.children[0].children[1]
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
