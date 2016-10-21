@@ -5,9 +5,15 @@ from src.KivyClasses.SignUpClass import *
 
 Builder.load_file("GUI_builderForm.kv")
 Window.size = (700, 700)
-screenManager = ScreenManager( transition = FadeTransition() )
-#screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
-screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
+
+def userDoesNotExists(*args):
+    return 1
+
+if userDoesNotExists():
+    screenManager = ScreenManager( transition = FadeTransition() )
+    screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
+    screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
+
 
 screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
 screenManager.add_widget( RecoverScreen( name = 'recoverScreen' ) )

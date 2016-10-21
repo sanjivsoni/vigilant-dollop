@@ -25,13 +25,7 @@ class SudoPasswordScreen(Screen):
 
     def checkSudoPassword(self, callback):
         if checkSudoPwd(self.sudoPassword.text) == 1:
-            App.get_running_app().root.current = 'usernameScreen'
-
-
-
-        pass
-
-
+            App.get_running_app().root.current = 'signupScreen'
 
 class UsernameScreen(Screen):
     usernameField = TextInput(hint_text = 'username')
@@ -133,6 +127,8 @@ class UsernameScreen(Screen):
         root = App.get_running_app().root
         root.current = 'recoverScreen'
         root.get_screen('recoverScreen').updateLabel(2)
+
+
 
 class LevelTwoScreen(Screen):
     _total_seconds = 60
@@ -373,7 +369,7 @@ class LevelTwoScreen(Screen):
 
 class RecoverScreen(Screen):
 
-    layout = BoxLayout(orientation = 'vertical', size_hint = (0.5,0.20),
+    layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.20),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
     recoverLabel = Label( text = 'Recover by Email or phone')
@@ -396,10 +392,8 @@ class RecoverScreen(Screen):
 
     def recoverUsernameByMobile(self, callback):
         pass
-
     def recoverPasswordByEmail(self, callback):
         pass
-
     def recoverPasswordByMobile(self, callback):
         pass
 
@@ -409,25 +403,23 @@ class RecoverScreen(Screen):
         recoverUser = UserRecovery()
         contact = self.recoverMedium
 
-
+        x = 0
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
+            print "Email"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
             thread1.start()
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+            x = 1
 
         else:
+            print "Phone"
             thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
             thread1.start()
-
-
-        #check if revovery id is valid
+            App.get_running_app().root.current = 'recoverylevelTwoScreen'
+            App.get_running_app().root.get_screen('recoverylevelTwoScreen').parameter(self.pathValue)
+            x = 2
         generatedOTP = my_queue.get()
-
-        if generatedOTP == -1:
-            print "Recovery Id doesn't exits"
-
-
-
-
 
 
     def updateLabel(self, choice):
@@ -516,7 +508,6 @@ class HomeScreen(Screen):
         self._popup.dismiss()
 
     def load(self, *args):
-        global verifyUser
         #print args[0].path, args[0].selection[0]
         filePath = str(args[0].path).split('/')
         completeFilePath = str(args[0].selection[0]).split('/')
@@ -527,8 +518,6 @@ class HomeScreen(Screen):
             except ValueError:
                 pass
 
-        print args[0].path, completeFilePath[0]
-        verifyUser.lockItem(args[0].path, completeFilePath[0])
         self.lockFile(args[0].path, completeFilePath[0])
         self.cancel()
 
@@ -587,7 +576,6 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
-
         button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
 
         if  self.first_time_add_button == 1:
