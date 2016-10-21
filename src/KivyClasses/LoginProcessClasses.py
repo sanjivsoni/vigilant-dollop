@@ -1,10 +1,37 @@
 from ..BackEndClasses import *
 from ..libraries import *
+from ..helperFunctions import *
 
 verifyUser = Authentication()
 choice = -1
 attempt = 0
 generatedOTP = 0
+
+class SudoPasswordScreen(Screen):
+    sudoPassword = TextInput(hint_text = 'sudo password', password = True)
+    submitButton = Button( text = 'Submit')
+    label = Label( text = 'Please Enter your sudo password.')
+    layout = BoxLayout( orientation = 'vertical',
+                        pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25,
+                        size_hint = (0.25, 0.25))
+
+    def __init__(self, **kwargs):
+        super(SudoPasswordScreen, self).__init__(**kwargs)
+        self.submitButton.bind(on_press = self.checkSudoPassword)
+        self.layout.add_widget(self.label)
+        self.layout.add_widget(self.sudoPassword)
+        self.layout.add_widget(self.submitButton)
+        self.add_widget(self.layout)
+
+    def checkSudoPassword(self, callback):
+        if checkSudoPwd(self.sudoPassword.text) == 1:
+            App.get_running_app().root.current = 'usernameScreen'
+
+
+
+        pass
+
+
 
 class UsernameScreen(Screen):
     usernameField = TextInput(hint_text = 'username')
