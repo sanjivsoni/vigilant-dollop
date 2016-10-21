@@ -141,6 +141,7 @@ class Authentication:
 
     def lockItem(self,filePath,fileName):
         if(self.authenticationComplete):
+            flag = -1
             encryptedSudoPwd = ""
             establishConnection()
             sql = "SELECT sudoPwd FROM user WHERE userid =" + "'" + self.userID + "'"
@@ -164,15 +165,17 @@ class Authentication:
                 try:
                     config.statement.execute(sql)
                     config.conn.commit()
+                    flag = 1
 
                 except Exception, e:
-                    print repr(e)
                     config.conn.rollback()
                     flag = 0
 
-                return 1
-
             closeConnection()
+            if flag:
+                return 1
+            else:
+                return 0
 
     def unlockItem(self,filePath,fileName):
         if(self.authenticationComplete):
@@ -207,6 +210,28 @@ class Authentication:
                 return 1
 
             closeConnection()
+
+
+    def fetchLockedFiles(self):
+
+        establishConnection()
+
+        sql = "SELECT filepath,filename FROM lockedFiles WHERE userid =" + "'" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                print aesDecrypt(row[0])
+                print aesDecrypt(row[1])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        return results
+
 
     def sendOTPforAuth_mobile(self,length,out_queue):
         #login_stats = LoginDetails(self.userID)

@@ -62,7 +62,7 @@ class UsernameScreen(Screen):
         layout.add_widget(self.recoverUserNameButton)
 
         self.add_widget(layout)
-        self.usernameField.text = 'sonisanjiv'
+        self.usernameField.text = 'bhatshubhs'
 
         self.recoverPasswordButton.bind(on_release = partial(self.recoverPasswordEvent))
         self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
@@ -86,7 +86,7 @@ class UsernameScreen(Screen):
             self.usernameField.text = ''
             self.usernameField.hint_text = 'Password'
 
-            self.usernameField.text = 'Test@1234'
+            self.usernameField.text = 'Qwe@1234'
 
             self.statusLabel.text = ' '
 
@@ -591,14 +591,15 @@ class HomeScreen(Screen):
 
     def addFilesOnLogin(self):
         grid = self.children[0].children[0].children[0].children[0]
-        for i in range(8):
-            fileName = str(i)
-            filePath = str(i)
+        results = verifyUser.fetchLockedFiles()
+        for i in results:
+            fileName = aesDecrypt(i[1])
+            filePath = aesDecrypt(i[0])
             fileButton = Button(text=' ', size=(40, 40),
-                             size_hint=(None, None), id = str(i))
+                             size_hint=(None, None), id = str(fileName))
 
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
-            fileLabel = Label(text = str(i), width = 70, halign = 'left',valign = 'middle', id="label"+str(i), font_size='15sp')
+            fileLabel = Label(text = str(fileName), width = 70, halign = 'left',valign = 'middle', id="label"+str(fileName), font_size='15sp')
             fileLabel.bind(size=fileLabel.setter('text_size'))
 
             grid.add_widget(fileButton)
@@ -618,8 +619,16 @@ class HomeScreen(Screen):
             except ValueError:
                 pass
 
-        self.lockFile(args[0].path, completeFilePath[0])
         self.cancel()
+        status = verifyUser.lockItem(args[0].path, completeFilePath[0])
+        if status:
+            self.lockFile(args[0].path, completeFilePath[0])
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='File already secured'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+
 
 
     def lockFile(self, *args):
