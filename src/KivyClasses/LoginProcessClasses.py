@@ -3,6 +3,7 @@ from ..libraries import *
 from ..helperFunctions import *
 
 verifyUser = Authentication()
+recoverUser = UserRecovery()
 choice = -1
 attempt = 0
 generatedOTP = 0
@@ -385,46 +386,40 @@ class RecoverScreen(Screen):
         self.layout.add_widget(self.textInput)
         self.layout.add_widget(self.submitButton)
         self.add_widget(self.layout)
-        
         # Stub
-        self.textInput.text = 'sanjiv1994@gmail.com'
+        self.textInput.text = '+919810158269'
 
 
-    def recoverByEmail(self, callback):
-        print "Email"
+    def recoverByEmail(self, contact, my_queue):
+        global recoverUser
         thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (2,contact.text,my_queue,))
         thread1.start()
 
-    def recoverByMobile(self, callback):
-        print "Phone"
+    def recoverByMobile(self, contact, my_queue):
+        global recoverUser
         thread1 = Thread(target = recoverUser.recoverUserLevel1, args = (1,contact.text,my_queue,))
         thread1.start()
 
     def recoverStepTwoEvent(self, callback):
         global generatedOTP
         my_queue = Queue.Queue()
-        recoverUser = UserRecovery()
         contact = self.textInput
 
         if re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", contact.text):
-            # Check if user id matches from backend
-            if 1 == 1:
-                #recoverUsernameByEmail()
-                self.recoverStepTwoSsn()
-
+            self.recoverByEmail(contact,my_queue)
         else:
-            # Add elif with regex for mobile number
-            # Check if phone number matches from backend
-            if 1 == 1:
-                #recoverUsernameByMobile()
-                self.recoverStepTwoSsn()
+            self.recoverByMobile(contact,my_queue)
 
-        #generatedOTP = my_queue.get()
+
+        generatedOTP = my_queue.get()
+        print generatedOTP
         if generatedOTP == -1:
-            print "Recovery Id doesn't exits"
+            print "Recovery Id doesn't exists"
+        elif generatedOTP == self.textInput.text:
+            self.recoverStepTwoSsn()
 
     def recoverStepTwoSsn(self):
-        self.recoverLabel.text = 'Enter Your SSN Number'
+        self.recoverLabel.text = self.recoverUser.fetchSSNType()
         self.textInput.hint_text = 'SSN Number'
 
         self.layout.remove_widget(self.submitButton)
@@ -436,11 +431,14 @@ class RecoverScreen(Screen):
 
     def checkSSN(self, callback):
         # Check valid SSN
-        if self.textInput.text == '12345':
+        global recoverUser
+        if recoverUser.recoverUserLeveL2(self.textInput.text):
             if self.usernameOrPasswordFlag == 1:
-                self.recoverUserName()
+                print "success"
+                #self.recoverUserName()
             else:
-                self.recoverPassword()
+                print "failed"
+                #self.recoverPassword()
 
     def recoverUserName(self):
         print 'Recover USer NAme'
@@ -452,7 +450,7 @@ class RecoverScreen(Screen):
         self.submitButton = Button( text = 'submit')
         self.layout.add_widget(self.submitButton)
         self.submitButton.bind( on_press = self.updateUserName )
-        
+
     def updateUserName(self, callback):
         print self.textInput.text
 
@@ -468,7 +466,7 @@ class RecoverScreen(Screen):
 
         confirmPasswordField =TextInput(hint_text = 'Confirm Password')
         confirmPasswordField.password = True
-        
+
         self.layout.add_widget(confirmPasswordField)
         self.submitButton = Button( text = 'submit')
         self.layout.add_widget(self.submitButton)
@@ -643,7 +641,7 @@ class HomeScreen(Screen):
 
         grid = self.children[0].children[0].children[0].children[0]
         complete_file_name = str(filePath + '/' + fileName)
-        file_name = fileName 
+        file_name = fileName
         midLayout = self.children[0].children[1]
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))

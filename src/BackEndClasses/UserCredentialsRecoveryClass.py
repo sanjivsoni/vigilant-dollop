@@ -177,7 +177,26 @@ class UserRecovery:
             out_queue.put(-1)
 
 
+    def fetchSSNType(self):
 
+        ssn = ""
+        establishConnection()
+
+        sql = "SELECT ssn_type FROM personal WHERE userid =" + "'" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                ssn = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+
+        closeConnection()
+
+        return config.ssnTypes[int(ssn)]
 
     def recoverUserLeveL2(self,ssnid):
         establishConnection()
