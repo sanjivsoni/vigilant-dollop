@@ -298,7 +298,7 @@ class LoginMessages:
     def __init__(self,userID = ""):
         self.userID = userID
 
-    def loggedIn(self,dt):
+    def loggedIn(self):
 
 
         userMobile = ""
@@ -333,10 +333,13 @@ class LoginMessages:
             config.conn.rollback()
             flag = 0
 
-        runByThreadForMobile(sendTextMobile,userMobile,config.succesfulLoginMessageText + fetchLocation())
-        runByThreadForEmail(sendEmail,userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
+        sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
+        sendEmail(userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
 
-    def failedLogin(self,dt):
+        #runByThreadForMobile(sendTextMobile,userMobile,config.succesfulLoginMessageText + fetchLocation())
+        #runByThreadForEmail(sendEmail,userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
+
+    def failedLogin(self):
 
         userMobile = ""
         userEmail = ""

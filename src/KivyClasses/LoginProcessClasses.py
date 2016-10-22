@@ -59,14 +59,16 @@ class UsernameScreen(Screen):
     timeout = 0
     passwordAttempts = 0
 
+    captchaCorrectText = ''
 
     def __init__(self, **kwargs):
         super(UsernameScreen, self).__init__(**kwargs)
+        self.captchaCorrectText = createCaptcha()
+        self.captcha = Image(source = 'src/images/captcha.jpg')
 
         self.recoverUserNameButton.bind(on_release = self.recoverUsernameEvent)
         self.usernameField.bind(on_text = self.checkEmptyUserName)
         self.nextButton.bind( on_release = self.enterPassword )
-
 
         self.layout.add_widget(self.statusLabel)
 
@@ -89,7 +91,6 @@ class UsernameScreen(Screen):
         self.layout.add_widget(self.nextButton)
         self.layout.add_widget(self.recoverUserNameButton)
 
-
         self.add_widget(self.layout)
         self.usernameField.text = 'bhatshubhs'
 
@@ -99,7 +100,7 @@ class UsernameScreen(Screen):
     def regenerateCaptcha(self, callback):
         self.captcha = Image(source = 'src/images/captcha.jpg')
         self.captchaTextInput.text = ''
-
+        self.captchaCorrectText = createCaptcha()
 
     # Check if username is empty or not
     def checkEmptyUserName(self, callback):
@@ -117,7 +118,7 @@ class UsernameScreen(Screen):
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
 
-        if self.captchaTextInput.text == '12345':
+        if self.captchaTextInput.text == self.captchaCorrectText:
             if userExists :
                 sendOTP = OTP(verifyUser.returnUserID())
                 loginMsgs = LoginMessages(verifyUser.returnUserID())
@@ -169,7 +170,7 @@ class UsernameScreen(Screen):
             size_hint=(None, None), size=(180, 100))
             popup.open()
             if(self.passwordAttempts > 3):
-                Clock.schedule_once(loginMsgs.failedLogin, 5)
+                loginMsgs.failedLogin()
 
 
 
@@ -367,17 +368,24 @@ class LevelTwoScreen(Screen):
             self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree,choice) )
             self.midLayout.add_widget(self.submitButton)
 
+    def sendLoginMessages(self,dt):
+        global loginMsgs
+        t1 = Thread(target=loginMsgs.loggedIn())
+        t1.start()
+
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         global generatedOTP
-        global loginMsgs
         global sendOTP
+        global loginMsgs
         my_queue = Queue.Queue()
         if value == generatedOTP:
             print 'access granted'
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
-            Clock.schedule_once(loginMsgs.loggedIn, 5)
+            t1 = Thread(target=loginMsgs.loggedIn())
+            t1.start()
+
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
         global choice
@@ -387,7 +395,9 @@ class LevelTwoScreen(Screen):
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
-            Clock.schedule_once(loginMsgs.loggedIn, 5)
+            t1 = Thread(target=loginMsgs.loggedIn())
+            t1.start()
+
 
     def regenerateOtp(self, callback):
         self.startTimer()
