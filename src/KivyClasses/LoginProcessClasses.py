@@ -46,7 +46,6 @@ class UsernameScreen(Screen):
 
     layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
-    captcha = Image(source = 'src/images/captcha.jpg')
 
     captchaTextInput = TextInput(size_hint = (None,None), multiline = False, size = (60, 30))
     captchaTextInput.pos_hint = {'center_x': .5, 'center_y': .5}
@@ -98,10 +97,10 @@ class UsernameScreen(Screen):
         self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
 
     def regenerateCaptcha(self, callback):
-        self.layout.children[3].remove_widget(self.captcha)
-        self.captcha = Image(source = 'src/images/captcha.jpg')
-        self.layout.children[3].add_widget(self.captcha)
         self.captchaCorrectText = createCaptcha()
+
+        print self.captchaCorrectText
+        self.captcha.reload()
         self.captchaTextInput.text = ''
 
     # Check if username is empty or not
