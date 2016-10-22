@@ -11,15 +11,17 @@ attempt = 0
 generatedOTP = 0
 
 class SudoPasswordScreen(Screen):
-    sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
-    submitButton = Button( text = 'Submit')
-    label = Label( text = 'Please Enter your sudo password.')
-    layout = BoxLayout( orientation = 'vertical',
-                        pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25,
-                        size_hint = (0.25, 0.25))
-
+    
     def __init__(self, **kwargs):
+
         super(SudoPasswordScreen, self).__init__(**kwargs)
+        # Initialize Screen Elements
+        self.layout = BoxLayout(orientation = 'vertical', pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25, size_hint = (0.25, 0.25))
+        self.sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
+        self.submitButton = Button(text = 'Submit')
+        self.label = Label(text = 'Please Enter your sudo password.')
+
+        # Add elements to screen
         self.submitButton.bind(on_press = self.checkSudoPassword)
         self.layout.add_widget(self.label)
         self.layout.add_widget(self.sudoPassword)
@@ -27,42 +29,37 @@ class SudoPasswordScreen(Screen):
         self.add_widget(self.layout)
 
     def checkSudoPassword(self, callback):
+        # If valid Password then move to sign up form
         if checkSudoPwd(self.sudoPassword.text) == 1:
             App.get_running_app().root.current = 'signupScreen'
 
 class UsernameScreen(Screen):
-    usernameField = TextInput(hint_text = 'username', multiline = False)
-
-    recoverUserNameButton = Button( text = 'forgot Username', size = (20, 10))
-
-    nextButton  = Button(text = 'next',
-                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-
-    statusLabel = Label(text = ' ')
-
-    recoverPasswordButton = Button( text = 'forget password', size = (20, 10))
-    moveToLevelTwoButton  = Button(text = 'next',
-                        pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-
-    layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40),
-                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
-    captcha = Image(source = 'src/images/captcha.jpg')
-
-    captchaTextInput = TextInput(size_hint = (None,None), multiline = False, size = (60, 30))
-    captchaTextInput.pos_hint = {'center_x': .5, 'center_y': .5}
-
-    captchaLayout = BoxLayout(orientation = 'horizontal')
-
-    regenerateCaptchaButton = Button(size = (32,32), size_hint = (None, None))
-
-    attempts = 0
-    timeout = 0
-    passwordAttempts = 0
-
-    captchaCorrectText = ''
 
     def __init__(self, **kwargs):
         super(UsernameScreen, self).__init__(**kwargs)
+
+        self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
+
+        self.usernameField = TextInput(hint_text = 'username', multiline = False)
+        self.nextButton  = Button(text = 'next', pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+        self.recoverUserNameButton = Button( text = 'forgot Username', size = (20, 10))
+        self.statusLabel = Label(text = ' ')
+
+        self.captcha = Image(source = 'src/images/captcha.jpg', allow_strech = True, size = (100,100))
+        self.captchaTextInput = TextInput( multiline = False)
+        self.captchaTextInput.pos_hint = {'center_x': .5, 'center_y': .5}
+        self.captchaLayout = BoxLayout(orientation = 'horizontal', size_hint=(1,1))
+        self.regenerateCaptchaButton = Button(size = (32,32), size_hint = (None, None))
+
+        self.recoverPasswordButton = Button( text = 'forget password', size = (20, 10))
+        self.moveToLevelTwoButton  = Button(text = 'next',
+                            pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+        
+        self.attempts = 0
+        self.timeout = 0
+        self.passwordAttempts = 0
+
+        self.captchaCorrectText = ''
         self.captchaCorrectText = createCaptcha()
         self.captcha = Image(source = 'src/images/captcha.jpg')
 
@@ -71,23 +68,20 @@ class UsernameScreen(Screen):
         self.nextButton.bind( on_release = self.enterPassword )
 
         self.layout.add_widget(self.statusLabel)
-
         self.layout.add_widget(self.usernameField)
 
         self.regenerateCaptchaButton.background_normal = 'src/images/reset.png'
         self.regenerateCaptchaButton.pos_hint = {'center_x': .5, 'center_y': .5}
         self.regenerateCaptchaButton.bind( on_press = self.regenerateCaptcha )
 
-
-        self.captcha.size_hint = (0.75,1)
         self.captchaLayout.add_widget(self.captcha)
         self.captchaLayout.add_widget(self.regenerateCaptchaButton)
 
         self.layout.add_widget(self.captchaLayout)
-
         self.layout.add_widget(self.captchaTextInput)
 
         self.nextButton.spacing = 50
+
         self.layout.add_widget(self.nextButton)
         self.layout.add_widget(self.recoverUserNameButton)
 
@@ -609,20 +603,6 @@ class HomeScreen(Screen):
 
         grid.bind(minimum_height=grid.setter('height'))
 
-
-        # add button into that gridi from database
-        '''
-        for i in range(8):
-            btn = Button(text = "file" + str(i), size = (30, 30),
-                         size_hint = (None, None), id = str(i))
-            btn.bind(on_press = partial(self.unlockFile, str(i)))
-            label = Label(text = "file" + str(i), width=90, halign = 'left',valign = 'middle', id="label"+str(i))
-            label.bind(size=label.setter('text_size'))
-
-            grid.add_widget(btn)
-            grid.add_widget(label)
-        '''
-        # create a scroll view, with a size < size of the grid
         scroll = ScrollView(size_hint = (None, None), size = (650, 500),
                 pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)
 	scroll.add_widget(grid)
