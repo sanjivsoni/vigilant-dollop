@@ -248,19 +248,19 @@ class LevelTwoScreen(Screen):
             msg = "Enter the OTP sent on your registered mobile followed by birth year"
             thread1 = Thread(target = sendOTP.sendOTPforAuth_mobile, args = (2,otpQueue,))
             thread1.start()
-            generatedOTP = otpQueue.get() + sendOTP.fetchDOBforAuth(1)
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
 
         elif choice == 4:
             msg = "Enter the OTP sent on your registered email followed by birth date"
             thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (4,otpQueue,))
             thread1.start()
-            generatedOTP = otpQueue.get() + sendOTP.fetchDOBforAuth(2)
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
 
         elif choice == 5:
             msg = "Enter the OTP sent on your registered email followed by birth date"
             thread1 = Thread(target = sendOTP.sendOTPforAuth_email, args = (4,otpQueue,))
             thread1.start()
-            generatedOTP = otpQueue.get() + sendOTP.fetchDOBforAuth(2)
+            generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
 
 
         print generatedOTP
