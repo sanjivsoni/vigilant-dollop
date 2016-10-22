@@ -30,7 +30,7 @@ class SudoPasswordScreen(Screen):
             App.get_running_app().root.current = 'signupScreen'
 
 class UsernameScreen(Screen):
-    usernameField = TextInput(hint_text = 'username')
+    usernameField = TextInput(hint_text = 'username', multiline = False)
 
     recoverUserNameButton = Button( text = 'forgot Username', size = (20, 10))
 
@@ -119,7 +119,7 @@ class UsernameScreen(Screen):
             self.layout.remove_widget(self.captchaLayout)
             self.layout.remove_widget(self.captchaTextInput)
 
-            self.layout.size_hint = (0.25,0.37)
+            self.layout.size_hint = (0.25,0.27)
             
             self.children[0].remove_widget(self.recoverUserNameButton)
             self.children[0].remove_widget(self.nextButton)
@@ -180,10 +180,10 @@ class LevelTwoScreen(Screen):
     otpSentLabel = Label ()
     timerLabel = Label()
     otpText = TextInput(size_hint = (0.3, 0.2),
-                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25, multiline = False)
 
     otpTextSecond = TextInput(size_hint = (0.3, 0.2),
-                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25, multiline = False)
     regenerateOtpButton = Button ( text = "Regenerate OTP", size=(120,40),size_hint=(1, None),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 30)
 
@@ -409,7 +409,7 @@ class RecoverScreen(Screen):
 
     recoverLabel = Label( text = 'Recover by Email or phone')
 
-    textInput = TextInput(hint_text = 'email or Mobile No.')
+    textInput = TextInput(hint_text = 'email or Mobile No.',multiline = False)
     submitButton = Button( text = 'Submit' )
     usernameOrPasswordFlag = 0
     mobileOrEmailFlag = 0
