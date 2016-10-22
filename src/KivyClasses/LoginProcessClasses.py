@@ -98,9 +98,11 @@ class UsernameScreen(Screen):
         self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
 
     def regenerateCaptcha(self, callback):
+        self.layout.children[3].remove_widget(self.captcha)
         self.captcha = Image(source = 'src/images/captcha.jpg')
-        self.captchaTextInput.text = ''
+        self.layout.children[3].add_widget(self.captcha)
         self.captchaCorrectText = createCaptcha()
+        self.captchaTextInput.text = ''
 
     # Check if username is empty or not
     def checkEmptyUserName(self, callback):
