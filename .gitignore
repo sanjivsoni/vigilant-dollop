@@ -70,3 +70,6 @@ config/initializers/secret_token.rb
 
 #pyc files
 *.pyc
+
+#captcha 
+*.jpg
