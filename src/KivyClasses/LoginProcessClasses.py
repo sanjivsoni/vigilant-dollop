@@ -43,6 +43,15 @@ class UsernameScreen(Screen):
     moveToLevelTwoButton  = Button(text = 'next',
                         pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
 
+    layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40),
+                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
+    captcha = Image(source = 'src/images/captcha.jpg')
+
+    captchaTextInput = TextInput(size_hint = (None,None), multiline = False, size = (60, 30))
+    captchaTextInput.pos_hint = {'center_x': .5, 'center_y': .5}
+
+    captchaLayout = BoxLayout(orientation = 'horizontal')
+
     attempts = 0
     timeout = 0
 
@@ -54,15 +63,30 @@ class UsernameScreen(Screen):
         self.usernameField.bind(on_text = self.checkEmptyUserName)
         self.nextButton.bind( on_release = self.enterPassword )
 
-        layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.27),
-                pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
-        layout.add_widget(self.statusLabel)
 
-        layout.add_widget(self.usernameField)
-        layout.add_widget(self.nextButton)
-        layout.add_widget(self.recoverUserNameButton)
+        self.layout.add_widget(self.statusLabel)
 
-        self.add_widget(layout)
+        self.layout.add_widget(self.usernameField)
+        
+        regenerateCaptchaButton = Button(size = (32,32), size_hint = (None, None))
+        regenerateCaptchaButton.background_normal = 'src/images/reset.png'
+        regenerateCaptchaButton.pos_hint = {'center_x': .5, 'center_y': .5}
+
+
+        self.captcha.size_hint = (0.75,1)
+        self.captchaLayout.add_widget(self.captcha)
+        self.captchaLayout.add_widget(regenerateCaptchaButton)
+
+        self.layout.add_widget(self.captchaLayout)
+
+        self.layout.add_widget(self.captchaTextInput)
+
+        self.nextButton.spacing = 50
+        self.layout.add_widget(self.nextButton)
+        self.layout.add_widget(self.recoverUserNameButton)
+
+
+        self.add_widget(self.layout)
         self.usernameField.text = 'bhatshubhs'
 
         self.recoverPasswordButton.bind(on_release = partial(self.recoverPasswordEvent))
@@ -92,7 +116,11 @@ class UsernameScreen(Screen):
             self.usernameField.text = 'Qwe@1234'
 
             self.statusLabel.text = ' '
+            self.layout.remove_widget(self.captchaLayout)
+            self.layout.remove_widget(self.captchaTextInput)
 
+            self.layout.size_hint = (0.25,0.37)
+            
             self.children[0].remove_widget(self.recoverUserNameButton)
             self.children[0].remove_widget(self.nextButton)
 
