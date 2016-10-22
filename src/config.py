@@ -19,7 +19,10 @@ email_pass = "sanshuabh357"
 smtp_domain = "smtp.gmail.com"
 smtp_port = 587
 email_msg = "Your OneTimePassword(OTP) is "
-email_subject = "Your Vigilant Dollop OTP"
+emailOtpSubject = "Your Vigilant Dollop OTP"
+emailSuccesfulLoginSubject = "Succesful Login"
+emailFailedLoginSubject = "Failed Login"
+
 
 
 #messages

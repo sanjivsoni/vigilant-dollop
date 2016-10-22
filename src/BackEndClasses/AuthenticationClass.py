@@ -258,10 +258,9 @@ class OTP:
 
         generatedOTP = generateOTP(length)
         out_queue.put(generatedOTP)
-        client = TwilioRestClient(config.account_sid, config.auth_token)
-        message = client.messages.create(to = userMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
+        runByThreadForMobile(sendTextMobile,userMobile,config.mobile_msg + generatedOTP)
 
-    def sendOTPforAuth_email(self,length,out_queue,):
+    def sendOTPforAuth_email(self,length,out_queue):
         userEmail = ""
         establishConnection()
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
@@ -281,41 +280,95 @@ class OTP:
 
         generatedOTP = generateOTP(length)
         out_queue.put(generatedOTP)
-        msg = MIMEMultipart()
-        msg['From'] = "Team Vigilant Dollop"
-        msg['To'] = userEmail
-        msg['Subject'] = config.email_subject
-        body = config.email_msg + generatedOTP
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
-        server.starttls()
-        server.login(config.emailid, config.email_pass)
-        text = msg.as_string()
-        server.sendmail(config.emailid, userEmail, text)
-        server.quit()
+        runByThreadForEmail(sendEmail,userEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
+        #return generatedOTP
 
     def sendOTPforRecovery_mobile(self,sendToMobile,out_queue):
-
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
-        client = TwilioRestClient(config.account_sid, config.auth_token)
-        message = client.messages.create(to = sendToMobile, from_ = config.from_number, body = config.mobile_msg + generatedOTP)
+        runByThreadForMobile(sendTextMobile,userMobile,config.mobile_msg + generatedOTP)
 
     def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
-        msg = MIMEMultipart()
-        msg['From'] = "Team Vigilant Dollop"
-        msg['To'] = sendToEmail
-        msg['Subject'] = config.email_subject
-        body = config.email_msg + generatedOTP
-        msg.attach(MIMEText(body, 'plain'))
+        runByThreadForEmail(sendEmail,userEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
 
-        server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
-        server.starttls()
-        server.login(config.emailid, config.email_pass)
-        text = msg.as_string()
-        server.sendmail(config.emailid, sendToEmail, text)
-        server.quit()
+class LoginMessages:
+    def __init__(self,userID = ""):
+        self.userID = userID
+
+    def loggedIn(self,dt):
+
+
+        userMobile = ""
+        userEmail = ""
+        establishConnection()
+        sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userMobile = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+
+        sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        runByThreadForMobile(sendTextMobile,userMobile,config.succesfulLoginMessageText + fetchLocation())
+        runByThreadForEmail(sendEmail,userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
+
+    def failedLogin(self,dt):
+
+        userMobile = ""
+        userEmail = ""
+        establishConnection()
+        sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userMobile = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+
+        sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        runByThreadForMobile(sendTextMobile,userMobile,config.failedLoginMessageText + fetchLocation())
+        runByThreadForEmail(sendEmail,userEmail,config.failedLoginMessageText + fetchLocation() + config.failedLoginMessageText_part2 + config.messageTextSignature,config.emailFailedLoginSubject)

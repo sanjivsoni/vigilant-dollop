@@ -164,3 +164,32 @@ def userDoesNotExists():
         print "error"
 
     return flag
+
+
+def runByThreadForEmail(*kargs):
+    thread1 = Thread(target = kargs[0], args = (kargs[1],kargs[2],kargs[3],))
+    thread1.start()
+
+def runByThreadForMobile(*kargs):
+    thread1 = Thread(target = kargs[0], args = (kargs[1],kargs[2],))
+    thread1.start()
+
+def sendTextMobile(sendTo,msg):
+    client = TwilioRestClient(config.account_sid, config.auth_token)
+    message = client.messages.create(to = sendTo, from_ = config.from_number, body = msg)
+
+def sendEmail(sendTo,message,subject):
+
+    msg = MIMEMultipart()
+    msg['From'] = "Team Vigilant Dollop"
+    msg['To'] = sendTo
+    msg['Subject'] = subject
+    body = message
+    msg.attach(MIMEText(body, 'plain'))
+
+    server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
+    server.starttls()
+    server.login(config.emailid, config.email_pass)
+    text = msg.as_string()
+    server.sendmail(config.emailid, sendTo, text)
+    server.quit()
