@@ -1,6 +1,5 @@
 from libraries import *
 
-
 def aesEncrypt(plaintextArray):
 
     plaintexts = plaintextArray.split()
@@ -42,7 +41,7 @@ def closeConnection():
 def createCaptcha():
     #Change the path of font on config file
     image = ImageCaptcha(fonts=[config.fontPath])
-    captcha = ''.join(random.choice(string.ascii_lowercase + string.digits) for j in range(4))
+    captcha = ''.join(random.choice(string.digits) for j in range(4))
     data = image.generate(captcha)
     image.write(captcha, 'src/images/captcha.jpg')
     return captcha
@@ -180,7 +179,6 @@ def sendTextMobile(sendTo,msg):
     message = client.messages.create(to = sendTo, from_ = config.from_number, body = msg)
 
 def sendEmail(sendTo,message,subject):
-
     msg = MIMEMultipart()
     msg['From'] = "Team Vigilant Dollop"
     msg['To'] = sendTo

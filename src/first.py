@@ -51,5 +51,3 @@ au = LoginDetailsMessages("bhatshubhs")
 #au.succesfulLoginMessage()
 au.failedLoginMessage()
 '''
-
-createCaptcha()

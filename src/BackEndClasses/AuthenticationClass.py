@@ -299,8 +299,6 @@ class LoginMessages:
         self.userID = userID
 
     def loggedIn(self):
-
-
         userMobile = ""
         userEmail = ""
         establishConnection()
@@ -333,11 +331,9 @@ class LoginMessages:
             config.conn.rollback()
             flag = 0
 
+
         sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
         sendEmail(userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
-
-        #runByThreadForMobile(sendTextMobile,userMobile,config.succesfulLoginMessageText + fetchLocation())
-        #runByThreadForEmail(sendEmail,userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
 
     def failedLogin(self):
 
@@ -373,5 +369,5 @@ class LoginMessages:
             config.conn.rollback()
             flag = 0
 
-        runByThreadForMobile(sendTextMobile,userMobile,config.failedLoginMessageText + fetchLocation())
-        runByThreadForEmail(sendEmail,userEmail,config.failedLoginMessageText + fetchLocation() + config.failedLoginMessageText_part2 + config.messageTextSignature,config.emailFailedLoginSubject)
+        sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
+        sendEmail(userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)

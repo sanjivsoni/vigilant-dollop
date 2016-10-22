@@ -118,7 +118,6 @@ class UsernameScreen(Screen):
         global loginMsgs
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
-
         if self.captchaTextInput.text == self.captchaCorrectText:
             if userExists :
                 sendOTP = OTP(verifyUser.returnUserID())
@@ -278,9 +277,10 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         msg = ""
         choice = randint(0, 5)
-        #choice  = 0
+        choice  = 0
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
+            print datetime.datetime.now()
             sendOTP.sendOTPforAuth_email(6,otpQueue)
             generatedOTP = otpQueue.get()
 
@@ -371,24 +371,23 @@ class LevelTwoScreen(Screen):
 
     def sendLoginMessages(self,dt):
         global loginMsgs
-        t1 = Thread(target=loginMsgs.loggedIn())
+        t1 = Thread(target=loginMsgs.loggedIn)
         t1.start()
 
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         global generatedOTP
-        global sendOTP
         global loginMsgs
-        my_queue = Queue.Queue()
         if value == generatedOTP:
             print 'access granted'
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
-            t1 = Thread(target=loginMsgs.loggedIn())
+            t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
 
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
+        global verifyUser
         global choice
         global loginMsgs
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
@@ -396,7 +395,7 @@ class LevelTwoScreen(Screen):
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
-            t1 = Thread(target=loginMsgs.loggedIn())
+            t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
 
 
