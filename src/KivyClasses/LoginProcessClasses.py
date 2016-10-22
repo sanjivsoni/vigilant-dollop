@@ -53,6 +53,8 @@ class UsernameScreen(Screen):
 
     captchaLayout = BoxLayout(orientation = 'horizontal')
 
+    regenerateCaptchaButton = Button(size = (32,32), size_hint = (None, None))
+
     attempts = 0
     timeout = 0
     passwordAttempts = 0
@@ -70,14 +72,14 @@ class UsernameScreen(Screen):
 
         self.layout.add_widget(self.usernameField)
 
-        regenerateCaptchaButton = Button(size = (32,32), size_hint = (None, None))
-        regenerateCaptchaButton.background_normal = 'src/images/reset.png'
-        regenerateCaptchaButton.pos_hint = {'center_x': .5, 'center_y': .5}
+        self.regenerateCaptchaButton.background_normal = 'src/images/reset.png'
+        self.regenerateCaptchaButton.pos_hint = {'center_x': .5, 'center_y': .5}
+        self.regenerateCaptchaButton.bind( on_press = self.regenerateCaptcha )
 
 
         self.captcha.size_hint = (0.75,1)
         self.captchaLayout.add_widget(self.captcha)
-        self.captchaLayout.add_widget(regenerateCaptchaButton)
+        self.captchaLayout.add_widget(self.regenerateCaptchaButton)
 
         self.layout.add_widget(self.captchaLayout)
 
@@ -93,6 +95,11 @@ class UsernameScreen(Screen):
 
         self.recoverPasswordButton.bind(on_release = partial(self.recoverPasswordEvent))
         self.moveToLevelTwoButton.bind(on_release = partial(self.verifyPasswordEvent))
+
+    def regenerateCaptcha(self, callback):
+        self.captcha = Image(source = 'src/images/captcha.jpg')
+        self.captchaTextInput.text = ''
+
 
     # Check if username is empty or not
     def checkEmptyUserName(self, callback):
@@ -110,31 +117,37 @@ class UsernameScreen(Screen):
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
 
-        if userExists :
-            sendOTP = OTP(verifyUser.returnUserID())
-            loginMsgs = LoginMessages(verifyUser.returnUserID())
-            self.usernameField.password = True
-            self.usernameField.text = ''
-            self.usernameField.hint_text = 'Password'
+        if self.captchaTextInput.text == '12345':
+            if userExists :
+                sendOTP = OTP(verifyUser.returnUserID())
+                loginMsgs = LoginMessages(verifyUser.returnUserID())
+                self.usernameField.password = True
+                self.usernameField.text = ''
+                self.usernameField.hint_text = 'Password'
 
-            self.usernameField.text = 'Qwe@1234'
+                self.usernameField.text = 'Qwe@1234'
 
-            self.statusLabel.text = ' '
-            self.layout.remove_widget(self.captchaLayout)
-            self.layout.remove_widget(self.captchaTextInput)
+                self.statusLabel.text = ' '
+                self.layout.remove_widget(self.captchaLayout)
+                self.layout.remove_widget(self.captchaTextInput)
 
-            self.layout.size_hint = (0.25,0.27)
+                self.layout.size_hint = (0.25,0.27)
 
-            self.children[0].remove_widget(self.recoverUserNameButton)
-            self.children[0].remove_widget(self.nextButton)
+                self.children[0].remove_widget(self.recoverUserNameButton)
+                self.children[0].remove_widget(self.nextButton)
 
-            self.children[0].add_widget(self.moveToLevelTwoButton)
-            self.children[0].add_widget(self.recoverPasswordButton)
+                self.children[0].add_widget(self.moveToLevelTwoButton)
+                self.children[0].add_widget(self.recoverPasswordButton)
+            else:
+                popup = Popup(title='Error',
+                content=Label(text='Incorrect Username'),
+                size_hint=(None, None), size=(180, 100))
+                popup.open()
 
         else:
             # Unsuccessful match for Username
             popup = Popup(title='Error',
-            content=Label(text='Incorrect Username'),
+            content=Label(text='Incorrect Captcha Text'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
 
