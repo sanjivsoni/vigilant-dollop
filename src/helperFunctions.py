@@ -42,9 +42,10 @@ def closeConnection():
 def createCaptcha():
     #Change the path of font on config file
     image = ImageCaptcha(fonts=[config.fontPath])
-    captcha = ''.join(random.choice(string.ascii_lowercase + string.digits) for j in range(6))
+    captcha = ''.join(random.choice(string.ascii_lowercase + string.digits) for j in range(4))
     data = image.generate(captcha)
-    image.write(captcha, 'captcha.png')
+    image.write(captcha, 'src/images/captcha.jpg')
+    return captcha
 
 def checkSudoPwd(sudopwd):
     if os.system("echo " + sudopwd + " | sudo -S -v") == 0:
