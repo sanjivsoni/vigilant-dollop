@@ -288,10 +288,88 @@ class OTP:
     def sendOTPforRecovery_mobile(self,sendToMobile,out_queue):
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
-        runByThreadForMobile(sendTextMobile,userMobile,config.mobile_msg + generatedOTP)
+        runByThreadForMobile(sendTextMobile,sendToMobile,config.mobile_msg + generatedOTP)
 
     def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
-        runByThreadForEmail(sendEmail,userEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
+        runByThreadForEmail(sendEmail,sendToEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
+
+class LoginMessages:
+    def __init__(self,userID = ""):
+        self.userID = userID
+
+    def loggedIn(self):
+        userMobile = ""
+        userEmail = ""
+        establishConnection()
+        sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userMobile = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+
+        sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+
+        sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
+        sendEmail(userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
+
+    def failedLogin(self):
+
+        userMobile = ""
+        userEmail = ""
+        establishConnection()
+        sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userMobile = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+
+        sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
+        sendEmail(userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
