@@ -4,6 +4,7 @@ from ..helperFunctions import *
 
 verifyUser = Authentication()
 recoverUser = UserRecovery()
+updateLoginDetails = 0
 loginMsgs = 0
 sendOTP = 0
 choice = -1
@@ -83,6 +84,7 @@ class UsernameScreen(Screen):
         self.captchaCorrectText = ''
         self.captchaCorrectText = createCaptcha()
         self.captcha = Image(source = 'src/images/captcha.jpg')
+        self.captcha.reload()
 
         self.recoverUserNameButton.bind(on_release = self.recoverUsernameEvent)
         self.usernameField.bind(on_text = self.checkEmptyUserName)
@@ -132,6 +134,7 @@ class UsernameScreen(Screen):
         global attempt
         global sendOTP
         global loginMsgs
+        global updateLoginDetails
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
         print self.captchaCorrectText
@@ -139,6 +142,7 @@ class UsernameScreen(Screen):
             if userExists :
                 sendOTP = OTP(verifyUser.returnUserID())
                 loginMsgs = LoginMessages(verifyUser.returnUserID())
+                updateLoginDetails = LoginDetails(verifyUser.returnUserID())
                 self.usernameField.password = True
                 self.usernameField.text = ''
                 self.usernameField.hint_text = 'Password'
@@ -258,7 +262,7 @@ class LevelTwoScreen(Screen):
         self.headingLabel.text = "Authentication Step 2"
 
         randomLevel = randint(0,1)
-        randomLevel =1
+        #randomLevel =1
         # OTP
         if randomLevel == 0:
             self.otpOnLevelTwoFlag = 1
@@ -294,13 +298,12 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         msg = ""
         choice = randint(0, 5)
-        choice  = 0
+        #choice  = 0
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
             print datetime.datetime.now()
             sendOTP.sendOTPforAuth_email(6,otpQueue)
             generatedOTP = otpQueue.get()
-
 
         elif choice == 1:
             msg = "Please Enter the OTP sent to your registered Mobile"
@@ -394,11 +397,13 @@ class LevelTwoScreen(Screen):
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         global generatedOTP
         global loginMsgs
+        global updateLoginDetails
         if value == generatedOTP:
             print 'access granted'
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
+            updateLoginDetails.updateLoginTime()
             t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
 
@@ -407,11 +412,13 @@ class LevelTwoScreen(Screen):
         global verifyUser
         global choice
         global loginMsgs
+        global updateLoginDetails
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             print 'access granted'
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
+            updateLoginDetails.updateLoginTime()
             t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
 

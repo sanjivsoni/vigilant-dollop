@@ -51,4 +51,4 @@ au = LoginDetailsMessages("bhatshubhs")
 #au.succesfulLoginMessage()
 au.failedLoginMessage()
 '''
-print currentUTC()
+print convertToLocal()

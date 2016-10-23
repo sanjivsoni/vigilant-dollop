@@ -84,6 +84,18 @@ def unlock(path,encryptedSudoPwd):
 def currentUTC():
     return datetime.datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")
 
+def convertUTCToLocal(utcTime):
+
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+
+    utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
+
+    utc = utc.replace(tzinfo=from_zone)
+    central = utc.astimezone(to_zone)
+
+    print central.strftime("%Y-%m-%d %H:%M:%S")
+
 def hashEncrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
     return encryptedText.hexdigest()

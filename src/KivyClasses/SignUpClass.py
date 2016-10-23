@@ -357,7 +357,7 @@ class SignupScreen(Screen):
                 userSecurityQues = str(self.SQ1) + " " + str(self.SQ2) +  " " +label[12].text.replace(" ", "#") + " " +label[13].text.replace(" ", "#")
 
                 newUser = User(userCredentials)
-                loginDetails = LoginDetails(userCredentials)
+                loginDetails = LoginDetails(hashEncrypt(label[1].text))
                 newUser.createUser(userContactDetails)
                 newUser.addPersonalDetails(userPersonalDetails)
                 newUser.addSecurityQuestions(userSecurityQues)
