@@ -3,13 +3,12 @@ from ..helperFunctions import *
 class LoginDetails:
 
     def __init__(self,userID):
-        self.userID = hashEncrypt(userID)
+        self.userID = userID
 
     def userCreated(self):
         aesEncryptedInfo = aesEncrypt(currentUTC() + " " + getUserDetails())
         establishConnection()
-        sql = "INSERT INTO login_stats(userid,created_at,system_details) VALUES " + insertQueryHelper(self.userID + " " )
-        sql = sql.replace("#", " ")
+        sql = "INSERT INTO login_stats(userid,created_at,system_details) VALUES " + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -25,7 +24,6 @@ class LoginDetails:
 
         establishConnection()
         sql = "UPDATE login_stats SET pwd_changed_at = '" + aesEncrypt(currentUTC()) + "' " + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + " WHERE userid = " + "'" + self.userID + "'"
-        sql = sql.replace("#", " ")
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -40,8 +38,7 @@ class LoginDetails:
     def recordUpdated(self):
 
         establishConnection()
-        sql = "UPDATE login_stats SET updated_at = '" + aesEncrypt(currentUTC()) + " '" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        sql = sql.replace("#", " ")
+        sql = "UPDATE login_stats SET updated_at = '" + aesEncrypt(currentUTC()) + "'" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -55,8 +52,7 @@ class LoginDetails:
     def updateFailedLoginTime(self):
 
         establishConnection()
-        sql = "UPDATE login_stats SET failed_login_time = '" + aesEncrypt(currentUTC()) + " '" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        sql = sql.replace("#", " ")
+        sql = "UPDATE login_stats SET failed_login_time = '" + aesEncrypt(currentUTC()) + "'" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -68,21 +64,57 @@ class LoginDetails:
 
         closeConnection()
 
-    def updateLogoutTime(self):
-
+    def updateLoginTime(self):
         establishConnection()
-        sql = "UPDATE login_stats SET logout_time = '" + aesEncrypt(currentUTC()) + " '" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        sql = sql.replace("#", " ")
+        sql = "UPDATE login_stats SET login_time = '" + aesEncrypt(currentUTC()) + "'" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        print sql
         try:
             config.statement.execute(sql)
             config.conn.commit()
-            print "success"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
             flag = 0
 
         closeConnection()
+
+    def fetchLastFailedLoginTime(self):
+        establishConnection()
+        time = ""
+        sql = "SELECT failed_login_time FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                time = aesDecrypt(row[0]).replace("#"," ")
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        closeConnection()
+        return time
+
+    def fetchLastSuccessfulLoginTime(self):
+        establishConnection()
+        time = ""
+        sql = "SELECT login_time FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                time = aesDecrypt(row[0]).replace("#"," ")
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        closeConnection()
+        return time
+
+
 
 class LoginDetailsMessages:
     def __init__(self,userID = ""):

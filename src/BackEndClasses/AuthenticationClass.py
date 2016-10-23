@@ -103,7 +103,7 @@ class Authentication:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                ans = aesDecrypt(row[0])
+                ans = aesDecrypt(row[0]).replace("#", " ")
 
         except Exception, e:
             print repr(e)
@@ -164,6 +164,7 @@ class Authentication:
             if status == 1 :
                 encryptedData = aesEncrypt(filePath + " " + fileName)
                 sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
+                print sql
 
                 try:
                     config.statement.execute(sql)
@@ -200,7 +201,8 @@ class Authentication:
             status = unlock(filePath + "/" +  fileName,encryptedSudoPwd)
 
             if status == 1:
-                sql = "DELETE FROM lockedFiles WHERE filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
+                sql = "DELETE FROM lockedFiles WHERE userid = " + "'" + self.userID + "' AND filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
+                print sql
                 print sql
                 try:
                     config.statement.execute(sql)

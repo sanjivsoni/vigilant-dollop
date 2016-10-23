@@ -4,6 +4,7 @@ from ..helperFunctions import *
 
 verifyUser = Authentication()
 recoverUser = UserRecovery()
+updateLoginDetails = 0
 loginMsgs = 0
 sendOTP = 0
 choice = -1
@@ -11,7 +12,7 @@ attempt = 0
 generatedOTP = 0
 
 class SudoPasswordScreen(Screen):
-    
+
     def __init__(self, **kwargs):
 
         super(SudoPasswordScreen, self).__init__(**kwargs)
@@ -32,6 +33,12 @@ class SudoPasswordScreen(Screen):
         # If valid Password then move to sign up form
         if checkSudoPwd(self.sudoPassword.text) == 1:
             App.get_running_app().root.current = 'signupScreen'
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Sudo Password. Try Again'),
+            size_hint=(None, None), size=(300, 100))
+            popup.open()
+
 
 class UsernameScreen(Screen):
     usernameField = TextInput(hint_text = 'username', multiline = False)
@@ -69,7 +76,7 @@ class UsernameScreen(Screen):
         self.recoverPasswordButton = Button( text = 'forget password', size = (20, 10))
         self.moveToLevelTwoButton  = Button(text = 'next',
                             pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-        
+
         self.attempts = 0
         self.timeout = 0
         self.passwordAttempts = 0
@@ -77,6 +84,7 @@ class UsernameScreen(Screen):
         self.captchaCorrectText = ''
         self.captchaCorrectText = createCaptcha()
         self.captcha = Image(source = 'src/images/captcha.jpg')
+        self.captcha.reload()
 
         self.recoverUserNameButton.bind(on_release = self.recoverUsernameEvent)
         self.usernameField.bind(on_text = self.checkEmptyUserName)
@@ -126,12 +134,15 @@ class UsernameScreen(Screen):
         global attempt
         global sendOTP
         global loginMsgs
+        global updateLoginDetails
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
+        print self.captchaCorrectText
         if self.captchaTextInput.text == self.captchaCorrectText:
             if userExists :
                 sendOTP = OTP(verifyUser.returnUserID())
                 loginMsgs = LoginMessages(verifyUser.returnUserID())
+                updateLoginDetails = LoginDetails(verifyUser.returnUserID())
                 self.usernameField.password = True
                 self.usernameField.text = ''
                 self.usernameField.hint_text = 'Password'
@@ -251,7 +262,7 @@ class LevelTwoScreen(Screen):
         self.headingLabel.text = "Authentication Step 2"
 
         randomLevel = randint(0,1)
-        randomLevel =1
+        #randomLevel =1
         # OTP
         if randomLevel == 0:
             self.otpOnLevelTwoFlag = 1
@@ -287,13 +298,12 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         msg = ""
         choice = randint(0, 5)
-        choice  = 0
+        #choice  = 0
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
             print datetime.datetime.now()
             sendOTP.sendOTPforAuth_email(6,otpQueue)
             generatedOTP = otpQueue.get()
-
 
         elif choice == 1:
             msg = "Please Enter the OTP sent to your registered Mobile"
@@ -387,11 +397,13 @@ class LevelTwoScreen(Screen):
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         global generatedOTP
         global loginMsgs
+        global updateLoginDetails
         if value == generatedOTP:
             print 'access granted'
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
+            updateLoginDetails.updateLoginTime()
             t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
 
@@ -400,11 +412,13 @@ class LevelTwoScreen(Screen):
         global verifyUser
         global choice
         global loginMsgs
+        global updateLoginDetails
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             print 'access granted'
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
+            updateLoginDetails.updateLoginTime()
             t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
 
@@ -749,11 +763,14 @@ class HomeScreen(Screen):
 
 
     def removeFile(self, *args):
+        global verifyUser
         grid = args[0]
         file_name = args[1]
         label_previous = args[2]
         button_previous = args[3]
+        filePath = args[4]
         midLayout = self.children[0].children[1]
+        verifyUser.unlockItem(filePath, file_name)
 
         grid = self.children[0].children[0].children[0].children[0]
 #        print grid.children[int(args[0])]
@@ -778,8 +795,8 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
-        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
-        verifyUser.unlockItem(filePath, fileName)
+        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button,filePath))
+
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
 

@@ -42,12 +42,14 @@ def createCaptcha():
     #Change the path of font on config file
     image = ImageCaptcha(fonts=[config.fontPath])
     captcha = ''.join(random.choice(string.digits) for j in range(4))
-    data = image.generate(captcha)
+    print "captcha ", captcha
     image.write(captcha, 'src/images/captcha.jpg')
     return captcha
 
 def checkSudoPwd(sudopwd):
-    if os.system("echo " + sudopwd + " | sudo -S -v") == 0:
+    a = os.system("echo " + sudopwd + " | sudo -S -v")
+    print "a",a
+    if a == 0:
         return 1
     else:
         return 0
@@ -80,7 +82,19 @@ def unlock(path,encryptedSudoPwd):
     return flag
 
 def currentUTC():
-    return datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")
+    return datetime.datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")
+
+def convertUTCToLocal(utcTime):
+
+    from_zone = tz.tzutc()
+    to_zone = tz.tzlocal()
+
+    utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
+
+    utc = utc.replace(tzinfo=from_zone)
+    central = utc.astimezone(to_zone)
+
+    print central.strftime("%Y-%m-%d %H:%M:%S")
 
 def hashEncrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
