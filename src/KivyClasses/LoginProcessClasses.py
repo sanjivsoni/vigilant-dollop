@@ -70,6 +70,7 @@ class UsernameScreen(Screen):
 
 	self.captchaCorrectText = ''
 	self.captchaCorrectText = createCaptcha()
+	self.captchaTextInput.text = self.captchaCorrectText
 	self.captcha = Image(source = 'src/images/captcha.jpg')
 	self.captcha.reload()
 
@@ -139,7 +140,7 @@ class UsernameScreen(Screen):
 	global updateLoginDetails
 
 	userExists = verifyUser.checkIfUserExists(self.usernameField.text)
-	print self.captchaCorrectText
+        print self.captchaCorrectText
 	if self.captchaTextInput.text == self.captchaCorrectText:
 	    if userExists :
 		sendOTP = OTP(verifyUser.returnUserID())
@@ -149,7 +150,7 @@ class UsernameScreen(Screen):
 		self.usernameField.text = ''
 		self.usernameField.hint_text = 'Password'
 
-		self.usernameField.text = 'Qwe@1234'
+		self.usernameField.text = 'Test@1234'
 
 		self.statusLabel.text = ' '
 		self.layout.remove_widget(self.captchaLayout)
