@@ -6,9 +6,9 @@ class LoginDetails:
         self.userID = userID
 
     def userCreated(self):
-        aesEncryptedInfo = aesEncrypt(currentUTC() + " " + getUserDetails())
+        aesEncryptedInfo = aesEncrypt(currentUTC())
         establishConnection()
-        sql = "INSERT INTO login_stats(userid,created_at,system_details) VALUES " + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
+        sql = "INSERT INTO login_stats(userid,created_at) VALUES " + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -23,7 +23,7 @@ class LoginDetails:
     def passwordChanged(self):
 
         establishConnection()
-        sql = "UPDATE login_stats SET pwd_changed_at = '" + aesEncrypt(currentUTC()) + "' " + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + " WHERE userid = " + "'" + self.userID + "'"
+        sql = "UPDATE login_stats SET pwd_changed_at = '" + aesEncrypt(currentUTC()) + "'" + " WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -38,7 +38,7 @@ class LoginDetails:
     def recordUpdated(self):
 
         establishConnection()
-        sql = "UPDATE login_stats SET updated_at = '" + aesEncrypt(currentUTC()) + "'" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        sql = "UPDATE login_stats SET updated_at = '" + aesEncrypt(currentUTC()) + "'" + "WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -52,7 +52,7 @@ class LoginDetails:
     def updateFailedLoginTime(self):
 
         establishConnection()
-        sql = "UPDATE login_stats SET failed_login_time = '" + aesEncrypt(currentUTC()) + "'" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        sql = "UPDATE login_stats SET failed_login_time = '" + aesEncrypt(currentUTC()) + "'" + ",failedLogin_ip = '" + aesEncrypt(getUserIP()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -66,12 +66,13 @@ class LoginDetails:
 
     def updateLoginTime(self):
         establishConnection()
-        sql = "UPDATE login_stats SET login_time = '" + aesEncrypt(currentUTC()) + "'" + ",system_details = '" + aesEncrypt(getUserDetails()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        sql = "UPDATE login_stats SET login_time = '" + aesEncrypt(currentUTC()) + "'" + ",login_ip = '" + aesEncrypt(getUserIP()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
         print sql
         try:
             config.statement.execute(sql)
             config.conn.commit()
         except Exception, e:
+            print "error in ippp"
             print repr(e)
             config.conn.rollback()
             flag = 0
@@ -81,12 +82,14 @@ class LoginDetails:
     def fetchLastFailedLoginTime(self):
         establishConnection()
         time = ""
-        sql = "SELECT failed_login_time FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        ip =""
+        sql = "SELECT failed_login_time,failedLogin_ip FROM login_stats WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
                 time = aesDecrypt(row[0]).replace("#"," ")
+                ip = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
@@ -94,17 +97,19 @@ class LoginDetails:
             flag = 0
 
         closeConnection()
-        return time
+        return ip + " " + convertUTCToLocal(time)
 
     def fetchLastSuccessfulLoginTime(self):
         establishConnection()
         time = ""
-        sql = "SELECT login_time FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        ip =""
+        sql = "SELECT login_time,login_ip FROM login_stats WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
                 time = aesDecrypt(row[0]).replace("#"," ")
+                ip = aesDecrypt(row[1])
 
         except Exception, e:
             print repr(e)
@@ -112,7 +117,8 @@ class LoginDetails:
             flag = 0
 
         closeConnection()
-        return time
+        print time
+        return ip+ " " + convertUTCToLocal(time)
 
 
 

@@ -86,15 +86,15 @@ def currentUTC():
 
 def convertUTCToLocal(utcTime):
 
-    from_zone = tz.tzutc()
-    to_zone = tz.tzlocal()
+    utcTimeZone = tz.tzutc()
+    localTimezone = tz.tzlocal()
 
     utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
 
-    utc = utc.replace(tzinfo=from_zone)
-    central = utc.astimezone(to_zone)
+    utc = utc.replace(tzinfo = utcTimeZone)
+    localTime = utc.astimezone(localTimezone)
 
-    print central.strftime("%Y-%m-%d %H:%M:%S")
+    return str(localTime.strftime("%Y-%m-%d %H:%M:%S"))
 
 def hashEncrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
@@ -109,8 +109,12 @@ def insertQueryHelper(raw):
     processed= processed.replace("','')","')")
     return processed
 
-def getUserDetails():
-    return  "User:" + getpass.getuser() + "#MAC#Address#:#" + hex(get_mac())
+def getUserIP():
+    send_url = 'http://freegeoip.net/json'
+    r = requests.get(send_url)
+    j = json.loads(r.text)
+    details = "IP address: " + j['ip']
+    return details
 
 def generateOTP(length):
     if length == 6:

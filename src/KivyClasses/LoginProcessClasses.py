@@ -381,13 +381,14 @@ class LevelTwoScreen(Screen):
 	pass
 
     def securityQuestionLevelTwo(self, instance, value):
-	global verifyUser
-	choice = randint(0,1)
-	global generatedOTP
-	if value == generatedOTP:
-	    Clock.unschedule(self._time_event)
-	    self.timerLabel.text = ' '
-	    self.otpSentLabel.text = ' '
+        global verifyUser
+        global choice
+        choice = randint(0,1)
+        global generatedOTP
+        if value == generatedOTP:
+            Clock.unschedule(self._time_event)
+            self.timerLabel.text = ' '
+            self.otpSentLabel.text = ' '
 
 	    self.midLayout.remove_widget(self.otpText)
 	    self.otpText = self.otpTextSecond
@@ -395,8 +396,8 @@ class LevelTwoScreen(Screen):
 
 	    self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
 
-	    self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree,choice) )
-	    self.midLayout.add_widget(self.submitButton)
+            self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree) )
+            self.midLayout.add_widget(self.submitButton)
 
     def sendLoginMessages(self,dt):
 	global loginMsgs
@@ -416,21 +417,19 @@ class LevelTwoScreen(Screen):
 	    t1 = Thread(target=loginMsgs.loggedIn)
 	    t1.start()
 
-
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
-	global verifyUser
-	global choice
-	global loginMsgs
-	global updateLoginDetails
-	if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
-	    print 'access granted'
-	    root = App.get_running_app().root
-	    root.current = 'HomeScreen'
-	    root.get_screen('HomeScreen').addFilesOnLogin()
-	    updateLoginDetails.updateLoginTime()
-	    t1 = Thread(target=loginMsgs.loggedIn)
-	    t1.start()
-
+        global verifyUser
+        global choice
+        global loginMsgs
+        global updateLoginDetails
+        if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
+            print 'access granted'
+            updateLoginDetails.updateLoginTime()
+            t1 = Thread(target=loginMsgs.loggedIn)
+            t1.start()
+            root = App.get_running_app().root
+            root.current = 'HomeScreen'
+            root.get_screen('HomeScreen').addFilesOnLogin()
 
     def regenerateOtp(self, callback):
 	self.startTimer()
@@ -773,15 +772,28 @@ class HomeScreen(Screen):
 	    self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
 	    self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
 
-	    if i == 1:
-		temp = self.presentSessionDetails 
-		temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
-	    elif i == 2:
-		temp = self.lastSuccessfulSessionDetails
-		temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
-	    else:
-		temp = self.lastUnsuccessfulSessionDetails
-		temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
+    #def updateFooter(self):
+    #updateLoginDetails.fetchLastSuccessfulLoginTime().strip()[1]
+        global updateLoginDetails
+
+        for i in range(3):
+            #self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+            #self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
+            if i == 1:
+                temp = self.presentSessionDetails
+                temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
+                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = "ds", font_size = '10sp'))
+            elif i == 2:
+                temp = self.lastSuccessfulSessionDetails
+                temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
+                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
+            else:
+                temp = self.lastUnsuccessfulSessionDetails
+                temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
+                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
 
 	    temp.add_widget(self.ip[i])
 	    temp.add_widget(self.time[i])
@@ -795,15 +807,15 @@ class HomeScreen(Screen):
 	self.add_widget(self.layout)
 
     def addFilesOnLogin(self):
-	results = verifyUser.fetchLockedFiles()
-	for i in results:
-	    fileName = aesDecrypt(i[1])
-	    filePath = aesDecrypt(i[0])
-	    fileButton = Button(text=' ', size=(40, 40), size_hint = (None, None), id = str(fileName))
-	    fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
+        results = verifyUser.fetchLockedFiles()
+        for i in results:
+            fileName = aesDecrypt(i[1])
+            filePath = aesDecrypt(i[0])
+            fileButton = Button(text=' ', size=(40, 40), size_hint = (None, None), id = str(fileName))
+            fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
 
-	    fileLabel = Label(text = str(fileName), width = 70, halign = 'left', valign = 'middle', id="label" + str(fileName), font_size = '15sp')
-	    fileLabel.bind(size = fileLabel.setter('text_size'))
+            fileLabel = Label(text = str(fileName), width = 70, halign = 'left', valign = 'middle', id="label" + str(fileName), font_size = '15sp')
+            fileLabel.bind(size = fileLabel.setter('text_size'))
 
 	    self.grid.add_widget(fileButton)
 	    self.grid.add_widget(fileLabel)
