@@ -86,15 +86,15 @@ def currentUTC():
 
 def convertUTCToLocal(utcTime):
 
-    from_zone = tz.tzutc()
-    to_zone = tz.tzlocal()
+    utcTimeZone = tz.tzutc()
+    localTimezone = tz.tzlocal()
 
     utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
 
-    utc = utc.replace(tzinfo=from_zone)
-    central = utc.astimezone(to_zone)
+    utc = utc.replace(tzinfo = utcTimeZone)
+    localTime = utc.astimezone(localTimezone)
 
-    return str(central.strftime("%Y-%m-%d %H:%M:%S"))
+    return str(localTime.strftime("%Y-%m-%d %H:%M:%S"))
 
 def hashEncrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
