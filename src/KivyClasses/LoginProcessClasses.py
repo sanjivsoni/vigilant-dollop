@@ -11,7 +11,7 @@ attempt = 0
 generatedOTP = 0
 
 class SudoPasswordScreen(Screen):
-    
+
     def __init__(self, **kwargs):
 
         super(SudoPasswordScreen, self).__init__(**kwargs)
@@ -32,6 +32,12 @@ class SudoPasswordScreen(Screen):
         # If valid Password then move to sign up form
         if checkSudoPwd(self.sudoPassword.text) == 1:
             App.get_running_app().root.current = 'signupScreen'
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Sudo Password. Try Again'),
+            size_hint=(None, None), size=(300, 100))
+            popup.open()
+
 
 class UsernameScreen(Screen):
     usernameField = TextInput(hint_text = 'username', multiline = False)
@@ -69,7 +75,7 @@ class UsernameScreen(Screen):
         self.recoverPasswordButton = Button( text = 'forget password', size = (20, 10))
         self.moveToLevelTwoButton  = Button(text = 'next',
                             pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25)
-        
+
         self.attempts = 0
         self.timeout = 0
         self.passwordAttempts = 0
@@ -128,6 +134,7 @@ class UsernameScreen(Screen):
         global loginMsgs
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
+        print self.captchaCorrectText
         if self.captchaTextInput.text == self.captchaCorrectText:
             if userExists :
                 sendOTP = OTP(verifyUser.returnUserID())
@@ -718,11 +725,14 @@ class HomeScreen(Screen):
 
 
     def removeFile(self, *args):
+        global verifyUser
         grid = args[0]
         file_name = args[1]
         label_previous = args[2]
         button_previous = args[3]
+        filePath = args[4]
         midLayout = self.children[0].children[1]
+        verifyUser.unlockItem(filePath, file_name)
 
         grid = self.children[0].children[0].children[0].children[0]
 #        print grid.children[int(args[0])]
@@ -747,8 +757,8 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
         button = Button(text = 'remove', size_hint = (0.1,0.5))
-        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button))
-        verifyUser.unlockItem(filePath, fileName)
+        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button,filePath))
+
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
 

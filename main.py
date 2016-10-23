@@ -2,7 +2,6 @@ from src.helperFunctions import*
 from src.KivyClasses.LoginProcessClasses import *
 from src.KivyClasses.SignUpClass import *
 #from libraries import *
-print threading.enumerate()
 Builder.load_file("GUI_builderForm.kv")
 Window.size = (700, 700)
 

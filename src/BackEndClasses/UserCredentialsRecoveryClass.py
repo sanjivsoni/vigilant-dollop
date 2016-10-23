@@ -92,7 +92,7 @@ class UserRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                correctSSnId = aesDecrypt(row[0])
+                correctSSnId = aesDecrypt(row[0]).replace("#", " ")
 
         except Exception, e:
             print repr(e)
@@ -148,7 +148,7 @@ class UserRecovery:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                ans = aesDecrypt(row[0])
+                ans = aesDecrypt(row[0]).replace("#", " ")
 
         except Exception, e:
             print repr(e)

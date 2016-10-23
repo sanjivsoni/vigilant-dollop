@@ -13,7 +13,7 @@ import base64
 from twilio.rest import TwilioRestClient
 
 #for UTC time
-from datetime import datetime
+import datetime
 
 #to get current user
 import getpass

@@ -2,8 +2,8 @@ from ..helperFunctions import *
 
 class LoginDetails:
 
-    def __init__(self,userID):
-        self.userID = hashEncrypt(userID)
+    def __init__(self,userDetails):
+        self.userID = hashEncrypt((userDetails).split()[0])
 
     def userCreated(self):
         aesEncryptedInfo = aesEncrypt(currentUTC() + " " + getUserDetails())
