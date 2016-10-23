@@ -323,6 +323,7 @@ class SignupScreen(Screen):
     #     else:
     #         ID2.color = [1,1,1,1]
     def buttonAction(self):
+        ID10000 = self.ids['Z13']
         ID = self.ids['X']
         ID2 = self.ids['Y']
         ID3 = self.ids['10']
@@ -379,16 +380,17 @@ class SignupScreen(Screen):
                 else:
                     _SSN = 0
                 
-                phoneNo = label[14].text+label[5].text
-                userCredentials = label[1].text + " " + label[2].text
-                userContactDetails = label[4].text + " " +phoneNo +  " " +"sudoPwd"
-                userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(_SSN) + " " +label[11].text
-                userSecurityQues = str(Q1) + " " +label[12].text + " " + str(Q2) + " " +label[13].text
-                print phoneNo
-                newUser = User(userCredentials)
-                newUser.createUser(userContactDetails)
-                newUser.addPersonalDetails(userPersonalDetails)
-                newUser.addSecurityQuestions(userSecurityQues)
+                if ID10000.text == '12345':
+                    phoneNo = label[14].text+label[5].text
+                    userCredentials = label[1].text + " " + label[2].text
+                    userContactDetails = label[4].text + " " +phoneNo +  " " +"sudoPwd"
+                    userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(_SSN) + " " +label[11].text
+                    userSecurityQues = str(Q1) + " " +label[12].text + " " + str(Q2) + " " +label[13].text
+                    print phoneNo
+                    newUser = User(userCredentials)
+                    newUser.createUser(userContactDetails)
+                    newUser.addPersonalDetails(userPersonalDetails)
+                    newUser.addSecurityQuestions(userSecurityQues)
 
 
                 #print Q1

@@ -288,13 +288,13 @@ class OTP:
     def sendOTPforRecovery_mobile(self,sendToMobile,out_queue):
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
-        runByThreadForMobile(sendTextMobile,userMobile,config.mobile_msg + generatedOTP)
+        runByThreadForMobile(sendTextMobile,sendToMobile,config.mobile_msg + generatedOTP)
 
     def sendOTPforRecovery_email(self,sendToEmail,out_queue):
 
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
-        runByThreadForEmail(sendEmail,userEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
+        runByThreadForEmail(sendEmail,sendToEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
 
 class LoginMessages:
     def __init__(self,userID = ""):
