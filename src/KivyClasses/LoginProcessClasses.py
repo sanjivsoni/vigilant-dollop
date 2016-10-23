@@ -57,8 +57,18 @@ class UsernameScreen(Screen):
     layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
     def __init__(self, **kwargs):
         super(UsernameScreen, self).__init__(**kwargs)
+
+        with self.canvas.before:
+            Color(0, 0, 0, 1)  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
         self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 

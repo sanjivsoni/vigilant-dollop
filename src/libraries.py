@@ -60,6 +60,7 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.relativelayout import RelativeLayout
 from kivy.core.window import Window
 
+from kivy.graphics import Color, Rectangle
 
 from kivy.factory import Factory
 from kivy.uix.filechooser import FileChooserIconView, FileChooserListView
