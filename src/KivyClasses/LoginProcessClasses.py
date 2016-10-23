@@ -373,6 +373,7 @@ class LevelTwoScreen(Screen):
 
     def securityQuestionLevelTwo(self, instance, value):
         global verifyUser
+        global choice
         choice = randint(0,1)
         global generatedOTP
         if value == generatedOTP:
@@ -386,7 +387,7 @@ class LevelTwoScreen(Screen):
 
             self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
 
-            self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree,choice) )
+            self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree) )
             self.midLayout.add_widget(self.submitButton)
 
     def sendLoginMessages(self,dt):
@@ -400,12 +401,13 @@ class LevelTwoScreen(Screen):
         global updateLoginDetails
         if value == generatedOTP:
             print 'access granted'
-            root = App.get_running_app().root
-            root.current = 'HomeScreen'
-            root.get_screen('HomeScreen').addFilesOnLogin()
             updateLoginDetails.updateLoginTime()
             t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
+            root = App.get_running_app().root
+            root.current = 'HomeScreen'
+            root.get_screen('HomeScreen').addFilesOnLogin()
+
 
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
@@ -415,12 +417,13 @@ class LevelTwoScreen(Screen):
         global updateLoginDetails
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             print 'access granted'
-            root = App.get_running_app().root
-            root.current = 'HomeScreen'
-            root.get_screen('HomeScreen').addFilesOnLogin()
             updateLoginDetails.updateLoginTime()
             t1 = Thread(target=loginMsgs.loggedIn)
             t1.start()
+            root = App.get_running_app().root
+            root.current = 'HomeScreen'
+            root.get_screen('HomeScreen').addFilesOnLogin()
+
 
 
     def regenerateOtp(self, callback):
@@ -672,19 +675,28 @@ class HomeScreen(Screen):
         self.country = []
         self.time = []
 
+    #def updateFooter(self):
+    #updateLoginDetails.fetchLastSuccessfulLoginTime().strip()[1]
+        global updateLoginDetails
+
         for i in range(3):
-            self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
-            self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
-            
+            #self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+            #self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
             if i == 1:
-                temp = self.presentSessionDetails 
+                temp = self.presentSessionDetails
                 temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
+                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = "ds", font_size = '10sp'))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
+                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
+                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
 
             temp.add_widget(self.ip[i])
             temp.add_widget(self.time[i])
@@ -696,6 +708,7 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
+        #self.updateFooter()
         grid = self.children[0].children[0].children[0].children[0]
         results = verifyUser.fetchLockedFiles()
         for i in results:
