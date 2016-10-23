@@ -32,7 +32,6 @@ class SudoPasswordScreen(Screen):
 	self.add_widget(self.layout)
 
     def checkSudoPassword(self, callback):
-<<<<<<< HEAD
         # If valid Password then move to sign up form
         if checkSudoPwd(self.sudoPassword.text) == 1:
             App.get_running_app().root.current = 'signupScreen'
@@ -42,16 +41,7 @@ class SudoPasswordScreen(Screen):
             content=Label(text='Incorrect Sudo Password. Try Again'),
             size_hint=(None, None), size=(300, 100))
             popup.open()
-=======
-	# If valid Password then move to sign up form
-	if checkSudoPwd(self.sudoPassword.text) == 1:
-	    App.get_running_app().root.current = 'signupScreen'
-	else:
-	    popup = Popup(title='Error',
-		    content=Label(text='Incorrect Sudo Password. Try Again'),
-		    size_hint=(None, None), size=(300, 100))
-	    popup.open()
->>>>>>> 57fd3e716af212ca9310e0e1f6982516b3bd7f97
+
 
 
 class UsernameScreen(Screen):
@@ -115,7 +105,7 @@ class UsernameScreen(Screen):
 
 	self.add_widget(self.layout)
 
-	self.usernameField.text = 'sonisanjiv'
+	self.usernameField.text = 'bhatshubhs'
 
     def clearLayout(self):
         for child in self.children[:]:
@@ -156,16 +146,16 @@ class UsernameScreen(Screen):
     def calculateRetryTime(self):
         global updateLoginDetails
         lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%Y-%m-%d %H:%M:%S')
-        print lastFailedLoginDatetime
+        #print lastFailedLoginDatetime
         currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
-        print currentDatetime
+        #print currentDatetime
 
         timeDifference = currentDatetime - lastFailedLoginDatetime
 
         if(timeDifference.days > 0):
             return -1
 
-        elif(timeDifference.seconds > 30):
+        elif(timeDifference.seconds > 300):
             return -1
 
         else:
@@ -245,8 +235,7 @@ class UsernameScreen(Screen):
                 #thread1 = Thread(target=loginMsgs.failedLogin)
                 #thread1.start()
                 time  = self.calculateRetryTime()
-                print "time", time
-                print "else"
+
 
     def recoverUsernameEvent(self, callback):
 	root = App.get_running_app().root
@@ -830,19 +819,11 @@ class HomeScreen(Screen):
 	self.country = []
 	self.time = []
 
-	for i in range(3):
-	    self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
-	    self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
-
-    #def updateFooter(self):
-    #updateLoginDetails.fetchLastSuccessfulLoginTime().strip()[1]
     def updateFooter(self):
         global updateLoginDetails
         global lastLoginDetails
 
         for i in range(3):
-            #self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
-            #self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
             if i == 1:
                 temp = self.presentSessionDetails
                 temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
@@ -925,8 +906,8 @@ class HomeScreen(Screen):
 	    child_first = self.midLayout.children[0]
 	    child_second = self.midLayout.children[1]
 
-	    midLayout.remove_widget(child_first)
-	    midLayout.remove_widget(child_second)
+	    self.midLayout.remove_widget(child_first)
+	    self.midLayout.remove_widget(child_second)
 
 	self.grid.add_widget(fileButton)
 	self.grid.add_widget(fileLabel)

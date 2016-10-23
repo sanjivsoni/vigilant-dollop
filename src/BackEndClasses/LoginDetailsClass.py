@@ -176,6 +176,8 @@ class LoginDetails:
             flag = 0
 
         closeConnection()
+        if ip == "":
+            ip = "NA"
         return ip+ " " + convertUTCToLocal(time)
 
 class LoginDetailMessages:
