@@ -32,7 +32,6 @@ class SudoPasswordScreen(Screen):
 	self.add_widget(self.layout)
 
     def checkSudoPassword(self, callback):
-<<<<<<< HEAD
         # If valid Password then move to sign up form
         if checkSudoPwd(self.sudoPassword.text) == 1:
             App.get_running_app().root.current = 'signupScreen'
@@ -42,17 +41,6 @@ class SudoPasswordScreen(Screen):
             content=Label(text='Incorrect Sudo Password. Try Again'),
             size_hint=(None, None), size=(300, 100))
             popup.open()
-=======
-	# If valid Password then move to sign up form
-	if checkSudoPwd(self.sudoPassword.text) == 1:
-	    App.get_running_app().root.current = 'signupScreen'
-	else:
-	    popup = Popup(title='Error',
-		    content=Label(text='Incorrect Sudo Password. Try Again'),
-		    size_hint=(None, None), size=(300, 100))
-	    popup.open()
->>>>>>> 57fd3e716af212ca9310e0e1f6982516b3bd7f97
-
 
 class UsernameScreen(Screen):
     def _update_rect(self, instance, value):
