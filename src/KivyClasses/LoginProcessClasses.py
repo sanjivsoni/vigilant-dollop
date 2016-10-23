@@ -648,6 +648,37 @@ class HomeScreen(Screen):
 
         self._popup = Popup(title = "Select Files to lock", content = popupContent,
                             size_hint = (0.9, 0.9))
+        self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), spacing = 20, padding = 10)
+        self.presentSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
+        self.lastSuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
+        self.lastUnsuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
+
+        self.location = []
+        self.ip = []
+        self.country = []
+        self.time = []
+
+        for i in range(3):
+            self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
+            self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
+            
+            if i == 1:
+                temp = self.presentSessionDetails 
+                temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
+            elif i == 2:
+                temp = self.lastSuccessfulSessionDetails
+                temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
+            else:
+                temp = self.lastUnsuccessfulSessionDetails
+                temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
+
+            temp.add_widget(self.ip[i])
+            temp.add_widget(self.time[i])
+
+        self.loginStatsLayout.add_widget(self.lastSuccessfulSessionDetails)
+        self.loginStatsLayout.add_widget(self.presentSessionDetails)
+        self.loginStatsLayout.add_widget(self.lastUnsuccessfulSessionDetails)
+        self.add_widget(self.loginStatsLayout)
 
 
     def addFilesOnLogin(self):
