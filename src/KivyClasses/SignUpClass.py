@@ -20,7 +20,12 @@ class SignupScreen(Screen):
     SQ2 = 0
     ssnType = 0
 
+    def __init__(self,**kwargs):
+        super(SignupScreen, self).__init__(**kwargs)
+        self.sudoPwd = ""
 
+    def setSudoPwd(self,pwd):
+        self.sudoPwd = aesEncrypt(pwd)
 
     def val_change(self):
         label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13', '14']
@@ -352,7 +357,7 @@ class SignupScreen(Screen):
 
                 phoneNo = label[14].text+label[5].text
                 userCredentials = label[1].text + " " + label[2].text
-                userContactDetails = label[4].text + " " +phoneNo +  " " +"sudoPwd"
+                userContactDetails = label[4].text + " " +phoneNo +  " " + self.sudoPwd
                 userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(self.ssnType) + " " +label[11].text.replace(" ", "#")
                 userSecurityQues = str(self.SQ1) + " " + str(self.SQ2) +  " " +label[12].text.replace(" ", "#") + " " +label[13].text.replace(" ", "#")
 

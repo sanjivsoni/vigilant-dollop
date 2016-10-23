@@ -5,11 +5,13 @@ from ..helperFunctions import *
 verifyUser = Authentication()
 recoverUser = UserRecovery()
 updateLoginDetails = 0
+lastLoginDetails = 0
 loginMsgs = 0
 sendOTP = 0
 choice = -1
 attempt = 0
 generatedOTP = 0
+
 
 class SudoPasswordScreen(Screen):
 
@@ -33,6 +35,7 @@ class SudoPasswordScreen(Screen):
         # If valid Password then move to sign up form
         if checkSudoPwd(self.sudoPassword.text) == 1:
             App.get_running_app().root.current = 'signupScreen'
+            App.get_running_app().root.get_screen('signupScreen').setSudoPwd(self.sudoPassword.text)
         else:
             popup = Popup(title='Error',
             content=Label(text='Incorrect Sudo Password. Try Again'),
@@ -138,6 +141,33 @@ class UsernameScreen(Screen):
         else:
             self.nextButton.disabled = False
 
+    def currentAttemptNo(self):
+        global updateLoginDetails
+        return updateLoginDetails.fetchAttemptNo()
+
+    def updateAttemptNo(self,flag):
+        global updateLoginDetails
+        updateLoginDetails.updateAttemptNo(flag)
+
+    def calculateRetryTime(self):
+        global updateLoginDetails
+        lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%Y-%m-%d %H:%M:%S')
+        print lastFailedLoginDatetime
+        currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
+        print currentDatetime
+
+        timeDifference = currentDatetime - lastFailedLoginDatetime
+
+        if(timeDifference.days > 0):
+            return -1
+
+        elif(timeDifference.seconds > 30):
+            return -1
+
+        else:
+            return timeDifference.seconds
+
+
     def enterPassword(self, callback):
         global verifyUser
         global userId
@@ -147,17 +177,17 @@ class UsernameScreen(Screen):
         global updateLoginDetails
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
-        print self.captchaCorrectText
-        if self.captchaTextInput.text == self.captchaCorrectText:
-            if userExists :
+        if userExists:
+            if self.captchaTextInput.text == self.captchaCorrectText:
                 sendOTP = OTP(verifyUser.returnUserID())
-                loginMsgs = LoginMessages(verifyUser.returnUserID())
+                loginMsgs = LoginDetailMessages(verifyUser.returnUserID())
                 updateLoginDetails = LoginDetails(verifyUser.returnUserID())
+
                 self.usernameField.password = True
                 self.usernameField.text = ''
                 self.usernameField.hint_text = 'Password'
 
-                self.usernameField.text = 'Qwe@1234'
+                #self.usernameField.text = 'Qwe@1234'
 
                 self.statusLabel.text = ' '
                 self.layout.remove_widget(self.captchaLayout)
@@ -171,37 +201,52 @@ class UsernameScreen(Screen):
                 self.children[0].add_widget(self.moveToLevelTwoButton)
                 self.children[0].add_widget(self.recoverPasswordButton)
             else:
+                # Unsuccessful match for Username
                 popup = Popup(title='Error',
-                content=Label(text='Incorrect Username'),
+                content=Label(text='Incorrect Captcha Text'),
                 size_hint=(None, None), size=(180, 100))
                 popup.open()
-
         else:
-            # Unsuccessful match for Username
             popup = Popup(title='Error',
-            content=Label(text='Incorrect Captcha Text'),
+            content=Label(text='Incorrect Username'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
 
+
+
+
+
     def verifyPasswordEvent(self, callback):
         global verifyUser
+        global loginMsgs
+
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
             self.statusLabel.text = 'Password Matched'
-
+            self.updateAttemptNo(0)
+            print self.currentAttemptNo()
             App.get_running_app().root.current = 'levelTwoScreen'
             App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
+
         else:
-            # Unsuccessful match for Password
-            print self.passwordAttempts
-            self.passwordAttempts = self.passwordAttempts + 1
-            popup = Popup(title='Error',
-            content=Label(text='Incorrect Password'),
-            size_hint=(None, None), size=(180, 100))
-            popup.open()
-            if(self.passwordAttempts > 3):
-                loginMsgs.failedLogin()
+            if self.currentAttemptNo() <= 3:
+                # Unsuccessful match for Password
+                self.updateAttemptNo(1)
+                print self.currentAttemptNo()
+                updateLoginDetails.updateFailedLoginTime()
+                popup = Popup(title='Error',
+                content=Label(text='Incorrect Password'),
+                size_hint=(None, None), size=(180, 100))
+                popup.open()
+            else:
+                #thread1 = Thread(target=loginMsgs.failedLogin)
+                #thread1.start()
+                time  = self.calculateRetryTime()
+                print "time", time
+                print "else"
+
+
 
 
 
@@ -405,18 +450,26 @@ class LevelTwoScreen(Screen):
         t1 = Thread(target=loginMsgs.loggedIn)
         t1.start()
 
+    def fetchLastLoginDetails(self):
+        global updateLoginDetails
+        global lastLoginDetails
+        lastLoginDetails =  updateLoginDetails.fetchLastSuccessfulLoginTime()
+
+
+
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         global generatedOTP
         global loginMsgs
         global updateLoginDetails
         if value == generatedOTP:
             print 'access granted'
+            self.fetchLastLoginDetails()
             updateLoginDetails.updateLoginTime()
-            t1 = Thread(target=loginMsgs.loggedIn)
-            t1.start()
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
+            t1 = Thread(target=loginMsgs.loggedIn)
+            t1.start()
 
 
 
@@ -427,12 +480,13 @@ class LevelTwoScreen(Screen):
         global updateLoginDetails
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             print 'access granted'
+            self.fetchLastLoginDetails()
             updateLoginDetails.updateLoginTime()
-            t1 = Thread(target=loginMsgs.loggedIn)
-            t1.start()
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
+            t1 = Thread(target=loginMsgs.loggedIn)
+            t1.start()
 
 
 
@@ -684,7 +738,9 @@ class HomeScreen(Screen):
 
     #def updateFooter(self):
     #updateLoginDetails.fetchLastSuccessfulLoginTime().strip()[1]
+    def updateFooter(self):
         global updateLoginDetails
+        global lastLoginDetails
 
         for i in range(3):
             #self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
@@ -692,18 +748,18 @@ class HomeScreen(Screen):
             if i == 1:
                 temp = self.presentSessionDetails
                 temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = "ds", font_size = '10sp'))
+                self.ip.append(Label( text = getUserIP(), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), font_size = '10sp'))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
+                self.ip.append(Label( text = lastLoginDetails.split()[0], font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2], font_size = '10sp'))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = 'IP : 182.68.231.46'+ str(i), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = 'Timestamp : 11:03:31 23/10/2016' + str(i), font_size = '10sp'))
+                self.ip.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[0], font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2], font_size = '10sp'))
 
             temp.add_widget(self.ip[i])
             temp.add_widget(self.time[i])
@@ -717,6 +773,7 @@ class HomeScreen(Screen):
         self.add_widget(self.layout)
 
     def addFilesOnLogin(self):
+        self.updateFooter()
         results = verifyUser.fetchLockedFiles()
         for i in results:
             fileName = aesDecrypt(i[1])

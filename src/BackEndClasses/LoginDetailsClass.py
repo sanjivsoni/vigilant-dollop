@@ -6,9 +6,9 @@ class LoginDetails:
         self.userID = userID
 
     def userCreated(self):
-        aesEncryptedInfo = aesEncrypt(currentUTC())
+        aesEncryptedInfo = aesEncrypt(currentUTC() + " " + str(0))
         establishConnection()
-        sql = "INSERT INTO login_stats(userid,created_at) VALUES " + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
+        sql = "INSERT INTO login_stats(userid,created_at,loginAttempts) VALUES " + insertQueryHelper(self.userID + " " + aesEncryptedInfo)
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -20,6 +20,65 @@ class LoginDetails:
 
         closeConnection()
 
+    def returnLastFailedLoginTime(self):
+        establishConnection()
+        time = ""
+        sql = "SELECT failed_login_time FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                time = aesDecrypt(row[0]).replace("#"," ")
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        closeConnection()
+
+        return convertUTCToLocal(time)
+
+    def fetchAttemptNo(self):
+        establishConnection()
+        attemptNo = ""
+
+        sql = "SELECT loginAttempts FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        #print sql
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                attemptNo = int(aesDecrypt(row[0]))
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        closeConnection()
+        return attemptNo
+
+    def updateAttemptNo(self,flag):
+
+        if flag == 1:
+            currentAttemptNo = self.fetchAttemptNo()
+            newAttemptNo = str(currentAttemptNo + 1)
+        else:
+            newAttemptNo = str(0)
+        establishConnection()
+        sql = "UPDATE login_stats SET loginAttempts = '" + aesEncrypt(newAttemptNo) + "'" + "WHERE userid = " + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            config.conn.commit()
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+        closeConnection()
+
+
+
     def passwordChanged(self):
 
         establishConnection()
@@ -27,7 +86,6 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-            print "success"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
@@ -56,7 +114,6 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-            print "success"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
@@ -67,7 +124,7 @@ class LoginDetails:
     def updateLoginTime(self):
         establishConnection()
         sql = "UPDATE login_stats SET login_time = '" + aesEncrypt(currentUTC()) + "'" + ",login_ip = '" + aesEncrypt(getUserIP()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        print sql
+        #print sql
         try:
             config.statement.execute(sql)
             config.conn.commit()
@@ -97,6 +154,8 @@ class LoginDetails:
             flag = 0
 
         closeConnection()
+        if ip == "":
+            ip = "NA"
         return ip + " " + convertUTCToLocal(time)
 
     def fetchLastSuccessfulLoginTime(self):
@@ -117,87 +176,82 @@ class LoginDetails:
             flag = 0
 
         closeConnection()
-        print time
         return ip+ " " + convertUTCToLocal(time)
 
-
-
-class LoginDetailsMessages:
+class LoginDetailMessages:
     def __init__(self,userID = ""):
-        self.userID = hashEncrypt(userID)
+        self.userID = userID
 
-    def succesfulLoginMessage(self):
+    def loggedIn(self):
+        userMobile = ""
+        userEmail = ""
         establishConnection()
-        sql = "SELECT mobile,email FROM user WHERE userid =" + "'" + self.userID + "'"
+        sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
         #print sql
+
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
+
             for row in results:
-                userMobile = "+91" + aesDecrypt(row[0])
-                userEmail  = aesDecrypt(row[1])
+                userMobile = aesDecrypt(row[0])
 
         except Exception, e:
             print repr(e)
             config.conn.rollback()
             flag = 0
-        closeConnection()
 
 
-        #send text
-        mobileText = "Dear " + getUserName(self.userID) + ",\n" + config.succesfulLoginMessageText + fetchLocation() + config.messageTextSignature
-        client = TwilioRestClient(config.account_sid, config.auth_token)
-        message = client.messages.create(to = userMobile, from_ = config.from_number, body = mobileText)
-
-        #send email
-        msg = MIMEMultipart()
-        msg['From'] = "Team Vigilant Dollop"
-        msg['To'] = userEmail
-        msg['Subject'] = "Login from Device"
-        body_ = "Dear " + getUserName(self.userID) + ",\n" + config.succesfulLoginMessageTextEmail_part1 + fetchLocation()
-        body = body_ + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3 + config.messageTextSignature
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
-        server.starttls()
-        server.login(config.emailid, config.email_pass)
-        text = msg.as_string()
-        server.sendmail(config.emailid, userEmail, text)
-        server.quit()
-
-    def failedLoginMessage(self):
-        establishConnection()
-        sql = "SELECT mobile,email FROM user WHERE userid =" + "'" + self.userID + "'"
-        #print sql
+        sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
+
             for row in results:
-                userMobile = "+91" + aesDecrypt(row[0])
-                userEmail  = aesDecrypt(row[1])
+                userEmail = aesDecrypt(row[0])
 
         except Exception, e:
             print repr(e)
             config.conn.rollback()
             flag = 0
-        closeConnection()
 
-        #send text
-        mobileText = "Dear " + getUserName(self.userID) + ",\n" + config.failedLoginMessageText + fetchLocation() + config.failedLoginMessageText_part2 + config.messageTextSignature
-        client = TwilioRestClient(config.account_sid, config.auth_token)
-        message = client.messages.create(to = userMobile, from_ = config.from_number, body = mobileText)
 
-        #send email
-        msg = MIMEMultipart()
-        msg['From'] = "Team Vigilant Dollop"
-        msg['To'] = userEmail
-        msg['Subject'] = "Login from Device"
-        body = "Dear " + getUserName(self.userID) + ",\n" + config.failedLoginMessageText +  fetchLocation() + config.failedLoginMessageText_part2 + config.messageTextSignature
-        msg.attach(MIMEText(body, 'plain'))
+        sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
+        sendEmail(userEmail,config.succesfulLoginMessageTextEmail_part1 + fetchLocation() + config.succesfulLoginMessageTextEmail_part2 + config.succesfulLoginMessageTextEmail_part3+config.messageTextSignature,config.emailSuccesfulLoginSubject)
 
-        server = smtplib.SMTP(config.smtp_domain,config.smtp_port)
-        server.starttls()
-        server.login(config.emailid, config.email_pass)
-        text = msg.as_string()
-        server.sendmail(config.emailid, userEmail, text)
-        server.quit()
+    def failedLogin(self):
+
+        userMobile = ""
+        userEmail = ""
+        establishConnection()
+        sql = "SELECT mobile FROM user WHERE userid =" + "'" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userMobile = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+
+        sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        sendTextMobile(userMobile,config.failedLoginMessageText + fetchLocation())
+        sendEmail(userEmail,config.failedLoginMessageText + fetchLocation() + config.failedLoginMessageText_part2 + config.messageTextSignature,config.emailFailedLoginSubject)

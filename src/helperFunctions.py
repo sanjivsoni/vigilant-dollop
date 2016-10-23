@@ -60,7 +60,6 @@ def lock(path,encryptedSudoPwd):
     sudoPwd = aesDecrypt(encryptedSudoPwd)
 
     command1 = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
-
     if os.system(command1) == 0:
         command2 = config.changeDirectory + sudoPwd + config.lockCommand + path
         if os.system(command2) == 0:
@@ -86,15 +85,19 @@ def currentUTC():
 
 def convertUTCToLocal(utcTime):
 
-    utcTimeZone = tz.tzutc()
-    localTimezone = tz.tzlocal()
+    if utcTime == "":
+        return "NA NA"
 
-    utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
+    else:
+        utcTimeZone = tz.tzutc()
+        localTimezone = tz.tzlocal()
 
-    utc = utc.replace(tzinfo = utcTimeZone)
-    localTime = utc.astimezone(localTimezone)
+        utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
 
-    return str(localTime.strftime("%Y-%m-%d %H:%M:%S"))
+        utc = utc.replace(tzinfo = utcTimeZone)
+        localTime = utc.astimezone(localTimezone)
+
+        return str(localTime.strftime("%Y-%m-%d %H:%M:%S"))
 
 def hashEncrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
@@ -113,7 +116,7 @@ def getUserIP():
     send_url = 'http://freegeoip.net/json'
     r = requests.get(send_url)
     j = json.loads(r.text)
-    details = "IP address: " + j['ip']
+    details =  j['ip']
     return details
 
 def generateOTP(length):
