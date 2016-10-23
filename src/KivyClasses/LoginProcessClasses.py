@@ -57,8 +57,18 @@ class UsernameScreen(Screen):
     layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40),
                 pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
     def __init__(self, **kwargs):
         super(UsernameScreen, self).__init__(**kwargs)
+
+        with self.canvas.before:
+            Color(0, 0, 0, 1)  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
         self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
@@ -612,40 +622,34 @@ class RecoverScreen(Screen):
 
 class HomeScreen(Screen):
 
-    elementCounter = 0
     first_time_add_button = 1
 
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
 
-        layout = BoxLayout(orientation = 'vertical')
+        self.layout = BoxLayout(orientation = 'vertical')
 
-        topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
-
+        self.topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
         lockFileButton = Button(text = "Lock Files", id = 'lock_button')
 	lockFileButton.bind(on_press = self.showLoadPopup)
+        self.topLayout.add_widget(lockFileButton)
 
-        topLayout.add_widget(lockFileButton)
-        midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
-        bottomLayout = BoxLayout(size_hint = (1, 0.9), padding = 20)
+        self.midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
 
-        grid = GridLayout(id = 'unlocked_files', cols = 6, padding = 5, spacing = 20,
-                size_hint = (None, None), width = 650,  pos_hint = {'center_x': .5, 'center_y': .5})
+        self.bottomLayout = BoxLayout(size_hint = (1, 0.9), padding = 20)
 
-        grid.bind(minimum_height=grid.setter('height'))
+        self.grid = GridLayout(id = 'unlocked_files', cols = 6, padding = 5, spacing = 20, size_hint = (None, None), width = 650,  pos_hint = {'center_x': .5, 'center_y': .5})
+        self.grid.bind(minimum_height = self.grid.setter('height'))
 
-        scroll = ScrollView(size_hint = (None, None), size = (650, 500),
-                pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)
-	scroll.add_widget(grid)
+        self.scroll = ScrollView(size_hint = (None, None), size = (650, 500), pos_hint = {'center_x': .5, 'center_y': .5}, do_scroll_x = False)
+	self.scroll.add_widget(self.grid)
+	self.bottomLayout.add_widget(self.scroll)
 
-	bottomLayout.add_widget(scroll)
+	self.layout.add_widget(self.topLayout)
+	self.layout.add_widget(self.midLayout)
+	self.layout.add_widget(self.bottomLayout)
 
-	layout.add_widget(topLayout)
-	layout.add_widget(midLayout)
-	layout.add_widget(bottomLayout)
-
-        self.add_widget(layout)
-
+        # Add popup for file chooser
         popupContent = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
         fileView = FileChooserListView(id = 'filechooser')
 
@@ -665,7 +669,10 @@ class HomeScreen(Screen):
 
         self._popup = Popup(title = "Select Files to lock", content = popupContent,
                             size_hint = (0.9, 0.9))
+
+        # Login stats layout
         self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), spacing = 20, padding = 10)
+
         self.presentSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
         self.lastSuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
         self.lastUnsuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
@@ -704,25 +711,24 @@ class HomeScreen(Screen):
         self.loginStatsLayout.add_widget(self.lastSuccessfulSessionDetails)
         self.loginStatsLayout.add_widget(self.presentSessionDetails)
         self.loginStatsLayout.add_widget(self.lastUnsuccessfulSessionDetails)
-        self.add_widget(self.loginStatsLayout)
 
+        self.layout.add_widget(self.loginStatsLayout)
+
+        self.add_widget(self.layout)
 
     def addFilesOnLogin(self):
-        #self.updateFooter()
-        grid = self.children[0].children[0].children[0].children[0]
         results = verifyUser.fetchLockedFiles()
         for i in results:
             fileName = aesDecrypt(i[1])
             filePath = aesDecrypt(i[0])
-            fileButton = Button(text=' ', size=(40, 40),
-                             size_hint=(None, None), id = str(fileName))
-
+            fileButton = Button(text=' ', size=(40, 40), size_hint = (None, None), id = str(fileName))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
-            fileLabel = Label(text = str(fileName), width = 70, halign = 'left',valign = 'middle', id="label"+str(fileName), font_size='15sp')
-            fileLabel.bind(size=fileLabel.setter('text_size'))
 
-            grid.add_widget(fileButton)
-            grid.add_widget(fileLabel)
+            fileLabel = Label(text = str(fileName), width = 70, halign = 'left', valign = 'middle', id="label" + str(fileName), font_size = '15sp')
+            fileLabel.bind(size = fileLabel.setter('text_size'))
+
+            self.grid.add_widget(fileButton)
+            self.grid.add_widget(fileLabel)
 
 
     def cancel(self, *args):
@@ -759,75 +765,60 @@ class HomeScreen(Screen):
         fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
         fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='15sp')
         fileLabel.bind(size=fileLabel.setter('text_size'))
-        midLayout = self.children[0].children[1]
 
-        if len(midLayout.children) > 0:
-            child_first = midLayout.children[0]
-            child_second = midLayout.children[1]
+        if len(self.midLayout.children) > 0:
+            child_first = self.midLayout.children[0]
+            child_second = self.midLayout.children[1]
 
             midLayout.remove_widget(child_first)
             midLayout.remove_widget(child_second)
 
-            self.elementCounter = self.elementCounter - 1
+        self.grid.add_widget(fileButton)
+        self.grid.add_widget(fileLabel)
 
-        grid = self.children[0].children[0].children[0].children[0]
-        grid.add_widget(fileButton)
-        grid.add_widget(fileLabel)
-
-
-    def removeFile(self, *args):
+    def removeFile(self, fileName, labelPrevious, buttonPrevious, filePath, callback):
         global verifyUser
-        grid = args[0]
-        file_name = args[1]
-        label_previous = args[2]
-        button_previous = args[3]
-        filePath = args[4]
-        midLayout = self.children[0].children[1]
-        verifyUser.unlockItem(filePath, file_name)
 
-        grid = self.children[0].children[0].children[0].children[0]
-#        print grid.children[int(args[0])]
-        inValidWidget = []
+        verifyUser.unlockItem(filePath, fileName)
+
         deleted = 1
-        for child in grid.children:
-            if child.id == file_name:
-                for label in grid.children:
-                    if label.id == "label"+ str(file_name) and deleted == 1:
+        for child in self.grid.children:
+            if child.id == fileName:
+                for label in self.grid.children:
+                    if label.id == "label"+ str(fileName) and deleted == 1:
                         deleted = 0
-                        grid.remove_widget(child)
-                        grid.remove_widget(label)
-                        midLayout.remove_widget(button_previous)
-                        midLayout.remove_widget(label_previous)
+                        self.grid.remove_widget(child)
+                        self.grid.remove_widget(label)
+                        self.midLayout.remove_widget(buttonPrevious)
+                        self.midLayout.remove_widget(labelPrevious)
 
     def unlockFile(self, fileName, filePath, callback):
-
-        grid = self.children[0].children[0].children[0].children[0]
         complete_file_name = str(filePath + '/' + fileName)
         file_name = fileName
-        midLayout = self.children[0].children[1]
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
+
         button = Button(text = 'remove', size_hint = (0.1,0.5))
-        button.bind(on_press = partial(self.removeFile, grid, file_name,label, button,filePath))
+        button.bind(on_press = partial(self.removeFile, file_name,label, button,filePath))
 
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
 
-            midLayout.add_widget(label)
-            midLayout.add_widget(button)
+            self.midLayout.add_widget(label)
+            self.midLayout.add_widget(button)
         else:
-            if len(midLayout.children) > 0 :
-                previous_label = midLayout.children[0]
-                previous_button = midLayout.children[1]
+            if len(self.midLayout.children) > 0 :
+                previous_label = self.midLayout.children[0]
+                previous_button = self.midLayout.children[1]
 
-                midLayout.remove_widget(previous_label)
-                midLayout.remove_widget(previous_button)
+                self.midLayout.remove_widget(previous_label)
+                self.midLayout.remove_widget(previous_button)
 
-                midLayout.add_widget(label)
-                midLayout.add_widget(button)
+                self.midLayout.add_widget(label)
+                self.midLayout.add_widget(button)
             else:
-                midLayout.add_widget(label)
-                midLayout.add_widget(button)
+                self.midLayout.add_widget(label)
+                self.midLayout.add_widget(button)
 
     def showLoadPopup(self, *args):
         self._popup.open()
