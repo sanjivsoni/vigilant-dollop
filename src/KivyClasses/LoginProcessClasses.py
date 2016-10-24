@@ -219,7 +219,7 @@ class LevelTwoScreen(Screen):
     _otp_expired = 0
 
     _time_event = 0
-    _otp_choice = 0
+    otpChoice = 0
     correctOTP = ""
 
     otpOnLevelTwoFlag = 0
@@ -291,7 +291,7 @@ class LevelTwoScreen(Screen):
         print choice
         if self.otpOnLevelTwoFlag == 1:
             self.startTimer()
-            self.otpSentLabel.text = self.returnOTPEvent()
+            self.otpSentLabel.text = self.returnOTPEvent(-1)
 
         else:
             self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
@@ -305,13 +305,20 @@ class LevelTwoScreen(Screen):
 
         self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
 
-    def returnOTPEvent(self):
+    def returnOTPEvent(self,flag):
         otpQueue = Queue.Queue()
         global sendOTP
         global generatedOTP
+        global otpChoice
         msg = ""
-        choice = randint(0, 5)
-        #choice  = 0
+
+        if flag == -1:
+            choice = randint(0, 5)
+            #choice  = 0
+            otpChoice = choice
+        else:
+            choice = flag
+
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
             print datetime.datetime.now()
@@ -362,7 +369,7 @@ class LevelTwoScreen(Screen):
 
             self.securityQuestionLabel.text = ' '
 
-            self.otpSentLabel.text = self.returnOTPEvent()
+            self.otpSentLabel.text = self.returnOTPEvent(-1)
 
             self.timerLabel.text = "00:00"
 
@@ -479,9 +486,12 @@ class LevelTwoScreen(Screen):
             print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def regenerateOtp(self, callback):
+        global otpChoice
+        self.returnOTPEvent(otpChoice)
         self.startTimer()
         self.bottomLayout.remove_widget(self.regenerateOtpButton)
         self.otpText.disabled = False
+
 
     # Update Timer after One Second
     def updateTimer(self, dt):

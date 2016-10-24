@@ -194,10 +194,12 @@ def runByThreadForMobile(*kargs):
     thread1.start()
 
 def sendTextMobile(sendTo,msg):
+    print "mobile"
     client = TwilioRestClient(config.account_sid, config.auth_token)
     message = client.messages.create(to = sendTo, from_ = config.from_number, body = msg)
 
 def sendEmail(sendTo,message,subject):
+    print "email"
     msg = MIMEMultipart()
     msg['From'] = "Team Vigilant Dollop"
     msg['To'] = sendTo
