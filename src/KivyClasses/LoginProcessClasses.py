@@ -12,24 +12,51 @@ choice = -1
 attempt = 0
 generatedOTP = 0
 
+labelFont = 'Play-Regular.ttf'
+buttonFont = 'batmfa__.ttf'
+textInputFont = 'Play-Regular.ttf'
+headingFont = 'batmfa__.ttf'
+headingFont = headingFont
+
+Label.font_name = StringProperty(labelFont)
+Label.color = (0.98, 0.87, 0,1)
+Label.font_size = NumericProperty('14sp')
+
+Button.font_name = StringProperty(buttonFont)
+backgroundColor = [0.04, 0, 0.2, 1]
+
+#TextInput.foreground_color = (0.32, 0.32, 0.32,1)
+TextInput.font_name = StringProperty(textInputFont)
+TextInput.font_size = NumericProperty('15sp')
+
+popupSize = (200, 200)
 
 class SudoPasswordScreen(Screen):
 
+    def _update_rect(self, instance, value):
+	self.rect.pos = instance.pos
+	self.rect.size = instance.size
+
     def __init__(self, **kwargs):
+	super(SudoPasswordScreen, self).__init__(**kwargs)
+	with self.canvas.before:
+	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+	    self.rect = Rectangle(size=self.size, pos=self.pos)
 
-        super(SudoPasswordScreen, self).__init__(**kwargs)
-        # Initialize Screen Elements
-        self.layout = BoxLayout(orientation = 'vertical', pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25, size_hint = (0.25, 0.25))
-        self.sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
-        self.submitButton = Button(text = 'Submit')
-        self.label = Label(text = 'Please Enter your sudo password.')
+	self.bind(size = self._update_rect, pos=self._update_rect)
 
-        # Add elements to screen
-        self.submitButton.bind(on_press = self.checkSudoPassword)
-        self.layout.add_widget(self.label)
-        self.layout.add_widget(self.sudoPassword)
-        self.layout.add_widget(self.submitButton)
-        self.add_widget(self.layout)
+	# Initialize Screen Elements
+	self.layout = BoxLayout(orientation = 'vertical', pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25, size_hint = (0.25, 0.25))
+	self.sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
+	self.submitButton = Button(text = 'Submit')
+	self.label = Label(text = 'Please Enter your sudo password.', font_size = '17sp')
+
+	# Add elements to screen
+	self.submitButton.bind(on_press = self.checkSudoPassword)
+	self.layout.add_widget(self.label)
+	self.layout.add_widget(self.sudoPassword)
+	self.layout.add_widget(self.submitButton)
+	self.add_widget(self.layout)
 
     def checkSudoPassword(self, callback):
         # If valid Password then move to sign up form
@@ -39,7 +66,7 @@ class SudoPasswordScreen(Screen):
         else:
             popup = Popup(title='Error',
             content=Label(text='Incorrect Sudo Password. Try Again'),
-            size_hint=(None, None), size=(300, 100))
+            size_hint=(None, None), size=(500, 100))
             popup.open()
 
 class UsernameScreen(Screen):
@@ -48,11 +75,11 @@ class UsernameScreen(Screen):
         self.rect.size = instance.size
 
     def buildLayout(self):
-        self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.25,0.40), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
+        self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.35,0.40), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
-        with self.canvas.before:
-            Color(0, 0, 0, 1)  # green; colors range from 0-1 instead of 0-255
-            self.rect = Rectangle(size=self.size, pos=self.pos)
+	with self.canvas.before:
+	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+	    self.rect = Rectangle(size=self.size, pos=self.pos)
 
         self.bind(size = self._update_rect, pos=self._update_rect)
 
@@ -103,7 +130,7 @@ class UsernameScreen(Screen):
 
         self.add_widget(self.layout)
 
-        self.usernameField.text = 'bhatshubhs'
+	self.usernameField.text = 'sanjivsoni'
 
     def clearLayout(self):
         for child in self.children[:]:
@@ -153,12 +180,13 @@ class UsernameScreen(Screen):
                 self.usernameField.hint_text = 'Password'
 
                 #self.usernameField.text = 'Qwe@1234'
+                self.usernameField.text = 'Test@1234'
 
                 self.statusLabel.text = ' '
                 self.layout.remove_widget(self.captchaLayout)
                 self.layout.remove_widget(self.captchaTextInput)
 
-                self.layout.size_hint = (0.25,0.27)
+                self.layout.size_hint = (0.35,0.27)
 
                 self.children[0].remove_widget(self.recoverUserNameButton)
                 self.children[0].remove_widget(self.nextButton)
@@ -183,7 +211,7 @@ class UsernameScreen(Screen):
         global verifyUser
         global loginMsgs
         global updateLoginDetails
-
+    
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
@@ -224,7 +252,17 @@ class LevelTwoScreen(Screen):
 
     otpOnLevelTwoFlag = 0
 
+    def _update_rect(self, instance, value):
+	self.rect.pos = instance.pos
+	self.rect.size = instance.size
+
     def buildLayout(self):
+	with self.canvas.before:
+	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+	    self.rect = Rectangle(size=self.size, pos=self.pos)
+
+	self.bind(size = self._update_rect, pos=self._update_rect)
+
         self.topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
         self.midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
 
@@ -249,10 +287,10 @@ class LevelTwoScreen(Screen):
     def __init__(self, **kwargs):
         super(LevelTwoScreen, self).__init__(**kwargs)
 
-        self.headingLabel = Label( text = ' HEADING')
-        self.securityQuestionLabel = Label ()
-        self.otpSentLabel = Label ()
-        self.timerLabel = Label()
+        self.headingLabel = Label( text = ' HEADING', font_size = '25sp')
+        self.securityQuestionLabel = Label (hint_text = 'Answer', font_size = '18sp' )
+        self.otpSentLabel = Label (font_size = '15sp')
+        self.timerLabel = Label(font_size = '40sp')
         self.otpText = TextInput(size_hint = (0.3, 0.2), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25, multiline = False)
 
         self.otpTextSecond = TextInput(size_hint = (0.3, 0.2), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25, multiline = False)
@@ -409,7 +447,6 @@ class LevelTwoScreen(Screen):
                 Clock.unschedule(self._time_event)
                 self.timerLabel.text = ' '
                 self.otpSentLabel.text = ' '
-
                 self.midLayout.remove_widget(self.otpText)
                 self.otpText = self.otpTextSecond
                 self.midLayout.add_widget(self.otpText)
@@ -524,6 +561,10 @@ class LevelTwoScreen(Screen):
             self.timerLabel.text = clockState
 
 class RecoverScreen(Screen):
+    def _update_rect(self, instance, value):
+	self.rect.pos = instance.pos
+	self.rect.size = instance.size
+
     def __init__(self, **kwargs):
         super(RecoverScreen, self).__init__(**kwargs)
 
@@ -534,6 +575,12 @@ class RecoverScreen(Screen):
             self.remove_widget(child)
 
     def renderUsernameScreen(self):
+	with self.canvas.before:
+	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+	    self.rect = Rectangle(size=self.size, pos=self.pos)
+
+	self.bind(size = self._update_rect, pos=self._update_rect)
+
         self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.40,0.20), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
         self.recoverLabel = Label( text = 'Recover by Email or phone')
 
@@ -775,10 +822,20 @@ class HomeScreen(Screen):
 
     first_time_add_button = 1
 
+    def _update_rect(self, instance, value):
+	self.rect.pos = instance.pos
+	self.rect.size = instance.size
+
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
 
-        self.layout = BoxLayout(orientation = 'vertical')
+	with self.canvas.before:
+	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+	    self.rect = Rectangle(size=self.size, pos=self.pos)
+
+	self.bind(size = self._update_rect, pos=self._update_rect)
+
+	self.layout = BoxLayout(orientation = 'vertical')
 
         self.topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
         lockFileButton = Button(text = "Lock Files", id = 'lock_button')
@@ -821,12 +878,12 @@ class HomeScreen(Screen):
         self._popup = Popup(title = "Select Files to lock", content = popupContent,
             size_hint = (0.9, 0.9))
 
-        # Login stats layout
-        self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), spacing = 20, padding = 10)
+	# Login stats layout
+	self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.11), padding = 10)
 
-        self.presentSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
-        self.lastSuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
-        self.lastUnsuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1), spacing = 10)
+	self.presentSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
+	self.lastSuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
+	self.lastUnsuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
 
         self.location = []
         self.ip = []
@@ -847,19 +904,19 @@ class HomeScreen(Screen):
         for i in range(3):
             if i == 1:
                 temp = self.presentSessionDetails
-                temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = str(getUserIP()), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), font_size = '10sp'))
+                temp.add_widget(Label(text = 'Present Session', width = 50  , halign = 'left'))
+                self.ip.append(Label( text = getUserIP()))
+                self.time.append(Label( text = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
-                temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = str(lastLoginDetails.split()[0]), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = str(lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2]), font_size = '10sp'))
+                temp.add_widget(Label(text = 'Last Login'))
+                self.ip.append(Label( text = lastLoginDetails.split()[0]))
+                self.time.append(Label( text = lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2]))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
-                temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = str(updateLoginDetails.fetchLastFailedLoginTime().split()[0]), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = str(updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2]), font_size = '10sp'))
+                temp.add_widget(Label(text = 'Failed Attempt'))
+                self.ip.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[0]))
+                self.time.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2]))
 
             temp.add_widget(self.ip[i])
             temp.add_widget(self.time[i])
@@ -871,6 +928,7 @@ class HomeScreen(Screen):
         thread1 = Thread(target = self.updateFooter)
         thread1.start()
         updateAttemptNo(updateLoginDetails,0)
+        '''
         results = verifyUser.fetchLockedFiles()
         for i in results:
             fileName = aesDecrypt(i[1])
@@ -883,6 +941,7 @@ class HomeScreen(Screen):
 
             self.grid.add_widget(fileButton)
             self.grid.add_widget(fileLabel)
+        '''
 
 
     def cancel(self, *args):
@@ -909,16 +968,13 @@ class HomeScreen(Screen):
                 size_hint=(None, None), size=(180, 100))
             popup.open()
 
-
-
     def lockFile(self, *args):
-        buttonId = str(args[1])
-        fileButton = Button(text=' ', size=(40, 40),
-            size_hint=(None, None), id = buttonId)
+	buttonId = str(args[1])
+	fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = buttonId, background_color = (1, 0.29, 0.32,1))
 
-        fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
-        fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='15sp')
-        fileLabel.bind(size=fileLabel.setter('text_size'))
+	fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
+	fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='13sp')
+	fileLabel.bind(size=fileLabel.setter('text_size'))
 
         if len(self.midLayout.children) > 0:
             child_first = self.midLayout.children[0]
@@ -952,8 +1008,8 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
 
-        button = Button(text = 'remove', size_hint = (0.1,0.5))
-        button.bind(on_press = partial(self.removeFile, file_name,label, button,filePath))
+	button = Button(text = 'remove', size_hint = (0.2,0.5))
+	button.bind(on_press = partial(self.removeFile, file_name,label, button,filePath))
 
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0

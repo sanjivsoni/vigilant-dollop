@@ -1,6 +1,11 @@
 from ..BackEndClasses import *
 from ..libraries import *
 
+backgroundColor = [0.04, 0, 0.2, 1]
+Spinner.font_name = 'Play-Regular.ttf'
+Spinner.background_color = (0.33,0.33,0.33,1)
+
+Builder.load_file("GUI_builderForm.kv")
 
 class SignupScreen(Screen):
     flag = 0
@@ -20,9 +25,19 @@ class SignupScreen(Screen):
     SQ2 = 0
     ssnType = 0
 
+    def _update_rect(self, instance, value):
+	self.rect.pos = instance.pos
+	self.rect.size = instance.size
+
     def __init__(self,**kwargs):
         super(SignupScreen, self).__init__(**kwargs)
         self.sudoPwd = ""
+
+	with self.canvas.before:
+	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+	    self.rect = Rectangle(size=self.size, pos=self.pos)
+
+	self.bind(size = self._update_rect, pos=self._update_rect)
 
     def setSudoPwd(self,pwd):
         self.sudoPwd = pwd

@@ -62,6 +62,12 @@ from kivy.core.window import Window
 
 from kivy.graphics import Color, Rectangle
 
+from kivy.uix.floatlayout import FloatLayout
+from kivy.properties import NumericProperty
+from kivy.properties import StringProperty
+from kivy.uix.spinner import Spinner
+
+
 from kivy.factory import Factory
 from kivy.uix.filechooser import FileChooserIconView, FileChooserListView
 from kivy.uix.popup import Popup
