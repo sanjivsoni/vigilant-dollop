@@ -1147,9 +1147,13 @@ class OtpVerification(Screen):
         self.label = Label(text = 'Please Enter the combined OTP sent to Email and Mobile', font_size = '15sp')
         self.textInput = TextInput(hint_text = 'OTP', multiline = False)
         self.button = Button( text = 'Submit')
-
+        self.button.bind( on_press = self.checkOtp)
         self.layout.add_widget(self.label)
         self.layout.add_widget(self.textInput)
         self.layout.add_widget(self.button)
         self.add_widget(self.layout)
 
+    def checkOtp(self, callback):
+        root = App.get_running_app().root
+        root.current = 'Username'
+        pass

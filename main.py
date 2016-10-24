@@ -6,7 +6,7 @@ Window.size = (700, 700)
 
 screenManager = ScreenManager( transition = FadeTransition() )
 
-choice = 8
+choice = 9
 
 if choice == 1:
     screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
@@ -25,11 +25,13 @@ elif choice == 7:
 elif choice == 8:
     screenManager.add_widget( OtpVerification( name = 'OTPVerification' ))
 
+
 else:
 
     if userDoesNotExists():
         screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
         screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
+        screenManager.add_widget( OtpVerification( name = 'OTPVerification' ))
     screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
     screenManager.add_widget( RecoverScreen( name = 'recoverScreen' ) )
     screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )

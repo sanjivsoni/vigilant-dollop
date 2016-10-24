@@ -389,7 +389,7 @@ class SignupScreen(Screen):
                     newUser.addSecurityQuestions(userSecurityQues)
                     loginDetails.userCreated()
 
-                    App.get_running_app().root.current = 'usernameScreen'
+                    App.get_running_app().root.current = 'OTPVerification'
 
         else:
             popup = Popup(title='Error',content=Label(text="Please Enter All The Fields Correctly."),size_hint=(None, None), size=(400, 200))
