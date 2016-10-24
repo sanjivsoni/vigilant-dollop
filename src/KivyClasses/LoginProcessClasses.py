@@ -902,18 +902,18 @@ class HomeScreen(Screen):
                 temp = self.presentSessionDetails
                 temp.add_widget(Label(text = 'Present Session', width = 50  , halign = 'left'))
                 self.ip.append(Label( text = str(getUserIP())))
-                self.time.append(Label( text = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
+                self.time.append(Label( text = str(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"))))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Last Succesful Login'))
-                self.ip.append(Label( text = lastLoginDetails.split()[0]))
-                self.time.append(Label( text = lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2]))
+                self.ip.append(Label( text = str(lastLoginDetails.split()[0])))
+                self.time.append(Label( text = str(lastLoginDetails.split()[1]) + " " + str(lastLoginDetails.split()[2])))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Last Failed Attempt'))
                 lastfFailedloginDetails = updateLoginDetails.fetchLastFailedLoginTime()
-                self.ip.append(Label( text = lastfFailedloginDetails.split()[0]))
-                self.time.append(Label( text = lastfFailedloginDetails.split()[1] + " " + lastfFailedloginDetails.split()[2]))
+                self.ip.append(Label( text = str(lastfFailedloginDetails.split()[0])))
+                self.time.append(Label( text = str(lastfFailedloginDetails.split()[1]) + " " + str(lastfFailedloginDetails.split()[2])))
 
             temp.add_widget(self.ip[i])
             temp.add_widget(self.time[i])

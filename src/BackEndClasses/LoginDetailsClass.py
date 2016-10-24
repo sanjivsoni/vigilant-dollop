@@ -180,6 +180,7 @@ class LoginDetails:
         time = ""
         ip =""
         sql = "SELECT login_time,login_ip FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        print sql
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()

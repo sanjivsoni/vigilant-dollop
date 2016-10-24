@@ -49,9 +49,8 @@ def createCaptcha():
     return captcha
 
 def checkSudoPwd(sudopwd):
-    a = os.system("echo " + sudopwd + " | sudo -S -v")
-    print "a",a
-    if a == 0:
+    status = os.system("echo " + sudopwd + " | sudo -S -v")
+    if status == 0:
         return 1
     else:
         return 0
@@ -81,23 +80,23 @@ def unlock(path,encryptedSudoPwd):
     return flag
 
 def currentUTC():
-    return datetime.datetime.utcnow().strftime("%Y-%m-%d#%H:%M:%S")
+    return datetime.datetime.utcnow().strftime("%d-%m-%Y#%H:%M:%S")
 
 def convertUTCToLocal(utcTime):
 
     if utcTime == "":
-        return ""
+        return " " + " "
 
     else:
         utcTimeZone = tz.tzutc()
         localTimezone = tz.tzlocal()
 
-        utc = datetime.datetime.strptime(utcTime,'%Y-%m-%d %H:%M:%S')
+        utc = datetime.datetime.strptime(utcTime,'%d-%m-%Y %H:%M:%S')
 
         utc = utc.replace(tzinfo = utcTimeZone)
         localTime = utc.astimezone(localTimezone)
 
-        return str(localTime.strftime("%Y-%m-%d %H:%M:%S"))
+        return str(localTime.strftime("%d-%m-%Y %H:%M:%S"))
 
 def hashEncrypt(plaintext):
     encryptedText = SHA256.new(plaintext)
@@ -224,9 +223,9 @@ def updateAttemptNo(updateLoginDetails,flag):
     updateLoginDetails.updateAttemptNo(flag)
 
 def calculateRetryTime(updateLoginDetails):
-    lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%Y-%m-%d %H:%M:%S')
+    lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%d-%m-%Y %H:%M:%S')
     #print lastFailedLoginDatetime
-    currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
+    currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),"%d-%m-%Y %H:%M:%S")
     #print currentDatetime
 
     timeDifference = currentDatetime - lastFailedLoginDatetime
