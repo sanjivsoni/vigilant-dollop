@@ -234,7 +234,6 @@ class Authentication:
             results = config.statement.fetchall()
 
         closeConnection()
-
         return results
 
 class OTP:

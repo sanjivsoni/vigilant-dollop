@@ -928,6 +928,11 @@ class HomeScreen(Screen):
         updateAttemptNo(updateLoginDetails,0)
 
         results = verifyUser.fetchLockedFiles()
+
+        while results == 0:
+            results = verifyUser.fetchLockedFiles()
+
+
         for i in results:
             fileName = aesDecrypt(i[1])
             filePath = aesDecrypt(i[0])
