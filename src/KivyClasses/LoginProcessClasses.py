@@ -314,7 +314,6 @@ class LevelTwoScreen(Screen):
 
         if flag == -1:
             choice = randint(0, 5)
-            #choice  = 0
             otpChoice = choice
         else:
             choice = flag
@@ -336,13 +335,13 @@ class LevelTwoScreen(Screen):
             generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
 
         elif choice == 3:
-            msg = "Enter the OTP sent on your registered mobile followed by birth year"
-            sendOTP.sendOTPforAuth_mobile(2,otpQueue)
+            msg = "Enter the OTP sent on your registered email followed by birth year"
+            sendOTP.sendOTPforAuth_email(2,otpQueue)
             generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(1)
 
         elif choice == 4:
-            msg = "Enter the OTP sent on your registered email followed by birth date"
-            sendOTP.sendOTPforAuth_email(4,otpQueue)
+            msg = "Enter the OTP sent on your registered mobile followed by birth date"
+            sendOTP.sendOTPforAuth_mobile(4,otpQueue)
             generatedOTP = otpQueue.get() + verifyUser.fetchDOBforAuth(2)
 
         elif choice == 5:
