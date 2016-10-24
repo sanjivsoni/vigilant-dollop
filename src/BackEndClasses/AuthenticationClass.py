@@ -230,9 +230,8 @@ class Authentication:
                 print aesDecrypt(row[1])
 
         except Exception, e:
-            establishConnection()
             print "Reconnecting"
-            self.fetchLockedFiles()
+            return 0
 
         return results
 
