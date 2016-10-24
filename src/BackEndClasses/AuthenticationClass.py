@@ -211,13 +211,14 @@ class Authentication:
                     print repr(e)
                     config.conn.rollback()
                     flag = 0
-
+                closeConnection()
                 return 1
 
-            closeConnection()
+
 
     def fetchLockedFiles(self):
 
+        print "fetching locked files"
         establishConnection()
 
         sql = "SELECT filepath,filename FROM lockedFiles WHERE userid =" + "'" + self.userID + "'"
@@ -225,14 +226,14 @@ class Authentication:
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
-            for row in results:
-                print aesDecrypt(row[0])
-                print aesDecrypt(row[1])
 
-        except Exception, e:
-            establishConnection()
+        except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
-            self.fetchLockedFiles()
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+
+        closeConnection()
 
         return results
 
@@ -253,11 +254,15 @@ class OTP:
             for row in results:
                 userMobile = aesDecrypt(row[0])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userMobile = aesDecrypt(row[0])
 
+        closeConnection()
         generatedOTP = generateOTP(length)
         out_queue.put(generatedOTP)
         runByThreadForMobile(sendTextMobile,userMobile,config.mobile_msg + generatedOTP)
@@ -274,12 +279,15 @@ class OTP:
                 userEmail = aesDecrypt(row[0])
                 #print userEmail
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            print "error"
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userEmail = aesDecrypt(row[0])
 
-
+        closeConnection()
         generatedOTP = generateOTP(length)
         out_queue.put(generatedOTP)
         runByThreadForEmail(sendEmail,userEmail,config.email_msg + generatedOTP,config.emailOtpSubject)

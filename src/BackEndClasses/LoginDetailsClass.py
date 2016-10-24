@@ -13,10 +13,11 @@ class LoginDetails:
             config.statement.execute(sql)
             config.conn.commit()
             flag = 1
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            config.conn.commit()
 
         closeConnection()
 
@@ -30,10 +31,13 @@ class LoginDetails:
             for row in results:
                 time = aesDecrypt(row[0]).replace("#"," ")
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                time = aesDecrypt(row[0]).replace("#"," ")
 
         closeConnection()
 
@@ -51,10 +55,13 @@ class LoginDetails:
             for row in results:
                 attemptNo = int(aesDecrypt(row[0]))
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                attemptNo = int(aesDecrypt(row[0]))
 
         closeConnection()
         return attemptNo
@@ -71,13 +78,14 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            config.conn.commit()
+
         closeConnection()
-
-
 
     def passwordChanged(self):
 
@@ -86,10 +94,11 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            config.conn.commit()
 
         closeConnection()
 
@@ -100,11 +109,13 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-            print "success"
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            config.conn.commit()
+
         closeConnection()
 
     def updateFailedLoginTime(self):
@@ -114,11 +125,11 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
-
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            config.conn.commit()
         closeConnection()
 
     def updateLoginTime(self):
@@ -128,10 +139,11 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
-        except Exception, e:
-            print "error in ippp"
-            print repr(e)
-            config.conn.rollback()
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            config.conn.commit()
             flag = 0
 
         closeConnection()
@@ -148,10 +160,15 @@ class LoginDetails:
                 time = aesDecrypt(row[0]).replace("#"," ")
                 ip = aesDecrypt(row[1])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                time = aesDecrypt(row[0]).replace("#"," ")
+                ip = aesDecrypt(row[1])
+
 
         closeConnection()
         if ip == "":
@@ -170,10 +187,14 @@ class LoginDetails:
                 time = aesDecrypt(row[0]).replace("#"," ")
                 ip = aesDecrypt(row[1])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                time = aesDecrypt(row[0]).replace("#"," ")
+                ip = aesDecrypt(row[1])
 
         closeConnection()
         if ip == "":
@@ -198,10 +219,13 @@ class LoginDetailMessages:
             for row in results:
                 userMobile = aesDecrypt(row[0])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userMobile = aesDecrypt(row[0])
 
 
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
@@ -212,10 +236,15 @@ class LoginDetailMessages:
             for row in results:
                 userEmail = aesDecrypt(row[0])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        closeConnection()
 
 
         sendTextMobile(userMobile,config.succesfulLoginMessageText + fetchLocation())
@@ -236,10 +265,13 @@ class LoginDetailMessages:
             for row in results:
                 userMobile = aesDecrypt(row[0])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userMobile = aesDecrypt(row[0])
 
 
         sql = "SELECT email FROM user WHERE userid =" + "'" + self.userID + "'"
@@ -250,10 +282,15 @@ class LoginDetailMessages:
             for row in results:
                 userEmail = aesDecrypt(row[0])
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+
+        closeConnection()
 
         sendTextMobile(userMobile,config.failedLoginMessageText + fetchLocation())
         sendEmail(userEmail,config.failedLoginMessageText + fetchLocation() + config.failedLoginMessageText_part2 + config.messageTextSignature,config.emailFailedLoginSubject)

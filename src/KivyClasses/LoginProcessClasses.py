@@ -911,8 +911,9 @@ class HomeScreen(Screen):
             else:
                 temp = self.lastUnsuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Last Failed Attempt'))
-                self.ip.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[0]))
-                self.time.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2]))
+                lastfFailedloginDetails = updateLoginDetails.fetchLastFailedLoginTime()
+                self.ip.append(Label( text = lastfFailedloginDetails.split()[0]))
+                self.time.append(Label( text = lastfFailedloginDetails.split()[1] + " " + lastfFailedloginDetails.split()[2]))
 
             temp.add_widget(self.ip[i])
             temp.add_widget(self.time[i])
@@ -920,6 +921,7 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
+        print "in add files on login"
         global updateLoginDetails
         thread1 = Thread(target = self.updateFooter)
         thread1.start()

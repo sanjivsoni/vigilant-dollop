@@ -34,9 +34,11 @@ def aesDecrypt(encryptedText):
 def establishConnection():
     config.conn = MySQLdb.connect(config.db_hostip, config.db_user, config.db_pass, config.db_name)
     config.statement = config.conn.cursor()
+    #print "connected"
 
 def closeConnection():
     config.conn.close()
+    #print "disconnected"
 
 def createCaptcha():
     #Change the path of font on config file
@@ -181,6 +183,7 @@ def userDoesNotExists():
         print repr(e)
         config.conn.rollback()
         print "error"
+    closeConnection()
 
     return flag
 
@@ -194,12 +197,12 @@ def runByThreadForMobile(*kargs):
     thread1.start()
 
 def sendTextMobile(sendTo,msg):
-    print "mobile"
+    print "mobile "
     client = TwilioRestClient(config.account_sid, config.auth_token)
     message = client.messages.create(to = sendTo, from_ = config.from_number, body = msg)
 
 def sendEmail(sendTo,message,subject):
-    print "email"
+    print "email "
     msg = MIMEMultipart()
     msg['From'] = "Team Vigilant Dollop"
     msg['To'] = sendTo
