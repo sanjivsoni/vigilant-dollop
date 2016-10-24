@@ -646,6 +646,11 @@ class RecoverScreen(Screen):
 	flag = 0
 	suggest = "Username Must Have Length Between \n8 and 16 characters long.\nUsername can only have \nAlphabets, Numbers and Underscore\nUsername Must Not Start\nWith A Digit. "
 
+	for i in range (0,len(name)):
+		if name[i] == " ":
+			suggest = suggest + "\nSpaces are not allowed."
+			flag = 1
+		
 	if len(name) >= 8 and len(name) <= 16:
 	    for i in range (0,len(name)):
 		if name[i].isalnum() or name[i]=="_":
