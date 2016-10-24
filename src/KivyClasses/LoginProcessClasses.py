@@ -650,31 +650,38 @@ class RecoverScreen(Screen):
         self.renderUsernameScreen()
 
     def updateUserName(self, callback):
-        global recoverUser
-        name = self.textInput.text
-        flag = 0
-        suggest = "Username Must Have Length Between \n8 and 16 characters long.\nUsername can only have \nAlphabets, Numbers and Underscore\nUsername Must Not Start\nWith A Digit. "
+	global recoverUser
+	name = self.textInput.text
+	flag = 0
+	suggest = "Username Must Have Length Between \n8 and 16 characters long.\nUsername can only have \nAlphabets, Numbers and Underscore\nUsername Must Not Start\nWith A Digit. "
 
-        if len(name) >= 8 and len(name) <= 16:
-            for i in range (0,len(name)):
-                if name[i].isalnum() or name[i]=="_":
-                    continue
-                else:
-                    flag=1
-                    break
-        else:
-            flag = 1
-            if not(flag):
-                if name[0].isdigit():
-                    flag =1
+	for i in range (0,len(name)):
+		if name[i] == " ":
+			suggest = suggest + "\nSpaces are not allowed."
+			flag = 1
 
-            if flag:
-                popup = Popup(title='!!Error!!', content=Label(text= suggest), size_hint=(None, None), size=(400, 400))
-                popup.open()
-            else:
-                recoverUser.updateUserID(self.textInput.text)
-                self.recoverLabel.text = "Username Has Been Reset."
-                event = Clock.schedule_once(self.redirecetSignin, 2)
+	if len(name) >= 8 and len(name) <= 16:
+	    for i in range (0,len(name)):
+		if name[i].isalnum() or name[i]=="_":
+		    continue
+		else:
+		    flag=1
+		    break
+	else:
+	    flag = 1
+
+	if not(flag):
+	    if name[0].isdigit():
+		flag =1
+
+	if flag:
+	    popup = Popup(title='!!Error!!', content=Label(text= suggest), size_hint=(None, None), size=(400, 400))
+	    popup.open()
+	else:
+	    recoverUser.updateUserID(self.textInput.text)
+	    self.recoverLabel.text = "Username Has Been Reset."
+	    event = Clock.schedule_once(self.redirecetSignin, 2)
+
 
     def recoverPassword(self):
         print 'Recover PAsssword)'
