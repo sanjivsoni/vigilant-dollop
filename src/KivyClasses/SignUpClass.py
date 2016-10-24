@@ -25,7 +25,7 @@ class SignupScreen(Screen):
         self.sudoPwd = ""
 
     def setSudoPwd(self,pwd):
-        self.sudoPwd = aesEncrypt(pwd)
+        self.sudoPwd = pwd
 
     def val_change(self):
         label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13', '14']
@@ -371,7 +371,7 @@ class SignupScreen(Screen):
                     newUser.addPersonalDetails(userPersonalDetails)
                     newUser.addSecurityQuestions(userSecurityQues)
                     loginDetails.userCreated()
-                    
+
 
                     App.get_running_app().root.current = 'usernameScreen'
 

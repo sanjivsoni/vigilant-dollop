@@ -51,4 +51,3 @@ au = LoginDetailsMessages("bhatshubhs")
 #au.succesfulLoginMessage()
 au.failedLoginMessage()
 '''
-print datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
