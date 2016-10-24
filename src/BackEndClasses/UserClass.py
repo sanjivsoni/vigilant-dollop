@@ -58,3 +58,28 @@ class User:
             print "Error in security q"
 
         closeConnection()
+
+    def updateUserContactDetails(self,flag,newContact):
+        checkFlag = 0
+        establishConnection()
+        if flag == 0:
+            sql = "UPDATE user SET mobile = '" + aesEncrypt(newContact) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        elif flag == 1:
+            sql = "UPDATE user SET email = '" + aesEncrypt(newContact) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        elif flag == 2:
+            sql = "UPDATE user SET email = '" + aesEncrypt(newContact.split()[0]) + "', mobile = '" + aesEncrypt(newContact.split()[1]) + "'"   + " WHERE userid = " + "'" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            config.conn.commit()
+            checkFlag = 1
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            checkFlag = 0
+
+
+        closeConnection()
+
+        return checkFlag

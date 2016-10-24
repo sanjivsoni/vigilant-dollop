@@ -22,6 +22,8 @@ email_msg = "Your OneTimePassword(OTP) is "
 emailOtpSubject = "Your Vigilant Dollop OTP"
 emailSuccesfulLoginSubject = "Succesful Login"
 emailFailedLoginSubject = "Failed Login"
+emailPwdChangedSubject = "Password Changed"
+emailUsernameChangedSubject = "Username Changed"
 
 
 
@@ -31,6 +33,8 @@ succesfulLoginMessageTextEmail_part1 = "\nYour Vigilant Dollop account was recen
 succesfulLoginMessageTextEmail_part2 = "\n\n\n\nDon't recognise this activity? \n Reveiw your security credentials immediately\n"
 succesfulLoginMessageTextEmail_part3 = "\nWhy are we sending this? \nWe take security very seriously and we want to keep you in the loop on important actions in your account."
 messageTextSignature = " \n\n\nBest,\nTeam Vigilant Dollop"
+passwordChangedText = "Your password has been recently changed from "
+usernameChangedText = "Your username has been recently changed from"
 
 failedLoginMessageText = "There was a failed login attempt from "
 failedLoginMessageText_part2 = "\n\n\nIf you don't recognise this activity, we urge you to please reveiw your security credentials immediately\n"

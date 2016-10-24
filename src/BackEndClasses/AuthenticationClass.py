@@ -164,7 +164,7 @@ class Authentication:
             if status == 1 :
                 encryptedData = aesEncrypt(filePath + " " + fileName)
                 sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
-                print sql
+                #print sql
 
                 try:
                     config.statement.execute(sql)

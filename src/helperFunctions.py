@@ -55,10 +55,8 @@ def checkSudoPwd(sudopwd):
         return 0
 
 def lock(path,encryptedSudoPwd):
-
     flag = 0
     sudoPwd = aesDecrypt(encryptedSudoPwd)
-
     command1 = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
     if os.system(command1) == 0:
         command2 = config.changeDirectory + sudoPwd + config.lockCommand + path
@@ -196,10 +194,12 @@ def runByThreadForMobile(*kargs):
     thread1.start()
 
 def sendTextMobile(sendTo,msg):
+    print "mobile"
     client = TwilioRestClient(config.account_sid, config.auth_token)
     message = client.messages.create(to = sendTo, from_ = config.from_number, body = msg)
 
 def sendEmail(sendTo,message,subject):
+    print "email"
     msg = MIMEMultipart()
     msg['From'] = "Team Vigilant Dollop"
     msg['To'] = sendTo
@@ -213,3 +213,44 @@ def sendEmail(sendTo,message,subject):
     text = msg.as_string()
     server.sendmail(config.emailid, sendTo, text)
     server.quit()
+
+def currentAttemptNo(updateLoginDetails):
+    return updateLoginDetails.fetchAttemptNo()
+
+def updateAttemptNo(updateLoginDetails,flag):
+    updateLoginDetails.updateAttemptNo(flag)
+
+def calculateRetryTime(updateLoginDetails):
+    lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%Y-%m-%d %H:%M:%S')
+    #print lastFailedLoginDatetime
+    currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
+    #print currentDatetime
+
+    timeDifference = currentDatetime - lastFailedLoginDatetime
+
+    if(timeDifference.days > 0):
+        return -1
+
+    elif(timeDifference.seconds > 300):
+        return -1
+
+    else:
+        return 300 - timeDifference.seconds
+
+def checkAttemptsStatus(updateLoginDetails,loginMsgs):
+
+    if currentAttemptNo(updateLoginDetails) < 3:
+        # Unsuccessful match for Password
+        updateAttemptNo(updateLoginDetails,1)
+        #print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
+        updateLoginDetails.updateFailedLoginTime()
+        status = 0
+
+    else:
+        #thread1 = Thread(target=loginMsgs.failedLogin)
+        #thread1.start()
+        #print "currentAttemptNoB",currentAttemptNo(updateLoginDetails)
+        status  = calculateRetryTime(updateLoginDetails)
+
+
+    return status

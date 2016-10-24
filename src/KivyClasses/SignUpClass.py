@@ -25,7 +25,7 @@ class SignupScreen(Screen):
         self.sudoPwd = ""
 
     def setSudoPwd(self,pwd):
-        self.sudoPwd = aesEncrypt(pwd)
+        self.sudoPwd = pwd
 
     def val_change(self):
         label = ['bar','1','2','3','4','5','6','7','8','9','10','11','12','13', '14']
@@ -151,7 +151,8 @@ class SignupScreen(Screen):
            if VAL[i].isdigit():
                num = 1
            if (not(VAL[i].isupper()) and not(VAL[i].islower()) and not(VAL[i].isdigit())):
-               splChar = 1
+                   splChar = 1
+
         if not(uCase):
             _suggest = _suggest + "Must Have One Upper Case Char.\n"
             flag +=1
@@ -225,6 +226,9 @@ class SignupScreen(Screen):
          self.val_change()
          flag = 0
          self.flag8 = 0
+
+         name.text = name.text.replace(" ","")
+
          if len(name.text) >=8 and len(name.text) <=16:
             for i in range (0,len(name.text)):
                 if name.text[i].isalnum() or name.text[i]=="_":
@@ -363,17 +367,15 @@ class SignupScreen(Screen):
                     userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(self.ssnType) + " " +label[11].text.replace(" ", "#")
                     userSecurityQues = str(self.SQ1) + " " + str(self.SQ2) +  " " +label[12].text.replace(" ", "#") + " " +label[13].text.replace(" ", "#")
 
-
-
                     newUser = User(userCredentials)
                     loginDetails = LoginDetails(hashEncrypt(label[1].text))
                     newUser.createUser(userContactDetails)
                     newUser.addPersonalDetails(userPersonalDetails)
                     newUser.addSecurityQuestions(userSecurityQues)
                     loginDetails.userCreated()
-                    
 
                     App.get_running_app().root.current = 'usernameScreen'
 
         else:
-            print "No"
+            popup = Popup(title='Error',content=Label(text="Please Enter All The Fields Correctly."),size_hint=(None, None), size=(400, 200))
+            popup.open()
