@@ -1050,8 +1050,18 @@ class HomeScreen(Screen):
         self._popup.open()
 
 class Reset(Screen):
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
     def __init__(self, **kwargs):
         super(Reset, self).__init__(**kwargs)
+
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
         self.boxLayout = BoxLayout(orientation='vertical')
         self.topLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.1)
@@ -1116,3 +1126,30 @@ class Reset(Screen):
                 else:
                     resetFlag = 1
                 sendData = sendData + self.text2.text
+
+
+class OtpVerification(Screen):
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
+    def __init__(self, **kwargs):
+        super(OtpVerification, self).__init__(**kwargs)
+
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size = self._update_rect, pos=self._update_rect)
+        
+        self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.3,0.20), pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 10, padding = 10)
+
+        self.label = Label(text = 'Please Enter the combined OTP sent to Email and Mobile', font_size = '15sp')
+        self.textInput = TextInput(hint_text = 'OTP', multiline = False)
+        self.button = Button( text = 'Submit')
+
+        self.layout.add_widget(self.label)
+        self.layout.add_widget(self.textInput)
+        self.layout.add_widget(self.button)
+        self.add_widget(self.layout)
+

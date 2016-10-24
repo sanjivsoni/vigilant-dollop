@@ -6,7 +6,7 @@ Window.size = (700, 700)
 
 screenManager = ScreenManager( transition = FadeTransition() )
 
-choice = 9
+choice = 8
 
 if choice == 1:
     screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
@@ -22,6 +22,9 @@ elif choice == 6:
     screenManager.add_widget( HomeScreen( name = 'HomeScreen' ))
 elif choice == 7:
     screenManager.add_widget( Reset( name = 'ChangeDetailsScreen' ))
+elif choice == 8:
+    screenManager.add_widget( OtpVerification( name = 'OTPVerification' ))
+
 else:
 
     if userDoesNotExists():
