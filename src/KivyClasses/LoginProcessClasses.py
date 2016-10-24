@@ -838,9 +838,18 @@ class HomeScreen(Screen):
 	self.layout = BoxLayout(orientation = 'vertical')
 
         self.topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
-        lockFileButton = Button(text = "Lock Files", id = 'lock_button')
+        lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
         lockFileButton.bind(on_press = self.showLoadPopup)
         self.topLayout.add_widget(lockFileButton)
+
+        self.logoutButton = Button(text = 'Logout', size_hint= (0.25, 1))
+        self.logoutButton.bind(on_press = self.redirectToSignin)
+
+        self.changeProfileButton = Button( text = 'Change Details', size_hint = (0.25, 1))
+        self.changeProfileButton.bind( on_press = self.changeProfile)
+
+        self.topLayout.add_widget(self.logoutButton)
+        self.topLayout.add_widget(self.changeProfileButton)
 
         self.midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
 
@@ -897,6 +906,15 @@ class HomeScreen(Screen):
 
         self.add_widget(self.layout)
 
+    def changeProfile(self, callback):
+        root = App.get_running_app().root
+        root.current = 'ChangeDetailsScreen'
+
+        pass
+
+    def redirectToSignin(self, callback):
+        App.get_running_app().stop()
+
     def updateFooter(self):
         global updateLoginDetails
         global lastLoginDetails
@@ -924,11 +942,11 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
+        '''
         global updateLoginDetails
         thread1 = Thread(target = self.updateFooter)
         thread1.start()
         updateAttemptNo(updateLoginDetails,0)
-        '''
         results = verifyUser.fetchLockedFiles()
         for i in results:
             fileName = aesDecrypt(i[1])
@@ -1032,3 +1050,71 @@ class HomeScreen(Screen):
 
     def showLoadPopup(self, *args):
         self._popup.open()
+
+class Reset(Screen):
+    def __init__(self, **kwargs):
+        super(Reset, self).__init__(**kwargs)
+
+        self.boxLayout = BoxLayout(orientation='vertical')
+        self.topLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.1)
+        self.upperLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.2)
+        self.lowerLayout = BoxLayout(orientation='horizontal',size_hint_y =0.4)
+        self.middleLayout = BoxLayout(orientation='horizontal', size_hint=(0.4,0.2),pos_hint = {'center_y': .5, 'center_x': .5})
+        self.gridLayout = GridLayout(cols = 1,spacing = 20)
+
+        #Create Widgets For Form
+        self.back = Button(text = 'Back',size = (90, 20), size_hint = (None,None),pos_hint = {'center_y': .5, 'center_x': .7})
+        self.back.bind(on_press = self.redirectToHomeScreen)
+        self.label = Label(text = ' Enter The Details You Want To Reset.', font_size = '20sp', pos_hint = {'center_y': .5, 'center_x': .1}) 
+        self.text1 = TextInput(hint_text = 'Email Id',size = (230, 10), id = 'email_id')
+        self.text2 = TextInput(hint_text = 'Phone No.',size = (230, 10), id = 'phone_no' )
+        self.resetButton = Button(text = 'Reset')
+        self.topLayout.add_widget(self.back)
+
+        self.upperLayout.add_widget(self.label)     
+
+        # Grid Layout For Reset Form   
+        self.gridLayout.add_widget(self.text1)
+        self.gridLayout.add_widget(self.text2)
+        self.gridLayout.add_widget(self.resetButton)
+
+        self.middleLayout.add_widget(self.gridLayout)
+        self.boxLayout.add_widget(self.topLayout)
+        self.boxLayout.add_widget(self.upperLayout)
+        self.boxLayout.add_widget(self.middleLayout)
+        self.boxLayout.add_widget(self.lowerLayout)
+
+        self.resetButton.bind(on_press = self.validateData)
+        self.add_widget(self.boxLayout)
+
+    def redirectToHomeScreen(self,callback):
+        root = App.get_running_app().root
+        root.current = 'HomeScreen'
+
+    #Go Back TO Original Screen
+    def validateData(self,callback):
+        message = ""
+        flag = 0
+        resetFlag = -1
+        if not(self.text1.text == ""):
+            if not(re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", self.text1.text)):
+                message = message + 'Please Enter A Valid Email\n'
+                flag = 1
+        if not(self.text2.text == ""):
+            if not(self.text2.text.isdigit()) or not(len(self.text2.text)==10):
+                message = message + 'Please Enter A Valid Contact No.'
+                flag = 1
+        if flag:
+            popup = Popup(title='Error',content=Label(text=message),size_hint=(None, None), size=(400, 400))
+            popup.open()
+        else:
+            sendData = ""
+            if not(self.text1.text == ""):
+                resetFlag = 0
+                sendData = sendData + self.text1.text + " "
+            if not(self.text2.text == ""):
+		if not(resetFlag):
+                    resetFlag = 2
+                else:
+                    resetFlag = 1
+                sendData = sendData + self.text2.text
