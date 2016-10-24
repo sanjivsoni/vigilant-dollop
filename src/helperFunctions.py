@@ -57,7 +57,7 @@ def checkSudoPwd(sudopwd):
 def lock(path,encryptedSudoPwd):
     flag = 0
     sudoPwd = aesDecrypt(encryptedSudoPwd)
-    print command1
+    command1 = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
     if os.system(command1) == 0:
         command2 = config.changeDirectory + sudoPwd + config.lockCommand + path
         if os.system(command2) == 0:
