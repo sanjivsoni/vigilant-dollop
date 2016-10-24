@@ -1129,7 +1129,6 @@ class Reset(Screen):
 
 
 class OtpVerification(Screen):
-
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
@@ -1142,18 +1141,95 @@ class OtpVerification(Screen):
             self.rect = Rectangle(size=self.size, pos=self.pos)
         self.bind(size = self._update_rect, pos=self._update_rect)
         
-        self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.3,0.20), pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 10, padding = 10)
+        self._time_event = 0
+        self._total_seconds = 60
+        self._total_minutes = 0
+        self._minutes = self._total_seconds
+        self._seconds = self._total_minutes
+        self._otp_expired = 0
 
-        self.label = Label(text = 'Please Enter the combined OTP sent to Email and Mobile', font_size = '15sp')
-        self.textInput = TextInput(hint_text = 'OTP', multiline = False)
-        self.button = Button( text = 'Submit')
-        self.button.bind( on_press = self.checkOtp)
-        self.layout.add_widget(self.label)
-        self.layout.add_widget(self.textInput)
-        self.layout.add_widget(self.button)
+        self.topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+        self.midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
+        self.bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10, padding = 10)
+
+        self.headingLabel = Label(text = 'Please verify your Mobile and Email Accounts.', font_size = '20sp')
+        self.otpSentLabel = Label(text = 'OTP Sent to Mobile and Email', font_size = '15sp')
+
+        self.timerLabel = Label(font_size = '40sp', text = '00:00')
+
+        self.emailOtpText = TextInput(size_hint = (0.3, None), pos_hint = {'center_x': .5, 'center_y': .5},  multiline = False, hint_text = 'Mobile OTP', height = 40)
+        self.mobileOtpText = TextInput(size_hint = (0.3, None), pos_hint = {'center_x': .5, 'center_y': .5}, multiline = False, hint_text = 'Email OTP', height = 40)
+
+        self.regenerateOtpButton = Button ( text = "Regenerate OTP", size=(120,40),size_hint=(0.5, 0.3), pos_hint = {'center_x': .5, 'center_y': .5})
+
+        self.layout = BoxLayout( orientation = 'vertical')
+
+        self.submitButton = Button(text = 'Submit', size_hint = (0.3, None), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25, height = 40)
+        self.submitButton.bind( on_press = self.checkEmailAndMobileOtp)
+
+        self.topLayout.add_widget(self.headingLabel)
+        self.topLayout.add_widget(self.otpSentLabel)
+
+        self.midLayout.add_widget(self.emailOtpText)
+        self.midLayout.add_widget(self.mobileOtpText)
+        self.midLayout.add_widget(self.submitButton)
+
+        self.bottomLayout.add_widget(self.timerLabel)
+
+        self.layout.add_widget(self.topLayout)
+        self.layout.add_widget(self.midLayout)
+        self.layout.add_widget(self.bottomLayout)
+
         self.add_widget(self.layout)
 
-    def checkOtp(self, callback):
-        root = App.get_running_app().root
-        root.current = 'Username'
-        pass
+    def checkEmailAndMobileOtp(self, callback):
+        print 'dd'
+        if self.emailOtpText.text == '123' and self.mobileOtpText.text == '123':
+            print 'next'
+            root = App.get_running_app().root
+            root.current = 'usernameScreen'
+
+    def regenerateOtp(self, callback):
+        self.startTimer()
+        self.bottomLayout.remove_widget(self.regenerateOtpButton)
+        self.emailOtpText.disabled = True
+        self.mobileOtpText.disabled = True
+
+    def startTimer(self):
+        self.timerLabel.text = "00:00"
+
+        self._seconds = self._total_seconds
+        self._minutes = self._total_minutes
+
+        self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
+
+    def updateTimer(self, dt):
+        if self._minutes >= 0 and self._seconds > 0:
+            self._seconds = self._seconds - 1
+            if self._minutes > 0 and self._seconds == 0:
+                self._seconds = 60
+                self._minutes = self._minutes - 1
+
+            elif self._minutes == 0 and self._seconds == 0:
+                Clock.unschedule(self._time_event)
+                self.timerLabel.text = ''
+                self.bottomLayout.add_widget(self.regenerateOtpButton)
+                self.regenerateOtpButton.bind(on_press = self.regenerateOtp)
+                self.emailOtpText.disabled = True
+                self.mobileOtpText.disabled = True
+                return
+
+            # Resend OTP after Timeout
+            clockState = ""
+
+            if self._minutes > 9:
+                clockState = str(self._minutes) + ':'
+            else:
+                clockState = '0' + str(self._minutes) + ':'
+
+            if self._seconds > 9:
+                clockState =  clockState + str(self._seconds)
+            else:
+                clockState = clockState + '0' + str(self._seconds)
+
+            self.timerLabel.text = clockState

@@ -24,7 +24,15 @@ elif choice == 7:
     screenManager.add_widget( Reset( name = 'ChangeDetailsScreen' ))
 elif choice == 8:
     screenManager.add_widget( OtpVerification( name = 'OTPVerification' ))
-
+elif choice == 9:
+    screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
+    screenManager.add_widget( SignupScreen( name = 'signupScreen' ) )
+    screenManager.add_widget( OtpVerification( name = 'OTPVerification' ))
+    screenManager.add_widget( UsernameScreen( name = 'usernameScreen' ) )
+    screenManager.add_widget( RecoverScreen( name = 'recoverScreen' ) )
+    screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
+    screenManager.add_widget( HomeScreen( name = 'HomeScreen' ))
+    screenManager.add_widget( Reset( name = 'ChangeDetailsScreen' ))
 
 else:
 
@@ -37,11 +45,6 @@ else:
     screenManager.add_widget( LevelTwoScreen( name = 'levelTwoScreen' ) )
     screenManager.add_widget( HomeScreen( name = 'HomeScreen' ))
     screenManager.add_widget( Reset( name = 'ChangeDetailsScreen' ))
-
-    
-
-
-
 
 class ThreeLevelAuthApp(App):
 	def build(self):
