@@ -34,29 +34,29 @@ popupSize = (200, 200)
 class SudoPasswordScreen(Screen):
 
     def _update_rect(self, instance, value):
-	self.rect.pos = instance.pos
-	self.rect.size = instance.size
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def __init__(self, **kwargs):
-	super(SudoPasswordScreen, self).__init__(**kwargs)
-	with self.canvas.before:
-	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-	    self.rect = Rectangle(size=self.size, pos=self.pos)
+        super(SudoPasswordScreen, self).__init__(**kwargs)
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
 
-	self.bind(size = self._update_rect, pos=self._update_rect)
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
-	# Initialize Screen Elements
-	self.layout = BoxLayout(orientation = 'vertical', pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25, size_hint = (0.25, 0.25))
-	self.sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
-	self.submitButton = Button(text = 'Submit')
-	self.label = Label(text = 'Please Enter your sudo password.', font_size = '17sp')
+    # Initialize Screen Elements
+        self.layout = BoxLayout(orientation = 'vertical', pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25, size_hint = (0.25, 0.25))
+        self.sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
+        self.submitButton = Button(text = 'Submit')
+        self.label = Label(text = 'Please Enter your sudo password.', font_size = '17sp')
 
-	# Add elements to screen
-	self.submitButton.bind(on_press = self.checkSudoPassword)
-	self.layout.add_widget(self.label)
-	self.layout.add_widget(self.sudoPassword)
-	self.layout.add_widget(self.submitButton)
-	self.add_widget(self.layout)
+        # Add elements to screen
+        self.submitButton.bind(on_press = self.checkSudoPassword)
+        self.layout.add_widget(self.label)
+        self.layout.add_widget(self.sudoPassword)
+        self.layout.add_widget(self.submitButton)
+        self.add_widget(self.layout)
 
     def checkSudoPassword(self, callback):
         # If valid Password then move to sign up form
@@ -77,9 +77,9 @@ class UsernameScreen(Screen):
     def buildLayout(self):
         self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.35,0.40), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
 
-	with self.canvas.before:
-	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-	    self.rect = Rectangle(size=self.size, pos=self.pos)
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
 
         self.bind(size = self._update_rect, pos=self._update_rect)
 
@@ -130,7 +130,7 @@ class UsernameScreen(Screen):
 
         self.add_widget(self.layout)
 
-	self.usernameField.text = 'sanjivsoni'
+        self.usernameField.text = 'bhatshubhs'
 
     def clearLayout(self):
         for child in self.children[:]:
@@ -211,7 +211,7 @@ class UsernameScreen(Screen):
         global verifyUser
         global loginMsgs
         global updateLoginDetails
-    
+
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
@@ -253,15 +253,15 @@ class LevelTwoScreen(Screen):
     otpOnLevelTwoFlag = 0
 
     def _update_rect(self, instance, value):
-	self.rect.pos = instance.pos
-	self.rect.size = instance.size
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def buildLayout(self):
-	with self.canvas.before:
-	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-	    self.rect = Rectangle(size=self.size, pos=self.pos)
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
 
-	self.bind(size = self._update_rect, pos=self._update_rect)
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
         self.topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
         self.midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
@@ -562,8 +562,8 @@ class LevelTwoScreen(Screen):
 
 class RecoverScreen(Screen):
     def _update_rect(self, instance, value):
-	self.rect.pos = instance.pos
-	self.rect.size = instance.size
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def __init__(self, **kwargs):
         super(RecoverScreen, self).__init__(**kwargs)
@@ -575,11 +575,11 @@ class RecoverScreen(Screen):
             self.remove_widget(child)
 
     def renderUsernameScreen(self):
-	with self.canvas.before:
-	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-	    self.rect = Rectangle(size=self.size, pos=self.pos)
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
 
-	self.bind(size = self._update_rect, pos=self._update_rect)
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
         self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.40,0.20), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
         self.recoverLabel = Label( text = 'Recover by Email or phone')
@@ -823,19 +823,16 @@ class HomeScreen(Screen):
     first_time_add_button = 1
 
     def _update_rect(self, instance, value):
-	self.rect.pos = instance.pos
-	self.rect.size = instance.size
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
-
-	with self.canvas.before:
-	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-	    self.rect = Rectangle(size=self.size, pos=self.pos)
-
-	self.bind(size = self._update_rect, pos=self._update_rect)
-
-	self.layout = BoxLayout(orientation = 'vertical')
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size = self._update_rect, pos=self._update_rect)
+        self.layout = BoxLayout(orientation = 'vertical')
 
         self.topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
         lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
@@ -884,15 +881,14 @@ class HomeScreen(Screen):
         popupContent.add_widget(fileView)
         popupContent.add_widget(popupManagerButtons)
 
-        self._popup = Popup(title = "Select Files to lock", content = popupContent,
-            size_hint = (0.9, 0.9))
+        self._popup = Popup(title = "Select Files to lock", content = popupContent,size_hint = (0.9, 0.9))
 
-	# Login stats layout
-	self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.11), padding = 10)
+    # Login stats layout
+        self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.11), padding = 10)
 
-	self.presentSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
-	self.lastSuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
-	self.lastUnsuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
+        self.presentSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
+        self.lastSuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
+        self.lastUnsuccessfulSessionDetails = BoxLayout(orientation = 'vertical', size_hint = (0.3, 1))
 
         self.location = []
         self.ip = []
@@ -918,21 +914,21 @@ class HomeScreen(Screen):
     def updateFooter(self):
         global updateLoginDetails
         global lastLoginDetails
-
+        temp = self.presentSessionDetails
         for i in range(3):
             if i == 1:
                 temp = self.presentSessionDetails
                 temp.add_widget(Label(text = 'Present Session', width = 50  , halign = 'left'))
-                self.ip.append(Label( text = getUserIP()))
-                self.time.append(Label( text = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                self.ip.append(Label( text = str(getUserIP())))
+                self.time.append(Label( text = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
-                temp.add_widget(Label(text = 'Last Login'))
+                temp.add_widget(Label(text = 'Last Succesful Login'))
                 self.ip.append(Label( text = lastLoginDetails.split()[0]))
                 self.time.append(Label( text = lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2]))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
-                temp.add_widget(Label(text = 'Failed Attempt'))
+                temp.add_widget(Label(text = 'Last Failed Attempt'))
                 self.ip.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[0]))
                 self.time.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2]))
 
@@ -942,7 +938,6 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
-        '''
         global updateLoginDetails
         thread1 = Thread(target = self.updateFooter)
         thread1.start()
@@ -959,8 +954,6 @@ class HomeScreen(Screen):
 
             self.grid.add_widget(fileButton)
             self.grid.add_widget(fileLabel)
-        '''
-
 
     def cancel(self, *args):
         self._popup.dismiss()
@@ -987,12 +980,12 @@ class HomeScreen(Screen):
             popup.open()
 
     def lockFile(self, *args):
-	buttonId = str(args[1])
-	fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = buttonId, background_color = (1, 0.29, 0.32,1))
+        buttonId = str(args[1])
+        fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = buttonId, background_color = (1, 0.29, 0.32,1))
 
-	fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
-	fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='13sp')
-	fileLabel.bind(size=fileLabel.setter('text_size'))
+        fileButton.bind(on_press = partial(self.unlockFile, buttonId, args[0]))
+        fileLabel = Label(text = buttonId  , width = 70, halign = 'left',valign = 'middle', id="label"+buttonId, font_size='13sp')
+        fileLabel.bind(size=fileLabel.setter('text_size'))
 
         if len(self.midLayout.children) > 0:
             child_first = self.midLayout.children[0]
@@ -1026,8 +1019,8 @@ class HomeScreen(Screen):
 
         label = Label(text = complete_file_name, size_hint = (0.9,0.5))
 
-	button = Button(text = 'remove', size_hint = (0.2,0.5))
-	button.bind(on_press = partial(self.removeFile, file_name,label, button,filePath))
+        button = Button(text = 'remove', size_hint = (0.2,0.5))
+        button.bind(on_press = partial(self.removeFile, file_name,label, button,filePath))
 
         if  self.first_time_add_button == 1:
             self.first_time_add_button = 0
