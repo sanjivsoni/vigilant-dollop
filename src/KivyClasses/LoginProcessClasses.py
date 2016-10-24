@@ -132,32 +132,6 @@ class UsernameScreen(Screen):
         else:
             self.nextButton.disabled = False
 
-    def currentAttemptNo(self):
-        global updateLoginDetails
-        return updateLoginDetails.fetchAttemptNo()
-
-    def updateAttemptNo(self,flag):
-        global updateLoginDetails
-        updateLoginDetails.updateAttemptNo(flag)
-
-    def calculateRetryTime(self):
-        global updateLoginDetails
-        lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%Y-%m-%d %H:%M:%S')
-        #print lastFailedLoginDatetime
-        currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
-        #print currentDatetime
-
-        timeDifference = currentDatetime - lastFailedLoginDatetime
-
-        if(timeDifference.days > 0):
-            return -1
-
-        elif(timeDifference.seconds > 300):
-            return -1
-
-        else:
-            return timeDifference.seconds
-
 
     def enterPassword(self, callback):
         global verifyUser
@@ -208,35 +182,21 @@ class UsernameScreen(Screen):
     def verifyPasswordEvent(self, callback):
         global verifyUser
         global loginMsgs
-        print "passwordMatch"
+        global updateLoginDetails
 
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
             self.statusLabel.text = 'Password Matched'
-            self.updateAttemptNo(0)
-            print self.currentAttemptNo()
             App.get_running_app().root.current = 'levelTwoScreen'
             App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
 
         else:
-            if self.currentAttemptNo() <= 3:
-                # Unsuccessful match for Password
-                self.updateAttemptNo(1)
-                print self.currentAttemptNo()
-                updateLoginDetails.updateFailedLoginTime()
-                popup = Popup(title='Error',
-                content=Label(text='Incorrect Password'),
-                size_hint=(None, None), size=(180, 100))
-                popup.open()
-            else:
-                #thread1 = Thread(target=loginMsgs.failedLogin)
-                #thread1.start()
-                popup = Popup(title='Error',
-                content=Label(text='Incorrect Password'),
-                size_hint=(None, None), size=(180, 100))
-                popup.open()
-                time  = self.calculateRetryTime()
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Password'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+            print "status",checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
 
     def recoverUsernameEvent(self, callback):
@@ -316,7 +276,7 @@ class LevelTwoScreen(Screen):
         self.randomLevel = randint(0,1)
         #randomLevel =1
         # OTP
-        print "random ", self.randomLevel
+
         if self.randomLevel == 0:
             self.otpOnLevelTwoFlag = 1
             self.otpLevelOne()
@@ -393,6 +353,8 @@ class LevelTwoScreen(Screen):
 
     def otpLevelTwo(self, callback):
         global choice
+        global updateLoginDetails
+        global loginMsgs
 
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
             self.midLayout.remove_widget(self.submitButton)
@@ -416,7 +378,11 @@ class LevelTwoScreen(Screen):
             self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
 
         else:
-            pass
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Answer'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def securityQuestionLevelOne(self):
         global verifyUser
@@ -427,21 +393,32 @@ class LevelTwoScreen(Screen):
     def securityQuestionLevelTwo(self, instance, value):
         global verifyUser
         global choice
-        choice = randint(0,1)
+        global updateLoginDetails
+        global loginMsgs
         global generatedOTP
-        if value == generatedOTP:
-            Clock.unschedule(self._time_event)
-            self.timerLabel.text = ' '
-            self.otpSentLabel.text = ' '
+        choice = randint(0,1)
 
-            self.midLayout.remove_widget(self.otpText)
-            self.otpText = self.otpTextSecond
-            self.midLayout.add_widget(self.otpText)
+        if len(value) == 6:
+            if value == generatedOTP:
+                Clock.unschedule(self._time_event)
+                self.timerLabel.text = ' '
+                self.otpSentLabel.text = ' '
 
-            self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
+                self.midLayout.remove_widget(self.otpText)
+                self.otpText = self.otpTextSecond
+                self.midLayout.add_widget(self.otpText)
 
-            self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree) )
-            self.midLayout.add_widget(self.submitButton)
+                self.securityQuestionLabel.text = verifyUser.fetchUserSecurityQuestion(choice)
+
+                self.submitButton.bind( on_press = partial(self.accessGrantedAfterSecurityQuestionLevelThree) )
+                self.midLayout.add_widget(self.submitButton)
+
+            else:
+                popup = Popup(title='Error',
+                content=Label(text='Incorrect OTP'),
+                size_hint=(None, None), size=(180, 100))
+                popup.open()
+                print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def sendLoginMessages(self,dt):
         global loginMsgs
@@ -460,14 +437,23 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         global loginMsgs
         global updateLoginDetails
-        if value == generatedOTP:
-            print 'access granted'
-            self.fetchLastLoginDetails()
-            updateLoginDetails.updateLoginTime()
-            root = App.get_running_app().root
-            root.current = 'HomeScreen'
-            root.get_screen('HomeScreen').addFilesOnLogin()
-            Clock.schedule_once(self.sendLoginMessages, 5)
+
+        if len(value) == 6:
+            if value == generatedOTP:
+                print 'access granted'
+                self.fetchLastLoginDetails()
+                updateLoginDetails.updateLoginTime()
+                root = App.get_running_app().root
+                root.current = 'HomeScreen'
+                root.get_screen('HomeScreen').addFilesOnLogin()
+                Clock.schedule_once(self.sendLoginMessages, 5)
+
+            else:
+                popup = Popup(title='Error',
+                content=Label(text='Incorrect OTP'),
+                size_hint=(None, None), size=(180, 100))
+                popup.open()
+                print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
 
 
@@ -483,7 +469,14 @@ class LevelTwoScreen(Screen):
             root = App.get_running_app().root
             root.current = 'HomeScreen'
             root.get_screen('HomeScreen').addFilesOnLogin()
-            Clock.schedule_once(self.sendLoginMessages, 7)
+            Clock.schedule_once(self.sendLoginMessages, 5)
+
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Answer'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def regenerateOtp(self, callback):
         self.startTimer()
@@ -855,8 +848,10 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
+        global updateLoginDetails
         thread1 = Thread(target = self.updateFooter)
         thread1.start()
+        updateAttemptNo(updateLoginDetails,0)
         results = verifyUser.fetchLockedFiles()
         for i in results:
             fileName = aesDecrypt(i[1])

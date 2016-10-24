@@ -211,3 +211,44 @@ def sendEmail(sendTo,message,subject):
     text = msg.as_string()
     server.sendmail(config.emailid, sendTo, text)
     server.quit()
+
+def currentAttemptNo(updateLoginDetails):
+    return updateLoginDetails.fetchAttemptNo()
+
+def updateAttemptNo(updateLoginDetails,flag):
+    updateLoginDetails.updateAttemptNo(flag)
+
+def calculateRetryTime(updateLoginDetails):
+    lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%Y-%m-%d %H:%M:%S')
+    #print lastFailedLoginDatetime
+    currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),"%Y-%m-%d %H:%M:%S")
+    #print currentDatetime
+
+    timeDifference = currentDatetime - lastFailedLoginDatetime
+
+    if(timeDifference.days > 0):
+        return -1
+
+    elif(timeDifference.seconds > 300):
+        return -1
+
+    else:
+        return 300 - timeDifference.seconds
+
+def checkAttemptsStatus(updateLoginDetails,loginMsgs):
+
+    if currentAttemptNo(updateLoginDetails) < 3:
+        # Unsuccessful match for Password
+        updateAttemptNo(updateLoginDetails,1)
+        #print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
+        updateLoginDetails.updateFailedLoginTime()
+        status = 0
+
+    else:
+        #thread1 = Thread(target=loginMsgs.failedLogin)
+        #thread1.start()
+        #print "currentAttemptNoB",currentAttemptNo(updateLoginDetails)
+        status  = calculateRetryTime(updateLoginDetails)
+
+
+    return status
