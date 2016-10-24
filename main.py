@@ -6,7 +6,7 @@ Window.size = (700, 700)
 
 screenManager = ScreenManager( transition = FadeTransition() )
 
-choice = 9
+choice = 10
 
 if choice == 1:
     screenManager.add_widget(SudoPasswordScreen ( name = 'sudoPasswordScreen' ) )
