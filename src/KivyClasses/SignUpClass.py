@@ -382,14 +382,19 @@ class SignupScreen(Screen):
                     userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(self.ssnType) + " " +label[11].text.replace(" ", "#")
                     userSecurityQues = str(self.SQ1) + " " + str(self.SQ2) +  " " +label[12].text.replace(" ", "#") + " " +label[13].text.replace(" ", "#")
 
+                    '''
                     newUser = User(userCredentials)
                     loginDetails = LoginDetails(hashEncrypt(label[1].text))
                     newUser.createUser(userContactDetails)
                     newUser.addPersonalDetails(userPersonalDetails)
                     newUser.addSecurityQuestions(userSecurityQues)
                     loginDetails.userCreated()
+                    '''
 
-                    App.get_running_app().root.current = 'usernameScreen'
+                    print 'Ok'
+                    root = App.get_running_app().root
+                    root.current = 'OTPVerification'
+                    root.get_screen('OTPVerification').startTimer()
 
         else:
             popup = Popup(title='Error',content=Label(text="Please Enter All The Fields Correctly."),size_hint=(None, None), size=(400, 200))

@@ -835,9 +835,18 @@ class HomeScreen(Screen):
         self.layout = BoxLayout(orientation = 'vertical')
 
         self.topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
-        lockFileButton = Button(text = "Lock Files", id = 'lock_button')
+        lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
         lockFileButton.bind(on_press = self.showLoadPopup)
         self.topLayout.add_widget(lockFileButton)
+
+        self.logoutButton = Button(text = 'Logout', size_hint= (0.25, 1))
+        self.logoutButton.bind(on_press = self.redirectToSignin)
+
+        self.changeProfileButton = Button( text = 'Change Details', size_hint = (0.25, 1))
+        self.changeProfileButton.bind( on_press = self.changeProfile)
+
+        self.topLayout.add_widget(self.logoutButton)
+        self.topLayout.add_widget(self.changeProfileButton)
 
         self.midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
 
@@ -893,6 +902,15 @@ class HomeScreen(Screen):
 
         self.add_widget(self.layout)
 
+    def changeProfile(self, callback):
+        root = App.get_running_app().root
+        root.current = 'ChangeDetailsScreen'
+
+        pass
+
+    def redirectToSignin(self, callback):
+        App.get_running_app().stop()
+
     def updateFooter(self):
         global updateLoginDetails
         global lastLoginDetails
@@ -926,7 +944,6 @@ class HomeScreen(Screen):
         thread1 = Thread(target = self.updateFooter)
         thread1.start()
         updateAttemptNo(updateLoginDetails,0)
-
         results = verifyUser.fetchLockedFiles()
 
         while results == 0:
@@ -944,8 +961,6 @@ class HomeScreen(Screen):
 
             self.grid.add_widget(fileButton)
             self.grid.add_widget(fileLabel)
-
-
 
     def cancel(self, *args):
         self._popup.dismiss()
@@ -1035,3 +1050,188 @@ class HomeScreen(Screen):
 
     def showLoadPopup(self, *args):
         self._popup.open()
+
+class Reset(Screen):
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
+    def __init__(self, **kwargs):
+        super(Reset, self).__init__(**kwargs)
+
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size = self._update_rect, pos=self._update_rect)
+
+        self.boxLayout = BoxLayout(orientation='vertical')
+        self.topLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.1)
+        self.upperLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.2)
+        self.lowerLayout = BoxLayout(orientation='horizontal',size_hint_y =0.4)
+        self.middleLayout = BoxLayout(orientation='horizontal', size_hint=(0.4,0.2),pos_hint = {'center_y': .5, 'center_x': .5})
+        self.gridLayout = GridLayout(cols = 1,spacing = 20)
+
+        #Create Widgets For Form
+        self.back = Button(text = 'Back',size = (90, 20), size_hint = (None,None),pos_hint = {'center_y': .5, 'center_x': .7})
+        self.back.bind(on_press = self.redirectToHomeScreen)
+        self.label = Label(text = ' Enter The Details You Want To Reset.', font_size = '20sp', pos_hint = {'center_y': .5, 'center_x': .1}) 
+        self.text1 = TextInput(hint_text = 'Email Id',size = (230, 10), id = 'email_id')
+        self.text2 = TextInput(hint_text = 'Phone No.',size = (230, 10), id = 'phone_no' )
+        self.resetButton = Button(text = 'Reset')
+        self.topLayout.add_widget(self.back)
+
+        self.upperLayout.add_widget(self.label)     
+
+        # Grid Layout For Reset Form   
+        self.gridLayout.add_widget(self.text1)
+        self.gridLayout.add_widget(self.text2)
+        self.gridLayout.add_widget(self.resetButton)
+
+        self.middleLayout.add_widget(self.gridLayout)
+        self.boxLayout.add_widget(self.topLayout)
+        self.boxLayout.add_widget(self.upperLayout)
+        self.boxLayout.add_widget(self.middleLayout)
+        self.boxLayout.add_widget(self.lowerLayout)
+
+        self.resetButton.bind(on_press = self.validateData)
+        self.add_widget(self.boxLayout)
+
+    def redirectToHomeScreen(self,callback):
+        root = App.get_running_app().root
+        root.current = 'HomeScreen'
+
+    #Go Back TO Original Screen
+    def validateData(self,callback):
+        message = ""
+        flag = 0
+        resetFlag = -1
+        if not(self.text1.text == ""):
+            if not(re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", self.text1.text)):
+                message = message + 'Please Enter A Valid Email\n'
+                flag = 1
+        if not(self.text2.text == ""):
+            if not(self.text2.text.isdigit()) or not(len(self.text2.text)==10):
+                message = message + 'Please Enter A Valid Contact No.'
+                flag = 1
+        if flag:
+            popup = Popup(title='Error',content=Label(text=message),size_hint=(None, None), size=(400, 400))
+            popup.open()
+        else:
+            sendData = ""
+            if not(self.text1.text == ""):
+                resetFlag = 0
+                sendData = sendData + self.text1.text + " "
+            if not(self.text2.text == ""):
+		if not(resetFlag):
+                    resetFlag = 2
+                else:
+                    resetFlag = 1
+                sendData = sendData + self.text2.text
+
+
+class OtpVerification(Screen):
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
+    def __init__(self, **kwargs):
+        super(OtpVerification, self).__init__(**kwargs)
+
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size = self._update_rect, pos=self._update_rect)
+        
+        self._time_event = 0
+        self._total_seconds = 60
+        self._total_minutes = 0
+        self._minutes = self._total_seconds
+        self._seconds = self._total_minutes
+        self._otp_expired = 0
+
+        self.topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+        self.midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
+        self.bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10, padding = 10)
+
+        self.headingLabel = Label(text = 'Please verify your Mobile and Email Accounts.', font_size = '20sp')
+        self.otpSentLabel = Label(text = 'OTP Sent to Mobile and Email', font_size = '15sp')
+
+        self.timerLabel = Label(font_size = '40sp', text = '00:00')
+
+        self.emailOtpText = TextInput(size_hint = (0.3, None), pos_hint = {'center_x': .5, 'center_y': .5},  multiline = False, hint_text = 'Mobile OTP', height = 40)
+        self.mobileOtpText = TextInput(size_hint = (0.3, None), pos_hint = {'center_x': .5, 'center_y': .5}, multiline = False, hint_text = 'Email OTP', height = 40)
+
+        self.regenerateOtpButton = Button ( text = "Regenerate OTP", size=(120,40),size_hint=(0.5, 0.3), pos_hint = {'center_x': .5, 'center_y': .5})
+
+        self.layout = BoxLayout( orientation = 'vertical')
+
+        self.submitButton = Button(text = 'Submit', size_hint = (0.3, None), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 25, height = 40)
+        self.submitButton.bind( on_press = self.checkEmailAndMobileOtp)
+
+        self.topLayout.add_widget(self.headingLabel)
+        self.topLayout.add_widget(self.otpSentLabel)
+
+        self.midLayout.add_widget(self.emailOtpText)
+        self.midLayout.add_widget(self.mobileOtpText)
+        self.midLayout.add_widget(self.submitButton)
+
+        self.bottomLayout.add_widget(self.timerLabel)
+
+        self.layout.add_widget(self.topLayout)
+        self.layout.add_widget(self.midLayout)
+        self.layout.add_widget(self.bottomLayout)
+
+        self.add_widget(self.layout)
+
+    def checkEmailAndMobileOtp(self, callback):
+        print 'dd'
+        if self.emailOtpText.text == '123' and self.mobileOtpText.text == '123':
+            print 'next'
+            root = App.get_running_app().root
+            root.current = 'usernameScreen'
+
+    def regenerateOtp(self, callback):
+        self.startTimer()
+        self.bottomLayout.remove_widget(self.regenerateOtpButton)
+        self.emailOtpText.disabled = True
+        self.mobileOtpText.disabled = True
+
+    def startTimer(self):
+        self.timerLabel.text = "00:00"
+
+        self._seconds = self._total_seconds
+        self._minutes = self._total_minutes
+
+        self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
+
+    def updateTimer(self, dt):
+        if self._minutes >= 0 and self._seconds > 0:
+            self._seconds = self._seconds - 1
+            if self._minutes > 0 and self._seconds == 0:
+                self._seconds = 60
+                self._minutes = self._minutes - 1
+
+            elif self._minutes == 0 and self._seconds == 0:
+                Clock.unschedule(self._time_event)
+                self.timerLabel.text = ''
+                self.bottomLayout.add_widget(self.regenerateOtpButton)
+                self.regenerateOtpButton.bind(on_press = self.regenerateOtp)
+                self.emailOtpText.disabled = True
+                self.mobileOtpText.disabled = True
+                return
+
+            # Resend OTP after Timeout
+            clockState = ""
+
+            if self._minutes > 9:
+                clockState = str(self._minutes) + ':'
+            else:
+                clockState = '0' + str(self._minutes) + ':'
+
+            if self._seconds > 9:
+                clockState =  clockState + str(self._seconds)
+            else:
+                clockState = clockState + '0' + str(self._seconds)
+
+            self.timerLabel.text = clockState
