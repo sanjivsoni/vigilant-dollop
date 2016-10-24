@@ -230,9 +230,9 @@ class Authentication:
                 print aesDecrypt(row[1])
 
         except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+            establishConnection()
+            print "Reconnecting"
+            self.fetchLockedFiles()
 
         return results
 

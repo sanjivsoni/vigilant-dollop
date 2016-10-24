@@ -84,7 +84,7 @@ def currentUTC():
 def convertUTCToLocal(utcTime):
 
     if utcTime == "":
-        return "NA NA"
+        return ""
 
     else:
         utcTimeZone = tz.tzutc()
