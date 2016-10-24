@@ -836,21 +836,21 @@ class HomeScreen(Screen):
             if i == 1:
                 temp = self.presentSessionDetails
                 temp.add_widget(Label(text = 'Present Session', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = getUserIP(), font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), font_size = '10sp'))
+                self.ip.append(Label( text = str(getUserIP()), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")), font_size = '10sp'))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Last Login', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = lastLoginDetails.split()[0], font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2], font_size = '10sp'))
+                self.ip.append(Label( text = str(lastLoginDetails.split()[0]), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = str(lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2]), font_size = '10sp'))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
                 temp.add_widget(Label(text = 'Failed Attempt', font_size = '10sp', size_hint = (None, 1), width = 130))
-                self.ip.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[0], font_size = '10sp', width = 130, size_hint = (None, 1)))
-                self.time.append(Label( text = updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2], font_size = '10sp'))
+                self.ip.append(Label( text = str(updateLoginDetails.fetchLastFailedLoginTime().split()[0]), font_size = '10sp', width = 130, size_hint = (None, 1)))
+                self.time.append(Label( text = str(updateLoginDetails.fetchLastFailedLoginTime().split()[1] + " " + updateLoginDetails.fetchLastFailedLoginTime().split()[2]), font_size = '10sp'))
 
-        temp.add_widget(self.ip[i])
-        temp.add_widget(self.time[i])
+            temp.add_widget(self.ip[i])
+            temp.add_widget(self.time[i])
 
 
 
