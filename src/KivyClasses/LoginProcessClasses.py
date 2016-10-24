@@ -41,6 +41,7 @@ class SudoPasswordScreen(Screen):
             content=Label(text='Incorrect Sudo Password. Try Again'),
             size_hint=(None, None), size=(300, 100))
             popup.open()
+
 class UsernameScreen(Screen):
     def _update_rect(self, instance, value):
 	self.rect.pos = instance.pos
