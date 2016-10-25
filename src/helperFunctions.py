@@ -37,7 +37,8 @@ def establishConnection():
     #print "connected"
 
 def closeConnection():
-    config.conn.close()
+    if config.conn.open:
+        config.conn.close()
     #print "disconnected"
 
 def createCaptcha():
@@ -84,8 +85,8 @@ def currentUTC():
 
 def convertUTCToLocal(utcTime):
 
-    if utcTime == "":
-        return " " + " "
+    if utcTime == "0":
+        return "-" + " -"
 
     else:
         utcTimeZone = tz.tzutc()

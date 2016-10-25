@@ -6,6 +6,7 @@ verifyUser = Authentication()
 recoverUser = UserRecovery()
 updateLoginDetails = 0
 lastLoginDetails = 0
+userVerification = 0
 loginMsgs = 0
 sendOTP = 0
 choice = -1
@@ -143,6 +144,7 @@ class UsernameScreen(Screen):
         self.attempts = 0
         self.timeout = 0
         self.passwordAttempts = 0
+        self.username = ""
 
         self.buildLayout()
 
@@ -167,6 +169,9 @@ class UsernameScreen(Screen):
         global sendOTP
         global loginMsgs
         global updateLoginDetails
+        global userVerification
+
+        userVerification = VerifyUserCredentials(self.usernameField.text)
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
         if userExists:
@@ -174,6 +179,7 @@ class UsernameScreen(Screen):
                 sendOTP = OTP(verifyUser.returnUserID())
                 loginMsgs = LoginDetailMessages(verifyUser.returnUserID())
                 updateLoginDetails = LoginDetails(verifyUser.returnUserID())
+                self.username = self.usernameField.text
 
                 self.usernameField.password = True
                 self.usernameField.text = ''
@@ -193,6 +199,7 @@ class UsernameScreen(Screen):
 
                 self.children[0].add_widget(self.moveToLevelTwoButton)
                 self.children[0].add_widget(self.recoverPasswordButton)
+
             else:
                 # Unsuccessful match for Username
                 popup = Popup(title='Error',
@@ -215,9 +222,14 @@ class UsernameScreen(Screen):
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
-            self.statusLabel.text = 'Password Matched'
-            App.get_running_app().root.current = 'levelTwoScreen'
-            App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
+            if userVerification.getContactVerificationStatus() == 1:
+                self.statusLabel.text = 'Password Matched'
+                App.get_running_app().root.current = 'levelTwoScreen'
+                App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
+            else:
+                root = App.get_running_app().root
+                root.current = 'OTPVerification'
+                root.get_screen('OTPVerification').sendOTPforVerification(self.username)
 
         else:
             popup = Popup(title='Error',
@@ -941,14 +953,11 @@ class HomeScreen(Screen):
     def addFilesOnLogin(self):
         print "in add files on login"
         global updateLoginDetails
-        thread1 = Thread(target = self.updateFooter)
-        thread1.start()
+        #thread1 = Thread(target = self.updateFooter)
+        #thread1.start()
+        self.updateFooter()
         updateAttemptNo(updateLoginDetails,0)
         results = verifyUser.fetchLockedFiles()
-
-        while results == 0:
-            results = verifyUser.fetchLockedFiles()
-
 
         for i in results:
             fileName = aesDecrypt(i[1])
@@ -1075,15 +1084,15 @@ class Reset(Screen):
         #Create Widgets For Form
         self.back = Button(text = 'Back',size = (90, 20), size_hint = (None,None),pos_hint = {'center_y': .5, 'center_x': .7})
         self.back.bind(on_press = self.redirectToHomeScreen)
-        self.label = Label(text = ' Enter The Details You Want To Reset.', font_size = '20sp', pos_hint = {'center_y': .5, 'center_x': .1}) 
+        self.label = Label(text = ' Enter The Details You Want To Reset.', font_size = '20sp', pos_hint = {'center_y': .5, 'center_x': .1})
         self.text1 = TextInput(hint_text = 'Email Id',size = (230, 10), id = 'email_id')
         self.text2 = TextInput(hint_text = 'Phone No.',size = (230, 10), id = 'phone_no' )
         self.resetButton = Button(text = 'Reset')
         self.topLayout.add_widget(self.back)
 
-        self.upperLayout.add_widget(self.label)     
+        self.upperLayout.add_widget(self.label)
 
-        # Grid Layout For Reset Form   
+        # Grid Layout For Reset Form
         self.gridLayout.add_widget(self.text1)
         self.gridLayout.add_widget(self.text2)
         self.gridLayout.add_widget(self.resetButton)
@@ -1142,7 +1151,7 @@ class OtpVerification(Screen):
             Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
             self.rect = Rectangle(size=self.size, pos=self.pos)
         self.bind(size = self._update_rect, pos=self._update_rect)
-        
+
         self._time_event = 0
         self._total_seconds = 60
         self._total_minutes = 0
@@ -1184,10 +1193,41 @@ class OtpVerification(Screen):
 
         self.add_widget(self.layout)
 
+        self.mobileOTP = 0
+        self.emailOTP = 0
+
+    def sendOTPforVerification(self,userID):
+
+        global userVerification
+        userVerification = VerifyUserCredentials(userID)
+        contactVerification = OTP()
+        mobileOtpQueue = Queue.Queue()
+        emailOtpQueue = Queue.Queue()
+
+        contactVerification.sendOTPforVerification_email(userVerification.fetchUserContactDetails().split()[0],emailOtpQueue)
+        contactVerification.sendOTPforVerification_mobile(userVerification.fetchUserContactDetails().split()[1],mobileOtpQueue)
+
+        #Start Timer
+        self.startTimer()
+
+        self.mobileOTP = mobileOtpQueue.get()
+        self.emailOTP = emailOtpQueue.get()
+
+        #print "mobileotp",self.mobileOTP
+        #print "emailotp", self.emailOTP
+
     def checkEmailAndMobileOtp(self, callback):
-        print 'dd'
-        if self.emailOtpText.text == '123' and self.mobileOtpText.text == '123':
+        global userVerification
+        print 'Checking OTP'
+        print "\n\n"
+        print self.emailOtpText.text
+        print self.mobileOtpText.text
+        print "mobileotp",self.mobileOTP
+        print "emailotp", self.emailOTP
+
+        if self.mobileOtpText.text == self.emailOTP and self.emailOtpText.text == self.mobileOTP:
             print 'next'
+            userVerification.setContactVerificationStatus()
             root = App.get_running_app().root
             root.current = 'usernameScreen'
 

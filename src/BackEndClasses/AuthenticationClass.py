@@ -296,7 +296,16 @@ class OTP:
         runByThreadForMobile(sendTextMobile,sendToMobile,config.mobile_msg + generatedOTP)
 
     def sendOTPforRecovery_email(self,sendToEmail,out_queue):
-
         generatedOTP = generateOTP(6)
         out_queue.put(generatedOTP)
         runByThreadForEmail(sendEmail,sendToEmail,config.email_msg + generatedOTP,config.emailOtpSubject)
+
+    def sendOTPforVerification_mobile(self,sendToMobile,out_queue):
+        generatedOTP = generateOTP(6)
+        out_queue.put(generatedOTP)
+        runByThreadForMobile(sendTextMobile,sendToMobile,config.mobile_msg + generatedOTP)
+
+    def sendOTPforVerification_email(self,sendToEmail,out_queue):
+        generatedOTP = generateOTP(6)
+        out_queue.put(generatedOTP)
+        runByThreadForEmail(sendEmail,sendToEmail,config.email_msg + generatedOTP,config.emailVerificationSubject)
