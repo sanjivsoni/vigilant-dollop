@@ -7,6 +7,7 @@ recoverUser = UserRecovery()
 updateLoginDetails = 0
 lastLoginDetails = 0
 userVerification = 0
+updateContactDetails = 0
 loginMsgs = 0
 sendOTP = 0
 choice = -1
@@ -171,6 +172,7 @@ class UsernameScreen(Screen):
         global updateLoginDetails
         global userVerification
 
+
         userVerification = VerifyUserCredentials(self.usernameField.text)
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
@@ -219,12 +221,14 @@ class UsernameScreen(Screen):
         global verifyUser
         global loginMsgs
         global updateLoginDetails
+        global updateContactDetails
 
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
+            updateContactDetails = User(self.username + " " + self.usernameField.text)
             if userVerification.getContactVerificationStatus() == 1:
                 App.get_running_app().root.current = 'levelTwoScreen'
                 App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
@@ -500,7 +504,9 @@ class LevelTwoScreen(Screen):
             if value == generatedOTP:
                 print "Authentication Level 3 Complete.\n Access granted"
                 self.fetchLastLoginDetails()
+                print "dsadsa"
                 updateLoginDetails.updateLoginTime()
+                print "fdsd"
                 root = App.get_running_app().root
                 root.current = 'HomeScreen'
                 root.get_screen('HomeScreen').addFilesOnLogin()
@@ -742,7 +748,7 @@ class RecoverScreen(Screen):
             thread1 = Thread(target = recoverUser.usernameChanged)
             thread1.start()
             recoverUser.updateUserID(self.textInput.text)
-            self.recoverLabel.text = "Username Has Been Reset."
+            self.recoverLabel.text = "Username Has Been Reset....Redirecting to Login Screen"
             event = Clock.schedule_once(self.redirecetSignin, 2)
 
 
@@ -812,13 +818,13 @@ class RecoverScreen(Screen):
             suggest = suggest + "The Password Field And The Confirm \nPassword Field Do Not Match.\n"
             flag = 1
         if flag:
-            popup = Popup(title='!!Error!!', content=Label(text= suggest), size_hint=(None, None), size=(400, 400))
+            popup = Popup(title='!!Error!!', content=Label(text= suggest), size_hint=(None, None), size=(300, 250))
             popup.open()
         else:
             thread1 = Thread(target = recoverUser.passwordChanged)
             thread1.start()
             recoverUser.updateUserPassword(self.textInput.text)
-            self.recoverLabel.text = 'Password Updated Successfully'
+            self.recoverLabel.text = 'Password Updated Successfully...Redirecting to Login Screen'
             Clock.schedule_once(self.redirecetSignin, 2)
 
     def updateLabel(self, choice):
@@ -1116,6 +1122,7 @@ class Reset(Screen):
 
     #Go Back TO Original Screen
     def validateData(self,callback):
+        global updateContactDetails
         message = ""
         flag = 0
         resetFlag = -1
@@ -1134,13 +1141,17 @@ class Reset(Screen):
             sendData = ""
             if not(self.text1.text == ""):
                 resetFlag = 0
-                sendData = sendData + self.text1.text + " "
+                sendData = sendData + self.text1.text
             if not(self.text2.text == ""):
-		if not(resetFlag):
+                if not(resetFlag):
                     resetFlag = 2
+                    sendData = sendData + " " + self.text2.text
                 else:
                     resetFlag = 1
-                sendData = sendData + self.text2.text
+                    sendData = sendData + self.text2.text
+            if not(resetFlag == -1):
+                updateContactDetails.updateUserContactDetails(resetFlag,sendData)
+
 
 
 class OtpVerification(Screen):

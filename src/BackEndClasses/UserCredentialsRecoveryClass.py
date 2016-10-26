@@ -164,6 +164,7 @@ class UserRecovery:
         personalTableSql = "UPDATE personal SET userid = '" + hashEncrypt(newUserID) + "' " + " WHERE userid = " + "'" + self.userID + "'"
         SQTableSql = "UPDATE security_ques SET userid = '" + hashEncrypt(newUserID) + "' " + " WHERE userid = " + "'" + self.userID + "'"
         lockedFilesTableSQL = "UPDATE lockedFiles SET userid = '" + hashEncrypt(newUserID) + "' " + " WHERE userid = " + "'" + self.userID + "'"
+        loginDetailsTableSQL = "UPDATE login_stats SET userid = '" + hashEncrypt(newUserID) + "' " + " WHERE userid = " + "'" + self.userID + "'"
         try:
             config.statement.execute(userTableSql)
             config.conn.commit()
@@ -173,11 +174,24 @@ class UserRecovery:
             config.conn.commit()
             config.statement.execute(lockedFilesTableSQL)
             config.conn.commit()
+            config.statement.execute(loginDetailsTableSQL)
+            config.conn.commit()
+            
+        except (AttributeError, MySQLdb.OperationalError):
+            print "Reconnecting"
+            establishConnection()
+            config.statement.execute(userTableSql)
+            config.conn.commit()
+            config.statement.execute(personalTableSql)
+            config.conn.commit()
+            config.statement.execute(SQTableSql)
+            config.conn.commit()
+            config.statement.execute(lockedFilesTableSQL)
+            config.conn.commit()
+            config.statement.execute(loginDetailsTableSQL)
+            config.conn.commit()
 
-        except Exception, e:
-            print repr(e)
-            config.conn.rollback()
-            flag = 0
+
 
         closeConnection()
 

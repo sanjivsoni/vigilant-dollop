@@ -139,6 +139,7 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
+            print "Login Time updated"
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
             establishConnection()
@@ -216,6 +217,9 @@ class LoginDetails:
         closeConnection()
         if ip == "0":
             ip = "NA"
+
+        print "ip", ip
+        print "time", time
         return ip+ " " + convertUTCToLocal(time)
 
 class LoginDetailMessages:

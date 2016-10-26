@@ -67,9 +67,9 @@ class User:
         checkFlag = 0
         establishConnection()
         if flag == 0:
-            sql = "UPDATE user SET mobile = '" + aesEncrypt(newContact) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
-        elif flag == 1:
             sql = "UPDATE user SET email = '" + aesEncrypt(newContact) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
+        elif flag == 1:
+            sql = "UPDATE user SET mobile = '" + aesEncrypt(newContact) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
         elif flag == 2:
             sql = "UPDATE user SET email = '" + aesEncrypt(newContact.split()[0]) + "', mobile = '" + aesEncrypt(newContact.split()[1]) + "'"   + " WHERE userid = " + "'" + self.userID + "'"
 
