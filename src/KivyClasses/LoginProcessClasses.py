@@ -223,12 +223,9 @@ class UsernameScreen(Screen):
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
-<<<<<<< HEAD
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
             updateContactDetails = User(self.username + " " + self.usernameField.text)
-=======
->>>>>>> 6c1a7e4a2f0c9ee9ac48624d9887f32fb60d3f5f
             if userVerification.getContactVerificationStatus() == 1:
                 self.statusLabel.text = 'Password Matched'
                 App.get_running_app().root.current = 'levelTwoScreen'
@@ -243,12 +240,7 @@ class UsernameScreen(Screen):
             content=Label(text='Incorrect Password'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-<<<<<<< HEAD
-            print "status" ,checkAttemptsStatus(updateLoginDetails,loginMsgs)
-
-=======
             print "status",checkAttemptsStatus(updateLoginDetails,loginMsgs)
->>>>>>> 6c1a7e4a2f0c9ee9ac48624d9887f32fb60d3f5f
 
     def recoverUsernameEvent(self, callback):
         root = App.get_running_app().root
