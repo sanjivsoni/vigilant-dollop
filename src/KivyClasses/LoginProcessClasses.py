@@ -176,7 +176,6 @@ class UsernameScreen(Screen):
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
         if userExists:
             if self.captchaTextInput.text == self.captchaCorrectText:
-                print "User found"
                 sendOTP = OTP(verifyUser.returnUserID())
                 loginMsgs = LoginDetailMessages(verifyUser.returnUserID())
                 updateLoginDetails = LoginDetails(verifyUser.returnUserID())
@@ -223,13 +222,11 @@ class UsernameScreen(Screen):
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
 
         if passwordMatch:
-            print "Authentication Level 1 Complete"
-            self.statusLabel.text = 'Password Matched'
             if userVerification.getContactVerificationStatus() == 1:
+                self.statusLabel.text = 'Password Matched'
                 App.get_running_app().root.current = 'levelTwoScreen'
                 App.get_running_app().root.get_screen('levelTwoScreen').startTimerIfOtp()
             else:
-                print "Sorry bud, you're not allowed to mov further ahead until you verify your contact details."
                 root = App.get_running_app().root
                 root.current = 'OTPVerification'
                 root.get_screen('OTPVerification').sendOTPforVerification(self.username)
@@ -239,7 +236,7 @@ class UsernameScreen(Screen):
             content=Label(text='Incorrect Password'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-            checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            print "status",checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
 
     def recoverUsernameEvent(self, callback):
@@ -341,6 +338,7 @@ class LevelTwoScreen(Screen):
     def startTimerIfOtp(self):
         global choice
         choice = randint(0,1)
+        print choice
         if self.otpOnLevelTwoFlag == 1:
             self.startTimer()
             self.otpSentLabel.text = self.returnOTPEvent(-1)
@@ -372,6 +370,7 @@ class LevelTwoScreen(Screen):
 
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
+            print datetime.datetime.now()
             sendOTP.sendOTPforAuth_email(6,otpQueue)
             generatedOTP = otpQueue.get()
 
@@ -414,7 +413,6 @@ class LevelTwoScreen(Screen):
         global loginMsgs
 
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
-            print "Authentication Level 2 Complete."
             self.midLayout.remove_widget(self.submitButton)
             self.headingLabel.text = 'Authentication Step 3'
 
@@ -440,7 +438,7 @@ class LevelTwoScreen(Screen):
             content=Label(text='Incorrect Answer'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-            checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def securityQuestionLevelOne(self):
         global verifyUser
@@ -458,7 +456,6 @@ class LevelTwoScreen(Screen):
 
         if len(value) == 6:
             if value == generatedOTP:
-                print "Authentication Level 2 Complete."
                 Clock.unschedule(self._time_event)
                 self.timerLabel.text = ' '
                 self.otpSentLabel.text = ' '
@@ -476,11 +473,11 @@ class LevelTwoScreen(Screen):
                 content=Label(text='Incorrect OTP'),
                 size_hint=(None, None), size=(180, 100))
                 popup.open()
-                checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def sendLoginMessages(self,dt):
         global loginMsgs
-        print "Sending Login Details"
+        print "sending msgs"
         t1 = Thread(target=loginMsgs.loggedIn)
         t1.start()
 
@@ -498,7 +495,7 @@ class LevelTwoScreen(Screen):
 
         if len(value) == 6:
             if value == generatedOTP:
-                print "Authentication Level 3 Complete.\n Access granted"
+                print 'access granted'
                 self.fetchLastLoginDetails()
                 updateLoginDetails.updateLoginTime()
                 root = App.get_running_app().root
@@ -511,7 +508,7 @@ class LevelTwoScreen(Screen):
                 content=Label(text='Incorrect OTP'),
                 size_hint=(None, None), size=(180, 100))
                 popup.open()
-                checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
 
 
@@ -521,7 +518,7 @@ class LevelTwoScreen(Screen):
         global loginMsgs
         global updateLoginDetails
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
-            print "Authentication Level 3 Complete.\n Access granted"
+            print 'access granted'
             self.fetchLastLoginDetails()
             updateLoginDetails.updateLoginTime()
             root = App.get_running_app().root
@@ -534,7 +531,7 @@ class LevelTwoScreen(Screen):
             content=Label(text='Incorrect Answer'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-            checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def regenerateOtp(self, callback):
         global otpChoice
@@ -664,6 +661,12 @@ class RecoverScreen(Screen):
 
             self.submitButton.bind( on_press = self.checkSSN )
             self.textInput.text = ''
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect OTP'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
+            
 
     def checkSSN(self, callback):
         # Check valid SSN
@@ -680,6 +683,11 @@ class RecoverScreen(Screen):
 
             self.submitButton.bind( on_press = self.checkSecurityQuesAnswer )
             self.textInput.text = ''
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect SSN'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
 
     def checkSecurityQuesAnswer(self, callback):
         global choice
@@ -689,6 +697,11 @@ class RecoverScreen(Screen):
                 self.recoverUserName()
             else:
                 self.recoverPassword()
+        else:
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Answer'),
+            size_hint=(None, None), size=(180, 100))
+            popup.open()
 
     def recoverUserName(self):
         print 'Recover USer NAme'
@@ -849,7 +862,7 @@ class HomeScreen(Screen):
         self.bind(size = self._update_rect, pos=self._update_rect)
         self.layout = BoxLayout(orientation = 'vertical')
 
-        self.topLayout = BoxLayout(orientation = 'vertical', size_hint = (1, 0.10), height = 20)
+        self.topLayout = BoxLayout(orientation = 'vertical', size_hint = (1, 0.15), height = 20)
         self.lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
         self.lockFileButton.bind(on_press = self.showLoadPopup)
         
@@ -857,18 +870,18 @@ class HomeScreen(Screen):
         lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
         lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
 
-        self.logoutButton = Button(text = 'Logout', size_hint= (0.25, 1))
+        self.logoutButton = Button(text = 'Logout', size_hint= (0.25, 1), font_size = '10sp')
         self.logoutButton.bind(on_press = self.redirectToSignin)
 
-        self.changeProfileButton = Button( text = 'Change Details', size_hint = (0.25, 1))
+        self.changeProfileButton = Button( text = 'Change Details', size_hint = (0.25, 1), font_size = '10sp')
         self.changeProfileButton.bind( on_press = self.changeProfile)
 
         
-        self.helloUserLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
-        self.welcomeUserText = Label( text = 'Welcome Mr.Doe')
+        self.helloUserLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.10), height = 10)
+        self.welcomeUserText = Label( text = 'Welcome Mr.Doe', font_size = '13sp')
 
-        self.topButtonLayout.add_widget(self.lockFileButton)
         self.topButtonLayout.add_widget(self.logoutButton)
+        self.topButtonLayout.add_widget(self.lockFileButton)
         self.topButtonLayout.add_widget(self.changeProfileButton)
 
         self.helloUserLayout.add_widget(self.welcomeUserText)
@@ -943,7 +956,6 @@ class HomeScreen(Screen):
         global updateLoginDetails
         global lastLoginDetails
         temp = self.presentSessionDetails
-        print "Updating Footer"
         for i in range(3):
             if i == 1:
                 temp = self.presentSessionDetails
@@ -968,7 +980,7 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
-        print "Fetching Already Locked files"
+        print "in add files on login"
         global updateLoginDetails
         #thread1 = Thread(target = self.updateFooter)
         #thread1.start()
@@ -977,8 +989,8 @@ class HomeScreen(Screen):
         results = verifyUser.fetchLockedFiles()
 
         for i in results:
-            fileName = aesDecrypt(i[1]).replace("#"," ")
-            filePath = aesDecrypt(i[0]).replace("#"," ")
+            fileName = aesDecrypt(i[1])
+            filePath = aesDecrypt(i[0])
             fileButton = Button(text=' ', size=(40, 40), size_hint = (None, None), id = str(fileName))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
 
@@ -1216,7 +1228,6 @@ class OtpVerification(Screen):
         self.mobileOTP = 0
         self.emailOTP = 0
 
-
     def sendOTPforVerification(self,userID):
 
         global userVerification
@@ -1234,13 +1245,20 @@ class OtpVerification(Screen):
         self.mobileOTP = mobileOtpQueue.get()
         self.emailOTP = emailOtpQueue.get()
 
-        print "mobileotp",self.mobileOTP
-        print "emailotp", self.emailOTP
+        #print "mobileotp",self.mobileOTP
+        #print "emailotp", self.emailOTP
 
     def checkEmailAndMobileOtp(self, callback):
         global userVerification
         print 'Checking OTP'
+        print "\n\n"
+        print self.emailOtpText.text
+        print self.mobileOtpText.text
+        print "mobileotp",self.mobileOTP
+        print "emailotp", self.emailOTP
+
         if self.mobileOtpText.text == self.emailOTP and self.emailOtpText.text == self.mobileOTP:
+            print 'next'
             userVerification.setContactVerificationStatus()
             root = App.get_running_app().root
             root.current = 'usernameScreen'
