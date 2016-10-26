@@ -123,18 +123,21 @@ class LoginDetails:
 
     def updateFailedLoginTime(self):
 
-        establishConnection()
+        conn = MySQLdb.connect(config.db_hostip, config.db_user, config.db_pass, config.db_name)
+        statement = conn.cursor()
         sql = "UPDATE login_stats SET failed_login_time = '" + aesEncrypt(currentUTC()) + "'" + ",failedLogin_ip = '" + aesEncrypt(getUserIP()) + "'"  + "WHERE userid = " + "'" + self.userID + "'"
         try:
-            config.statement.execute(sql)
-            config.conn.commit()
+            statement.execute(sql)
+            conn.commit()
             print "Failed Login Time updated"
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
-            establishConnection()
-            config.statement.execute(sql)
-            config.conn.commit()
-        closeConnection()
+            conn = MySQLdb.connect(config.db_hostip, config.db_user, config.db_pass, config.db_name)
+            statement.execute(sql)
+            conn.commit()
+
+        if conn.open:
+            conn.close()
 
     def updateLoginTime(self):
         establishConnection()

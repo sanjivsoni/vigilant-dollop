@@ -240,7 +240,8 @@ def calculateRetryTime(updateLoginDetails):
         print currentDatetime
 
         timeDifference = currentDatetime - lastFailedLoginDatetime
-
+        print "td",timeDifference
+        
         if(timeDifference.days > 0):
             return 0
 
