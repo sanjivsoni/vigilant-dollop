@@ -221,18 +221,8 @@ class UsernameScreen(Screen):
         global updateContactDetails
 
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
-        
-        passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
-        print passwordTimeout
 
-        if passwordTimeout > 0:
-            self.usernameField.disabled = True
-            minutes = passwordTimeout / 60
-            seconds = passwordTimeout % 60
-            popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
-            popup.open()
-
-        elif passwordMatch:
+        if passwordMatch:
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
             updateContactDetails = User(self.username + " " + self.usernameField.text)
@@ -246,9 +236,18 @@ class UsernameScreen(Screen):
                 root.get_screen('OTPVerification').sendOTPforVerification(self.username)
 
         else:
-            self.usernameField.disabled = False
-            popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
-            popup.open()
+            passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+
+            if passwordTimeout > 0:
+                self.usernameField.disabled = True
+                minutes = passwordTimeout / 60
+                seconds = passwordTimeout % 60
+                popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+                popup.open()
+            else:
+                self.usernameField.disabled = False
+                popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
+                popup.open()
 
     def recoverUsernameEvent(self, callback):
         root = App.get_running_app().root
@@ -460,9 +459,7 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         choice = randint(0,1)
 
-
-
-        if len(value) == 6:
+        if len(value) >= 6:
             if value == generatedOTP:
                 Clock.unschedule(self._time_event)
                 self.timerLabel.text = ' '
@@ -478,14 +475,17 @@ class LevelTwoScreen(Screen):
 
             else:
                 #self.textInput.disabled = False
-                checkAttempts = checkAttemptsStatus(updateLoginDetails,loginMsgs)
-                if checkAttempts < 0:
-                    self.otpText.disabled = False
-                    popup = Popup(title='Error', content=Label(text='Incorrect OTP'), size_hint=(None, None), size=(180, 100))
+                passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+
+                if passwordTimeout > 0:
+                    self.otpText.disabled = True
+                    minutes = passwordTimeout / 60
+                    seconds = passwordTimeout % 60
+                    popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
                     popup.open()
                 else:
-                    self.otpText.disabled = True
-                    popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+                    self.otpText.disabled = False
+                    popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
                     popup.open()
 
     def sendLoginMessages(self,dt):
@@ -499,14 +499,12 @@ class LevelTwoScreen(Screen):
         global lastLoginDetails
         lastLoginDetails =  updateLoginDetails.fetchLastSuccessfulLoginTime()
 
-
-
     def accessGrantedAfterOtpLevelThree(self, callback, value):
         global generatedOTP
         global loginMsgs
         global updateLoginDetails
 
-        if len(value) == 6:
+        if len(value) >= 6:
             if value == generatedOTP:
                 print 'access granted'
                 self.fetchLastLoginDetails()
