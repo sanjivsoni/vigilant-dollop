@@ -834,10 +834,13 @@ class HomeScreen(Screen):
         self.bind(size = self._update_rect, pos=self._update_rect)
         self.layout = BoxLayout(orientation = 'vertical')
 
-        self.topLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
+        self.topLayout = BoxLayout(orientation = 'vertical', size_hint = (1, 0.10), height = 20)
+        self.lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
+        self.lockFileButton.bind(on_press = self.showLoadPopup)
+        
+        self.topButtonLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
         lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
-        lockFileButton.bind(on_press = self.showLoadPopup)
-        self.topLayout.add_widget(lockFileButton)
+        lockFileButton = Button(text = "Lock Files", id = 'lock_button', size_hint = (0.5,1))
 
         self.logoutButton = Button(text = 'Logout', size_hint= (0.25, 1))
         self.logoutButton.bind(on_press = self.redirectToSignin)
@@ -845,8 +848,18 @@ class HomeScreen(Screen):
         self.changeProfileButton = Button( text = 'Change Details', size_hint = (0.25, 1))
         self.changeProfileButton.bind( on_press = self.changeProfile)
 
-        self.topLayout.add_widget(self.logoutButton)
-        self.topLayout.add_widget(self.changeProfileButton)
+        
+        self.helloUserLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.05), height = 10)
+        self.welcomeUserText = Label( text = 'Welcome Mr.Doe')
+
+        self.topButtonLayout.add_widget(self.lockFileButton)
+        self.topButtonLayout.add_widget(self.logoutButton)
+        self.topButtonLayout.add_widget(self.changeProfileButton)
+
+        self.helloUserLayout.add_widget(self.welcomeUserText)
+
+        self.topLayout.add_widget(self.topButtonLayout)
+        self.topLayout.add_widget(self.helloUserLayout)
 
         self.midLayout = BoxLayout(orientation = 'horizontal', size_hint = (1,0.1))
 
@@ -918,17 +931,17 @@ class HomeScreen(Screen):
         for i in range(3):
             if i == 1:
                 temp = self.presentSessionDetails
-                temp.add_widget(Label(text = 'Present Session', width = 50  , halign = 'left'))
+                temp.add_widget(Label(text = 'Present Session', width = 50  , halign = 'left', font_name = 'Play-Bold.ttf'))
                 self.ip.append(Label( text = str(getUserIP())))
                 self.time.append(Label( text = str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))))
             elif i == 2:
                 temp = self.lastSuccessfulSessionDetails
-                temp.add_widget(Label(text = 'Last Succesful Login'))
+                temp.add_widget(Label(text = 'Last Succesful Login', font_name = 'Play-Bold.ttf'))
                 self.ip.append(Label( text = lastLoginDetails.split()[0]))
                 self.time.append(Label( text = lastLoginDetails.split()[1] + " " +lastLoginDetails.split()[2]))
             else:
                 temp = self.lastUnsuccessfulSessionDetails
-                temp.add_widget(Label(text = 'Last Failed Attempt'))
+                temp.add_widget(Label(text = 'Last Failed Attempt', font_name = 'Play-Bold.ttf'))
                 lastfFailedloginDetails = updateLoginDetails.fetchLastFailedLoginTime()
                 self.ip.append(Label( text = lastfFailedloginDetails.split()[0]))
                 self.time.append(Label( text = lastfFailedloginDetails.split()[1] + " " + lastfFailedloginDetails.split()[2]))
@@ -1034,6 +1047,9 @@ class HomeScreen(Screen):
 
             self.midLayout.add_widget(label)
             self.midLayout.add_widget(button)
+
+            self.topLayout.remove_widget(self.helloUserLayout)
+            self.topLayout.size_hint = (1,0.05)
         else:
             if len(self.midLayout.children) > 0 :
                 previous_label = self.midLayout.children[0]
