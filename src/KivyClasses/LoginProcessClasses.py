@@ -461,7 +461,7 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         choice = randint(0,1)
 
-        if len(value) >= 6:
+        if len(value) == 6:
             if value == generatedOTP:
                 Clock.unschedule(self._time_event)
                 self.timerLabel.text = ' '
@@ -506,7 +506,7 @@ class LevelTwoScreen(Screen):
         global loginMsgs
         global updateLoginDetails
 
-        if len(value) >= 6:
+        if len(value) == 6:
             if value == generatedOTP:
                 print 'access granted'
                 self.fetchLastLoginDetails()
