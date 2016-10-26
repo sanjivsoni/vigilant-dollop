@@ -220,6 +220,8 @@ class UsernameScreen(Screen):
         global updateLoginDetails
         global updateContactDetails
 
+        passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
+
         if passwordMatch:
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
