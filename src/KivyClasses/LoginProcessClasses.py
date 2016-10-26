@@ -243,7 +243,7 @@ class UsernameScreen(Screen):
             content=Label(text='Incorrect Password'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-            checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            print "status" ,checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
 
     def recoverUsernameEvent(self, callback):
@@ -517,7 +517,8 @@ class LevelTwoScreen(Screen):
                 content=Label(text='Incorrect OTP'),
                 size_hint=(None, None), size=(180, 100))
                 popup.open()
-                checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                thread1 = Thread(target = checkAttemptsStatus,args = (updateLoginDetails,loginMsgs,))
+                thread1.start()
 
 
 

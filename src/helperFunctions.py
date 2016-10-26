@@ -231,28 +231,31 @@ def updateAttemptNo(updateLoginDetails,flag):
     updateLoginDetails.updateAttemptNo(flag)
 
 def calculateRetryTime(updateLoginDetails):
-    lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%d-%m-%Y %H:%M:%S')
-    #print lastFailedLoginDatetime
-    currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),"%d-%m-%Y %H:%M:%S")
-    #print currentDatetime
-
-    timeDifference = currentDatetime - lastFailedLoginDatetime
-
-    if(timeDifference.days > 0):
+    if updateLoginDetails.returnLastFailedLoginTime() == "- -":
         return -1
-
-    elif(timeDifference.seconds > 300):
-        return -1
-
     else:
-        return 300 - timeDifference.seconds
+        lastFailedLoginDatetime = datetime.datetime.strptime(updateLoginDetails.returnLastFailedLoginTime(),'%d-%m-%Y %H:%M:%S')
+        #print lastFailedLoginDatetime
+        currentDatetime = datetime.datetime.strptime(datetime.datetime.now().strftime("%d-%m-%Y %H:%M:%S"),"%d-%m-%Y %H:%M:%S")
+        #print currentDatetime
+
+        timeDifference = currentDatetime - lastFailedLoginDatetime
+
+        if(timeDifference.days > 0):
+            return -1
+
+        elif(timeDifference.seconds > 300):
+            return -1
+
+        else:
+            return 300 - timeDifference.seconds
 
 def checkAttemptsStatus(updateLoginDetails,loginMsgs):
 
     if currentAttemptNo(updateLoginDetails) < 3:
         # Unsuccessful match for Password
         updateAttemptNo(updateLoginDetails,1)
-        #print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
+        print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
         updateLoginDetails.updateFailedLoginTime()
         status = 0
 

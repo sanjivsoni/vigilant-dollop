@@ -29,7 +29,10 @@ class LoginDetails:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                time = aesDecrypt(row[0]).replace("#"," ")
+                if row[0] == "0":
+                    time = "0"
+                else:
+                    time = aesDecrypt(row[0]).replace("#"," ")
 
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
@@ -218,8 +221,6 @@ class LoginDetails:
         if ip == "0":
             ip = "NA"
 
-        print "ip", ip
-        print "time", time
         return ip+ " " + convertUTCToLocal(time)
 
 class LoginDetailMessages:
