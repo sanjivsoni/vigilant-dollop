@@ -908,7 +908,7 @@ class HomeScreen(Screen):
         popupContent = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
         fileView = FileChooserListView(id = 'filechooser')
 
-        popupManagerButtons = BoxLayout(size_hint_y = None, height = 20)
+        popupManagerButtons = BoxLayout(size_hint_y = None, height = 30)
 
         cancelButton = Button(text = 'cancel')
         cancelButton.bind(on_press = self.cancel)
@@ -991,7 +991,7 @@ class HomeScreen(Screen):
         for i in results:
             fileName = aesDecrypt(i[1])
             filePath = aesDecrypt(i[0])
-            fileButton = Button(text=' ', size=(40, 40), size_hint = (None, None), id = str(fileName))
+            fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = buttonId, background_color = (1, 0.29, 0.32,1))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
 
             fileLabel = Label(text = str(fileName), width = 70, halign = 'left', valign = 'middle', id="label" + str(fileName), font_size = '15sp')
