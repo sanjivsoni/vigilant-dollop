@@ -219,10 +219,17 @@ class UsernameScreen(Screen):
         global loginMsgs
         global updateLoginDetails
         global updateContactDetails
-
+        
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
+        retyrTime = calculateRetryTime(updateLoginDetails) 
+        if retyrTime > 0:
+            self.usernameField.disabled = True
+            minutes = retyrTime / 60
+            seconds = retyrTime % 60
+            popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+            popup.open()
 
-        if passwordMatch:
+        elif passwordMatch:
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
             updateContactDetails = User(self.username + " " + self.usernameField.text)
