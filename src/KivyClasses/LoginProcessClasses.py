@@ -256,6 +256,7 @@ class UsernameScreen(Screen):
                 popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
                 popup.open()
 
+
     def recoverUsernameEvent(self, callback):
         root = App.get_running_app().root
         root.current = 'recoverScreen'
