@@ -162,6 +162,8 @@ class Authentication:
 
             status = lock(filePath + "/" +  fileName ,encryptedSudoPwd)
             if status == 1 :
+                filePath = filePath.replace(" ","#")
+                fileName = fileName.replace(" ","#")
                 encryptedData = aesEncrypt(filePath + " " + fileName)
                 sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
                 #print sql
@@ -170,6 +172,7 @@ class Authentication:
                     config.statement.execute(sql)
                     config.conn.commit()
                     flag = 1
+                    print "File Locked"
 
                 except Exception, e:
                     config.conn.rollback()
@@ -201,10 +204,13 @@ class Authentication:
             status = unlock(filePath + "/" +  fileName,encryptedSudoPwd)
 
             if status == 1:
+                filePath = filePath.replace(" ","#")
+                fileName = fileName.replace(" ","#")
                 sql = "DELETE FROM lockedFiles WHERE userid = " + "'" + self.userID + "' AND filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
                 try:
                     config.statement.execute(sql)
                     config.conn.commit()
+                    print "File unlocked"
                 except Exception, e:
                     print repr(e)
                     config.conn.rollback()
@@ -215,8 +221,6 @@ class Authentication:
 
 
     def fetchLockedFiles(self):
-
-        print "fetching locked files"
         establishConnection()
 
         sql = "SELECT filepath,filename FROM lockedFiles WHERE userid =" + "'" + self.userID + "'"
