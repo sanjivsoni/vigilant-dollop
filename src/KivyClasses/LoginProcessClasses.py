@@ -908,7 +908,7 @@ class HomeScreen(Screen):
 
 
         self.helloUserLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.10), height = 10)
-        self.welcomeUserText = Label( text = 'Welcome Mr.Doe', font_size = '13sp')
+        self.welcomeUserText = Label( text = 'Welcome', font_size = '13sp')
 
         self.topButtonLayout.add_widget(self.logoutButton)
         self.topButtonLayout.add_widget(self.lockFileButton)
@@ -1003,6 +1003,7 @@ class HomeScreen(Screen):
     def addFilesOnLogin(self):
         print "in add files on login"
         global updateLoginDetails
+        #self.welcomeUserText.text = getUserName()
         #thread1 = Thread(target = self.updateFooter)
         #thread1.start()
         self.updateFooter()
