@@ -221,18 +221,8 @@ class UsernameScreen(Screen):
         global updateContactDetails
 
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
-        
-        passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
-        print passwordTimeout
 
-        if passwordTimeout > 0:
-            self.usernameField.disabled = True
-            minutes = passwordTimeout / 60
-            seconds = passwordTimeout % 60
-            popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
-            popup.open()
-
-        elif passwordMatch:
+        if passwordMatch:
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
             updateContactDetails = User(self.username + " " + self.usernameField.text)
@@ -246,10 +236,11 @@ class UsernameScreen(Screen):
                 root.get_screen('OTPVerification').sendOTPforVerification(self.username)
 
         else:
-            self.usernameField.disabled = False
-            popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Password'),
+            size_hint=(None, None), size=(180, 100))
             popup.open()
-            
+            print "status",checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def recoverUsernameEvent(self, callback):
         root = App.get_running_app().root
@@ -444,8 +435,11 @@ class LevelTwoScreen(Screen):
             self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
 
         else:
-            popup = Popup(title='Error', content=Label(text='Incorrect Answer'), size_hint=(None, None), size=(180, 100))
+            popup = Popup(title='Error',
+            content=Label(text='Incorrect Answer'),
+            size_hint=(None, None), size=(180, 100))
             popup.open()
+            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
     def securityQuestionLevelOne(self):
         global verifyUser
@@ -914,7 +908,7 @@ class HomeScreen(Screen):
 
 
         self.helloUserLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.10), height = 10)
-        self.welcomeUserText = Label( text = 'Welcome Mr.Doe', font_size = '13sp')
+        self.welcomeUserText = Label( text = 'Welcome ', font_size = '13sp')
 
         self.topButtonLayout.add_widget(self.logoutButton)
         self.topButtonLayout.add_widget(self.lockFileButton)
@@ -1009,6 +1003,7 @@ class HomeScreen(Screen):
     def addFilesOnLogin(self):
         print "in add files on login"
         global updateLoginDetails
+        #self.welcomeUserText.text = getUserName()
         #thread1 = Thread(target = self.updateFooter)
         #thread1.start()
         self.updateFooter()
@@ -1018,7 +1013,7 @@ class HomeScreen(Screen):
         for i in results:
             fileName = aesDecrypt(i[1])
             filePath = aesDecrypt(i[0])
-            fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = str(fileName), background_color = (1, 0.29, 0.32,1))
+            fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = buttonId, background_color = (1, 0.29, 0.32,1))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
 
             fileLabel = Label(text = str(fileName), width = 70, halign = 'left', valign = 'middle', id="label" + str(fileName), font_size = '15sp')
