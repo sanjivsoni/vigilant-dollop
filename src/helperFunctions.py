@@ -257,7 +257,8 @@ def checkAttemptsStatus(updateLoginDetails,loginMsgs):
         updateAttemptNo(updateLoginDetails,1)
         status = -1 * int(currentAttemptNo(updateLoginDetails))
         print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
-        updateLoginDetails.updateFailedLoginTime()
+        thread1 = Thread( target = updateLoginDetails.updateFailedLoginTime )
+        thread1.start()
 
     else:
         print "3 attempts over"

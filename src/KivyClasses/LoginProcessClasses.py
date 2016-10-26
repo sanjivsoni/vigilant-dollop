@@ -225,7 +225,14 @@ class UsernameScreen(Screen):
         passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
         print passwordTimeout
 
-        if passwordMatch:
+        if passwordTimeout > 0:
+            self.usernameField.disabled = True
+            minutes = passwordTimeout / 60
+            seconds = passwordTimeout % 60
+            popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+            popup.open()
+
+        elif passwordMatch:
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
             updateContactDetails = User(self.username + " " + self.usernameField.text)
@@ -239,15 +246,8 @@ class UsernameScreen(Screen):
                 root.get_screen('OTPVerification').sendOTPforVerification(self.username)
 
         else:
-            if passwordTimeout > 0:
-                self.usernameField.disabled = True
-                minutes = passwordTimeout / 60
-                seconds = passwordTimeout % 60
-                popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds ', size_hint=(None, None), size=(180, 100)))
-            else:
-                self.usernameField.disabled = False
-                popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
-
+            self.usernameField.disabled = False
+            popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
             popup.open()
             
 
@@ -914,7 +914,7 @@ class HomeScreen(Screen):
 
 
         self.helloUserLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.10), height = 10)
-        self.welcomeUserText = Label( text = 'Welcome', font_size = '13sp')
+        self.welcomeUserText = Label( text = 'Welcome Mr.Doe', font_size = '13sp')
 
         self.topButtonLayout.add_widget(self.logoutButton)
         self.topButtonLayout.add_widget(self.lockFileButton)
@@ -1009,7 +1009,6 @@ class HomeScreen(Screen):
     def addFilesOnLogin(self):
         print "in add files on login"
         global updateLoginDetails
-        #self.welcomeUserText.text = getUserName()
         #thread1 = Thread(target = self.updateFooter)
         #thread1.start()
         self.updateFooter()
