@@ -6,11 +6,6 @@ class Authentication:
     def __init__(self):
         self.userID = ""
         self.userDetails = ""
-        self.userVerifiedLevel1 = False
-        self.userVerifiedLevel2 = False
-        self.userVerifiedLevel3 = False
-        #self.authenticationComplete = self.userVerifiedLevel1 and self.userVerifiedLevel2 and self.userVerifiedLevel3
-        self.authenticationComplete = True
 
     def checkIfUserExists(self,userID):
         flag = 0
@@ -56,7 +51,6 @@ class Authentication:
             flag = 0
         closeConnection()
         if (correctPassword == hashEncrypt(userEnteredPwd)):
-            self.userVerifiedLevel1 = True
             return 1
         else:
             return 0
@@ -143,46 +137,45 @@ class Authentication:
         return self.userID
 
     def lockItem(self,filePath,fileName):
-        if(self.authenticationComplete):
-            flag = -1
-            encryptedSudoPwd = ""
-            establishConnection()
-            sql = "SELECT sudoPwd FROM user WHERE userid =" + "'" + self.userID + "'"
+        flag = -1
+        encryptedSudoPwd = ""
+        establishConnection()
+        sql = "SELECT sudoPwd FROM user WHERE userid =" + "'" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                encryptedSudoPwd = row[0]
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        status = lock(filePath + "/" +  fileName ,encryptedSudoPwd)
+        if status == 1 :
+            filePath = filePath.replace(" ","#")
+            fileName = fileName.replace(" ","#")
+            encryptedData = aesEncrypt(filePath + " " + fileName)
+            sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
+            #print sql
 
             try:
                 config.statement.execute(sql)
-                results = config.statement.fetchall()
-                for row in results:
-                    encryptedSudoPwd = row[0]
+                config.conn.commit()
+                flag = 1
+                print "File Locked"
 
             except Exception, e:
-                print repr(e)
                 config.conn.rollback()
                 flag = 0
 
-            status = lock(filePath + "/" +  fileName ,encryptedSudoPwd)
-            if status == 1 :
-                filePath = filePath.replace(" ","#")
-                fileName = fileName.replace(" ","#")
-                encryptedData = aesEncrypt(filePath + " " + fileName)
-                sql = "INSERT INTO lockedFiles(userid,filepath,filename) VALUES " + insertQueryHelper(self.userID + " " + encryptedData)
-                #print sql
-
-                try:
-                    config.statement.execute(sql)
-                    config.conn.commit()
-                    flag = 1
-                    print "File Locked"
-
-                except Exception, e:
-                    config.conn.rollback()
-                    flag = 0
-
-            closeConnection()
-            if flag:
-                return 1
-            else:
-                return 0
+        closeConnection()
+        if flag:
+            return 1
+        else:
+            return 0
 
     def unlockItem(self,filePath,fileName):
         if(self.authenticationComplete):

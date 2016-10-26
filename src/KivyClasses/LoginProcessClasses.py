@@ -13,6 +13,7 @@ sendOTP = 0
 choice = -1
 attempt = 0
 generatedOTP = 0
+triesFlag = False
 
 labelFont = 'Play-Regular.ttf'
 buttonFont = 'batmfa__.ttf'
@@ -145,6 +146,7 @@ class UsernameScreen(Screen):
 
         self.usernameField.text = 'bhatshubhs'
 
+
     def clearLayout(self):
         for child in self.children[:]:
             self.remove_widget(child)
@@ -219,17 +221,24 @@ class UsernameScreen(Screen):
         global loginMsgs
         global updateLoginDetails
         global updateContactDetails
-        
+        global triesFlag
+
         passwordMatch = verifyUser.checkUserLevel1(self.usernameField.text)
-        retyrTime = calculateRetryTime(updateLoginDetails) 
-        if retyrTime > 0:
-            self.usernameField.disabled = True
-            minutes = retyrTime / 60
-            seconds = retyrTime % 60
-            popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+        fetchAttemptNo = currentAttemptNo(updateLoginDetails)
+        retryTime = calculateRetryTime(updateLoginDetails)
+
+        if fetchAttemptNo >= 3 and retryTime > 0:
+            triesFlag = True
+            minutes = retryTime / 60
+            seconds = retryTime % 60
+            popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(450, 100))
             popup.open()
 
         elif passwordMatch:
+            if triesFlag == True:
+                updateAttemptNo(updateLoginDetails,0)
+                triesFlag = False
+
             print "Authentication Level 1 Complete"
             self.statusLabel.text = 'Password Matched'
             updateContactDetails = User(self.username + " " + self.usernameField.text)
@@ -244,6 +253,8 @@ class UsernameScreen(Screen):
 
         else:
             passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
+            thread1.start()
 
             if passwordTimeout > 0:
                 self.usernameField.disabled = True
@@ -354,7 +365,6 @@ class LevelTwoScreen(Screen):
     def startTimerIfOtp(self):
         global choice
         choice = randint(0,1)
-        print choice
         if self.otpOnLevelTwoFlag == 1:
             self.startTimer()
             self.otpSentLabel.text = self.returnOTPEvent(-1)
@@ -386,7 +396,6 @@ class LevelTwoScreen(Screen):
 
         if choice == 0:
             msg = "Please Enter the OTP sent to your registered Email"
-            print datetime.datetime.now()
             sendOTP.sendOTPforAuth_email(6,otpQueue)
             generatedOTP = otpQueue.get()
 
@@ -427,8 +436,10 @@ class LevelTwoScreen(Screen):
         global choice
         global updateLoginDetails
         global loginMsgs
+        global triesFlag
 
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
+            print "Authentication Level 2 Complete"
             self.midLayout.remove_widget(self.submitButton)
             self.headingLabel.text = 'Authentication Step 3'
 
@@ -450,11 +461,22 @@ class LevelTwoScreen(Screen):
             self._time_event = Clock.schedule_interval(partial(self.updateTimer), 1)
 
         else:
-            popup = Popup(title='Error',
-            content=Label(text='Incorrect Answer'),
-            size_hint=(None, None), size=(180, 100))
-            popup.open()
-            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
+            thread1.start()
+            if passwordTimeout > 0:
+                triesFlag = True
+                minutes = passwordTimeout / 60
+                seconds = passwordTimeout % 60
+                popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(450, 100))
+                popup.open()
+            else:
+                if triesFlag == True:
+                    updateAttemptNo(updateLoginDetails,0)
+                    triesFlag = False
+                self.otpText.disabled = False
+                popup = Popup(title='Error', content=Label(text='Incorrect Answer'), size_hint=(None, None), size=(180, 100))
+                popup.open()
 
     def securityQuestionLevelOne(self):
         global verifyUser
@@ -468,10 +490,12 @@ class LevelTwoScreen(Screen):
         global updateLoginDetails
         global loginMsgs
         global generatedOTP
+        global triesFlag
         choice = randint(0,1)
 
         if len(value) == 6:
             if value == generatedOTP:
+                print "Authentication Level 2 Complete"
                 Clock.unschedule(self._time_event)
                 self.timerLabel.text = ' '
                 self.otpSentLabel.text = ' '
@@ -485,23 +509,27 @@ class LevelTwoScreen(Screen):
                 self.midLayout.add_widget(self.submitButton)
 
             else:
-                #self.textInput.disabled = False
                 passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
+                thread1.start()
 
                 if passwordTimeout > 0:
-                    self.otpText.disabled = True
+                    triesFlag = True
                     minutes = passwordTimeout / 60
                     seconds = passwordTimeout % 60
-                    popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+                    popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(450, 100))
                     popup.open()
                 else:
+                    if triesFlag == True:
+                        updateAttemptNo(updateLoginDetails,0)
+                        triesFlag = False
                     self.otpText.disabled = False
-                    popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
+                    popup = Popup(title='Error', content=Label(text='Incorrect OTP'), size_hint=(None, None), size=(180, 100))
                     popup.open()
 
     def sendLoginMessages(self,dt):
         global loginMsgs
-        print "sending msgs"
+        print "Sending Login Details"
         t1 = Thread(target=loginMsgs.loggedIn)
         t1.start()
 
@@ -514,26 +542,37 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         global loginMsgs
         global updateLoginDetails
+        global triesFlag
 
         if len(value) == 6:
             if value == generatedOTP:
-                print 'access granted'
+                print "Authentication Level 2 Complete"
+                print 'Access Granted'
                 self.fetchLastLoginDetails()
-                print "dsadsa"
                 updateLoginDetails.updateLoginTime()
-                print "fdsd"
                 root = App.get_running_app().root
                 root.current = 'HomeScreen'
                 root.get_screen('HomeScreen').addFilesOnLogin()
                 Clock.schedule_once(self.sendLoginMessages, 5)
 
             else:
-                popup = Popup(title='Error',
-                content=Label(text='Incorrect OTP'),
-                size_hint=(None, None), size=(180, 100))
-                popup.open()
-                thread1 = Thread(target = checkAttemptsStatus,args = (updateLoginDetails,loginMsgs,))
+                passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
                 thread1.start()
+
+                if passwordTimeout > 0:
+                    triesFlag = True
+                    minutes = passwordTimeout / 60
+                    seconds = passwordTimeout % 60
+                    popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(450, 100))
+                    popup.open()
+                else:
+                    if triesFlag == True:
+                        updateAttemptNo(updateLoginDetails,0)
+                        triesFlag = False
+                    self.otpText.disabled = False
+                    popup = Popup(title='Error', content=Label(text='Incorrect OTP'), size_hint=(None, None), size=(180, 100))
+                    popup.open()
 
 
     def accessGrantedAfterSecurityQuestionLevelThree(self, callback):
@@ -541,8 +580,10 @@ class LevelTwoScreen(Screen):
         global choice
         global loginMsgs
         global updateLoginDetails
+        global triesFlag
         if self.otpText.text == verifyUser.checkSecurityQuesAnswer(choice):
-            print 'access granted'
+            print "Authentication Level 2 Complete"
+            print 'Access Granted'
             self.fetchLastLoginDetails()
             updateLoginDetails.updateLoginTime()
             root = App.get_running_app().root
@@ -551,11 +592,23 @@ class LevelTwoScreen(Screen):
             Clock.schedule_once(self.sendLoginMessages, 5)
 
         else:
-            popup = Popup(title='Error',
-            content=Label(text='Incorrect Answer'),
-            size_hint=(None, None), size=(180, 100))
-            popup.open()
-            print checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            passwordTimeout = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+            thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
+            thread1.start()
+
+            if passwordTimeout > 0:
+                triesFlag = True
+                minutes = passwordTimeout / 60
+                seconds = passwordTimeout % 60
+                popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(450, 100))
+                popup.open()
+            else:
+                if triesFlag == True:
+                    updateAttemptNo(updateLoginDetails,0)
+                    triesFlag = False
+                self.otpText.disabled = False
+                popup = Popup(title='Error', content=Label(text='Incorrect Answer'), size_hint=(None, None), size=(180, 100))
+                popup.open()
 
     def regenerateOtp(self, callback):
         global otpChoice
@@ -1022,7 +1075,7 @@ class HomeScreen(Screen):
 
 
     def addFilesOnLogin(self):
-        print "in add files on login"
+        print "Fetching Locked Files"
         global updateLoginDetails
         #self.welcomeUserText.text = getUserName()
         #thread1 = Thread(target = self.updateFooter)
@@ -1217,8 +1270,6 @@ class Reset(Screen):
             if not(resetFlag == -1):
                 updateContactDetails.updateUserContactDetails(resetFlag,sendData)
 
-
-
 class OtpVerification(Screen):
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
@@ -1293,9 +1344,6 @@ class OtpVerification(Screen):
         self.mobileOTP = mobileOtpQueue.get()
         self.emailOTP = emailOtpQueue.get()
 
-        #print "mobileotp",self.mobileOTP
-        #print "emailotp", self.emailOTP
-
     def checkEmailAndMobileOtp(self, callback):
         global userVerification
         print 'Checking OTP'
@@ -1312,7 +1360,19 @@ class OtpVerification(Screen):
             root.current = 'usernameScreen'
 
     def regenerateOtp(self, callback):
+        global userVerification
+        contactVerification = OTP()
+        mobileOtpQueue = Queue.Queue()
+        emailOtpQueue = Queue.Queue()
+
+        contactVerification.sendOTPforVerification_email(userVerification.fetchUserContactDetails().split()[0],emailOtpQueue)
+        contactVerification.sendOTPforVerification_mobile(userVerification.fetchUserContactDetails().split()[1],mobileOtpQueue)
+
+        #Start Timer
         self.startTimer()
+
+        self.mobileOTP = mobileOtpQueue.get()
+        self.emailOTP = emailOtpQueue.get()
         self.bottomLayout.remove_widget(self.regenerateOtpButton)
         self.emailOtpText.disabled = True
         self.mobileOtpText.disabled = True

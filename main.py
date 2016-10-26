@@ -2,6 +2,10 @@ from src.helperFunctions import*
 from src.KivyClasses.LoginProcessClasses import *
 from src.KivyClasses.SignUpClass import *
 #from libraries import *
+
+Config.set('kivy', 'log_level', 'critical')
+Config.write()
+
 Window.size = (700, 700)
 
 screenManager = ScreenManager( transition = FadeTransition() )

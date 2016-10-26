@@ -67,6 +67,7 @@ class LoginDetails:
                 attemptNo = int(aesDecrypt(row[0]))
 
         closeConnection()
+        #print "Current Attempt in DB ->" , attemptNo 
         return attemptNo
 
     def updateAttemptNo(self,flag):

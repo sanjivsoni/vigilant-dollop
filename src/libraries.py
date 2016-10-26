@@ -82,4 +82,5 @@ from kivy.uix.dropdown import DropDown
 from kivy.uix.image import Image
 from kivy.clock import Clock
 from kivy.core.image import Image as CoreImage
+from kivy.config import Config
 import datetime
