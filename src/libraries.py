@@ -67,6 +67,7 @@ from kivy.properties import NumericProperty
 from kivy.properties import StringProperty
 from kivy.uix.spinner import Spinner
 
+from kivy.uix.anchorlayout import AnchorLayout
 
 from kivy.factory import Factory
 from kivy.uix.filechooser import FileChooserIconView, FileChooserListView

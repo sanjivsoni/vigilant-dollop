@@ -34,10 +34,6 @@ popupSize = (200, 200)
 
 class SudoPasswordScreen(Screen):
 
-    def _update_rect(self, instance, value):
-        self.rect.pos = instance.pos
-        self.rect.size = instance.size
-
     def __init__(self, **kwargs):
         super(SudoPasswordScreen, self).__init__(**kwargs)
         with self.canvas.before:
@@ -46,7 +42,7 @@ class SudoPasswordScreen(Screen):
 
         self.bind(size = self._update_rect, pos=self._update_rect)
 
-    # Initialize Screen Elements
+        # Initialize Screen Elements
         self.layout = BoxLayout(orientation = 'vertical', pos_hint = {'center_y': .5, 'center_x': .5}, spacing = 25, size_hint = (0.25, 0.25))
         self.sudoPassword = TextInput(hint_text = 'sudo password', password = True, multiline = False)
         self.submitButton = Button(text = 'Submit')
@@ -58,6 +54,10 @@ class SudoPasswordScreen(Screen):
         self.layout.add_widget(self.sudoPassword)
         self.layout.add_widget(self.submitButton)
         self.add_widget(self.layout)
+
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def checkSudoPassword(self, callback):
         # If valid Password then move to sign up form
@@ -71,6 +71,17 @@ class SudoPasswordScreen(Screen):
             popup.open()
 
 class UsernameScreen(Screen):
+
+    def __init__(self, **kwargs):
+        super(UsernameScreen, self).__init__(**kwargs)
+
+        self.attempts = 0
+        self.timeout = 0
+        self.passwordAttempts = 0
+        self.username = ""
+
+        self.buildLayout()
+
     def _update_rect(self, instance, value):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
@@ -137,17 +148,6 @@ class UsernameScreen(Screen):
         for child in self.children[:]:
             self.remove_widget(child)
 
-
-    def __init__(self, **kwargs):
-        super(UsernameScreen, self).__init__(**kwargs)
-
-        self.attempts = 0
-        self.timeout = 0
-        self.passwordAttempts = 0
-        self.username = ""
-
-        self.buildLayout()
-
     def regenerateCaptcha(self, callback):
         self.captchaCorrectText = createCaptcha()
         print self.captchaCorrectText
@@ -161,7 +161,6 @@ class UsernameScreen(Screen):
         else:
             self.nextButton.disabled = False
 
-
     def enterPassword(self, callback):
         global verifyUser
         global userId
@@ -174,8 +173,8 @@ class UsernameScreen(Screen):
         userVerification = VerifyUserCredentials(self.usernameField.text)
 
         userExists = verifyUser.checkIfUserExists(self.usernameField.text)
-        if userExists:
-            if self.captchaTextInput.text == self.captchaCorrectText:
+        if self.captchaTextInput.text == self.captchaCorrectText:
+            if userExists:
                 sendOTP = OTP(verifyUser.returnUserID())
                 loginMsgs = LoginDetailMessages(verifyUser.returnUserID())
                 updateLoginDetails = LoginDetails(verifyUser.returnUserID())
@@ -201,18 +200,17 @@ class UsernameScreen(Screen):
                 self.children[0].add_widget(self.recoverPasswordButton)
 
             else:
-                # Unsuccessful match for Username
                 popup = Popup(title='Error',
-                content=Label(text='Incorrect Captcha Text'),
+                content=Label(text='Incorrect Username'),
                 size_hint=(None, None), size=(180, 100))
                 popup.open()
+                
         else:
+            # Unsuccessful match for Username
             popup = Popup(title='Error',
-            content=Label(text='Incorrect Username'),
+            content=Label(text='Incorrect Captcha Text'),
             size_hint=(None, None), size=(180, 100))
             popup.open()
-
-
 
     def verifyPasswordEvent(self, callback):
         global verifyUser
@@ -238,7 +236,6 @@ class UsernameScreen(Screen):
             popup.open()
             print "status",checkAttemptsStatus(updateLoginDetails,loginMsgs)
 
-
     def recoverUsernameEvent(self, callback):
         root = App.get_running_app().root
         root.current = 'recoverScreen'
@@ -263,38 +260,6 @@ class LevelTwoScreen(Screen):
     correctOTP = ""
 
     otpOnLevelTwoFlag = 0
-
-    def _update_rect(self, instance, value):
-        self.rect.pos = instance.pos
-        self.rect.size = instance.size
-
-    def buildLayout(self):
-        with self.canvas.before:
-            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-            self.rect = Rectangle(size=self.size, pos=self.pos)
-
-        self.bind(size = self._update_rect, pos=self._update_rect)
-
-        self.topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
-        self.midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
-
-        self.bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10, padding = 10)
-
-        self.topLayout.add_widget(self.headingLabel)
-        self.topLayout.add_widget(self.otpSentLabel)
-
-        self.midLayout.add_widget(self.securityQuestionLabel)
-        self.midLayout.add_widget(self.otpText)
-
-        self.bottomLayout.add_widget(self.timerLabel)
-
-        self.randomLevel = randint(0,1)
-
-    def clearLayout(self):
-        for parent in self.layout.children[:]:
-            for child in parent.children[:]:
-                self.layout.remove_widget(child)
-
 
     def __init__(self, **kwargs):
         super(LevelTwoScreen, self).__init__(**kwargs)
@@ -334,6 +299,36 @@ class LevelTwoScreen(Screen):
         else:
             self.securityQuestionLevelOne()
 
+    def _update_rect(self, instance, value):
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
+
+    def buildLayout(self):
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+
+        self.bind(size = self._update_rect, pos=self._update_rect)
+
+        self.topLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3))
+        self.midLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10)
+
+        self.bottomLayout = BoxLayout( orientation = 'vertical', size_hint = (1, 0.3), spacing = 10, padding = 10)
+
+        self.topLayout.add_widget(self.headingLabel)
+        self.topLayout.add_widget(self.otpSentLabel)
+
+        self.midLayout.add_widget(self.securityQuestionLabel)
+        self.midLayout.add_widget(self.otpText)
+
+        self.bottomLayout.add_widget(self.timerLabel)
+
+        self.randomLevel = randint(0,1)
+
+    def clearLayout(self):
+        for parent in self.layout.children[:]:
+            for child in parent.children[:]:
+                self.layout.remove_widget(child)
 
     def startTimerIfOtp(self):
         global choice
@@ -586,12 +581,23 @@ class RecoverScreen(Screen):
         for child in self.children[:]:
             self.remove_widget(child)
 
+    def redirectToHomeScreen(self, callback):
+        root = App.get_running_app().root
+        root.current = 'usernameScreen'
+
     def renderUsernameScreen(self):
         with self.canvas.before:
             Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
             self.rect = Rectangle(size=self.size, pos=self.pos)
 
         self.bind(size = self._update_rect, pos=self._update_rect)
+
+        self.topLayout = AnchorLayout(anchor_x='left', anchor_y='top', padding = 20)
+        self.backButton = Button(text = 'Back',size = (90, 20), size_hint = (None,None))
+    
+        self.backButton.bind(on_press = self.redirectToHomeScreen)
+
+        self.topLayout.add_widget(self.backButton)
 
         self.layout = BoxLayout(orientation = 'vertical', size_hint = (0.40,0.20), pos_hint = {'center_x': .5, 'center_y': .5}, spacing = 15)
         self.recoverLabel = Label( text = 'Recover by Email or phone')
@@ -607,6 +613,7 @@ class RecoverScreen(Screen):
         self.layout.add_widget(self.submitButton)
         # Stub
         self.textInput.text = '+919810030997'
+        self.add_widget(self.topLayout)
         self.add_widget(self.layout)
 
     def recoverByEmail(self, contact, my_queue):
@@ -854,12 +861,27 @@ class HomeScreen(Screen):
         self.rect.pos = instance.pos
         self.rect.size = instance.size
 
-    def __init__(self, **kwargs):
-        super(HomeScreen, self).__init__(**kwargs)
-        with self.canvas.before:
-            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-            self.rect = Rectangle(size=self.size, pos=self.pos)
-        self.bind(size = self._update_rect, pos=self._update_rect)
+    def buildPopup(self):
+        popupContent = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
+        fileView = FileChooserListView(id = 'filechooser')
+
+        popupManagerButtons = BoxLayout(size_hint_y = None, height = 30)
+
+        cancelButton = Button(text = 'cancel')
+        cancelButton.bind(on_press = self.cancel)
+
+        loadButton = Button(text = 'load')
+        loadButton.bind(on_press = partial(self.load,fileView))
+
+        popupManagerButtons.add_widget(cancelButton)
+        popupManagerButtons.add_widget(loadButton)
+
+        popupContent.add_widget(fileView)
+        popupContent.add_widget(popupManagerButtons)
+
+        self._popup = Popup(title = "Select Files to lock", content = popupContent,size_hint = (0.9, 0.9))
+
+    def buildLayout(self):
         self.layout = BoxLayout(orientation = 'vertical')
 
         self.topLayout = BoxLayout(orientation = 'vertical', size_hint = (1, 0.15), height = 20)
@@ -904,25 +926,16 @@ class HomeScreen(Screen):
         self.layout.add_widget(self.midLayout)
         self.layout.add_widget(self.bottomLayout)
 
-        # Add popup for file chooser
-        popupContent = BoxLayout(size = self.size, pos = self.pos, orientation = 'vertical')
-        fileView = FileChooserListView(id = 'filechooser')
+    def __init__(self, **kwargs):
+        super(HomeScreen, self).__init__(**kwargs)
 
-        popupManagerButtons = BoxLayout(size_hint_y = None, height = 30)
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
+        self.bind(size = self._update_rect, pos=self._update_rect)
 
-        cancelButton = Button(text = 'cancel')
-        cancelButton.bind(on_press = self.cancel)
-
-        loadButton = Button(text = 'load')
-        loadButton.bind(on_press = partial(self.load,fileView))
-
-        popupManagerButtons.add_widget(cancelButton)
-        popupManagerButtons.add_widget(loadButton)
-
-        popupContent.add_widget(fileView)
-        popupContent.add_widget(popupManagerButtons)
-
-        self._popup = Popup(title = "Select Files to lock", content = popupContent,size_hint = (0.9, 0.9))
+        self.buildLayout()
+        self.buildPopup()
 
     # Login stats layout
         self.loginStatsLayout = BoxLayout(orientation = 'horizontal', size_hint = (1, 0.11), padding = 10)
