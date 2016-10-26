@@ -59,6 +59,7 @@ def checkSudoPwd(sudopwd):
 def lock(path,encryptedSudoPwd):
     flag = 0
     sudoPwd = aesDecrypt(encryptedSudoPwd)
+    path = path.replace(" ", "\ ")
     command1 = config.changeDirectory + sudoPwd + config.changeOwnerToRoot + path
     if os.system(command1) == 0:
         command2 = config.changeDirectory + sudoPwd + config.lockCommand + path
@@ -71,7 +72,8 @@ def unlock(path,encryptedSudoPwd):
 
     flag = 0
     sudoPwd = aesDecrypt(encryptedSudoPwd)
-
+    path = path.replace(" ", "\ ")
+    print path
     command1 = config.changeDirectory + sudoPwd + config.unlockCommand + path
     if os.system(command1) == 0:
         command2 = config.changeDirectory + sudoPwd + config.changeOwnerToUser + path
@@ -168,6 +170,7 @@ def fetchSecurityQuestionPart2():
     return securityQues[:-1] + "]"
 
 def userDoesNotExists():
+    print "Checking if user exists"
     establishConnection()
     sql = "SELECT COUNT(*) FROM user"
     flag = 1
@@ -178,6 +181,9 @@ def userDoesNotExists():
         for row in results:
             if row[0] == 1:
                 flag = 0
+                print "User Exists"
+            else:
+                print "User doesn't Exists"
 
     except Exception, e:
         print repr(e)
@@ -197,12 +203,12 @@ def runByThreadForMobile(*kargs):
     thread1.start()
 
 def sendTextMobile(sendTo,msg):
-    print "mobile "
     client = TwilioRestClient(config.account_sid, config.auth_token)
     message = client.messages.create(to = sendTo, from_ = config.from_number, body = msg)
+    print "Mobile OTP Sent"
 
 def sendEmail(sendTo,message,subject):
-    print "email "
+
     msg = MIMEMultipart()
     msg['From'] = "Team Vigilant Dollop"
     msg['To'] = sendTo
@@ -216,6 +222,7 @@ def sendEmail(sendTo,message,subject):
     text = msg.as_string()
     server.sendmail(config.emailid, sendTo, text)
     server.quit()
+    print "Email OTP Sent"
 
 def currentAttemptNo(updateLoginDetails):
     return updateLoginDetails.fetchAttemptNo()

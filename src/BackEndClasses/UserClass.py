@@ -19,6 +19,7 @@ class User:
             config.statement.execute(sql)
             config.conn.commit()
             flag = 1
+            print "User Created(unverified contact details)"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
@@ -35,6 +36,7 @@ class User:
             config.statement.execute(sql)
             config.conn.commit()
             flag = 1
+            print "User Personal Details Added"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
@@ -52,6 +54,7 @@ class User:
             config.statement.execute(sql)
             config.conn.commit()
             flag = 1
+            print "USer Security Question Added"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
@@ -74,6 +77,7 @@ class User:
             config.statement.execute(sql)
             config.conn.commit()
             checkFlag = 1
+            print "User Record updated"
 
         except Exception, e:
             print repr(e)
@@ -118,11 +122,12 @@ class VerifyUserCredentials:
         establishConnection()
 
         sql = "UPDATE user SET contactVerified = '" + aesEncrypt(str(1)) + "' WHERE userid = '" + self.userID + "'"
-        print sql
+        #print sql
 
         try:
             config.statement.execute(sql)
             config.conn.commit()
+            print "User Contact Details Verified"
         except Exception, e:
             print repr(e)
             config.conn.rollback()
