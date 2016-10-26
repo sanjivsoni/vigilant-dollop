@@ -137,7 +137,7 @@ class SignupScreen(Screen):
                 _suggest = ""
              else:
                 L7.color = [1,0,0,1]
-                _suggest = "Password Doesn't Match"
+                _suggest = "Password Doesn't Match."
         else:
             L7.color = [0,1,0,1]
             _suggest = " "
@@ -145,8 +145,10 @@ class SignupScreen(Screen):
         _valid.text = _suggest
 
     def pass_valid(self):
+        pass_c = self.ids['3']
         pass_w = self.ids['2']
         L7 = self.ids['L2']
+        validMessage = self.ids['MSG2']
         uCase = 0
         lCase = 0
         num = 0
@@ -157,6 +159,14 @@ class SignupScreen(Screen):
         VAL = pass_w.text
         _suggest = "\n"
         _valid = self.ids['MSG']
+        if not(pass_c.text == ""):
+            if not(pass_c.text == pass_w.text):
+                validMessage.text = "Password Doesn't Match."
+            else:
+                validMessage.text = ""
+        else:
+                validMessage.text = ""
+            
         if len(VAL)<8 or len(VAL)>16:
             lent = 0
         else:
@@ -240,36 +250,71 @@ class SignupScreen(Screen):
             self.flag9 += 1
     def uid_work(self):
          L7 = self.ids['L1']
+         msg = self.ids['userIDMessage']
          name = self.ids['1']
          self.val_change()
          flag = 0
          self.flag8 = 0
-
+         suggest = ""
          name.text = name.text.replace(" ","")
+         flag2 = 0
 
-         if len(name.text) >=8 and len(name.text) <=16:
-            for i in range (0,len(name.text)):
-                if name.text[i].isalnum() or name.text[i]=="_":
-                    continue
-                else:
-                    flag+=1
-                    break
-         else:
-             flag += 1
+         if name.text == "":
+             suggest = ""
+             L7.color = [1,1,1,1]
 
-         if flag:
-             if name.text == "":
-                 L7.color = [1,1,1,1]
-             else:
+         if name.text[0:1].isdigit():
+             suggest = suggest + "First character cannot be a digit.\n"
+             flag +=1
+             L7.color = [1,0,0,1]
+
+         if not(len(name.text) >=8 and len(name.text) <=16) and not(name.text == ""):
+                flag +=1
+                suggest = suggest + "Username Must have length between 8 and 16.\n"
+                L7.color = [1,0,0,1]
+
+         if not(name.text.isalnum()):
+             for i in range (0,len(name.text)):
+                 if name.text[i].isalnum() or name.text[i]=="_":
+                     continue
+                 else:
+                     flag2 +=1
+                     flag +=1
+                     L7.color = [1,0,0,1]
+                     break
+             if flag2:
+                 suggest = suggest + "Username can only have \nletters, digits and underscore.\n"
                  L7.color = [1,0,0,1]
+         if flag or name.text == "":
+            pass 
          else:
-             if name.text == "":
-                 L7.color = [1,1,1,1]
-             elif name.text[0].isdigit():
-                 L7.color = [1,0,0,1]
-             else:
-                L7.color = [0,1,0,1]
-                self.flag8 += 1
+             self.flag8 = 1
+             L7.color = [0,1,0,1]
+         print self.flag8
+        
+        #  if flag2:
+        #      suggest = suggest + "Username can only have \nletters,digits, and underscore.\n"
+        #  if flag:
+        #      if name.text[0].isdigit():
+        #          L7.color = [1,0,0,1]
+        #          suggest = suggest + "First character cannot be a digit."
+        #      if name.text == "":
+        #          L7.color = [1,1,1,1]
+        #          suggest = ""
+        #      else:
+        #          suggest = suggest + "Username Must have length between 8 and 16.\n"
+        #          L7.color = [1,0,0,1]
+        #  else:
+        #      if name.text == "":
+        #          L7.color = [1,1,1,1]
+        #      elif name.text[0].isdigit():
+        #          L7.color = [1,0,0,1]
+        #          suggest = suggest + "First character cannot be a digit."
+        #      else:
+        #         suggest = ""
+        #         L7.color = [0,1,0,1]
+        #         self.flag8 += 1
+         msg.text = suggest
 
     def cont_work(self):
          L7 = self.ids['L5']
