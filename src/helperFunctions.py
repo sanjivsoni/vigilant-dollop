@@ -241,7 +241,7 @@ def calculateRetryTime(updateLoginDetails):
 
         timeDifference = currentDatetime - lastFailedLoginDatetime
         print "td",timeDifference
-        
+
         if(timeDifference.days > 0):
             return 0
 
@@ -258,16 +258,16 @@ def checkAttemptsStatus(updateLoginDetails,loginMsgs):
         updateAttemptNo(updateLoginDetails,1)
         status = -1 * int(currentAttemptNo(updateLoginDetails))
         print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
+        #print "currentAttemptNoA",currentAttemptNo(updateLoginDetails)
         thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
         thread1.start()
-
     else:
-        print "3 attempts over"
         #thread1 = Thread(target=loginMsgs.failedLogin)
         #thread1.start()
-        print "currentAttemptNoB",currentAttemptNo(updateLoginDetails)
+        #print "currentAttemptNoB",currentAttemptNo(updateLoginDetails)
         status  = calculateRetryTime(updateLoginDetails)
         if status == 0:
-            updateLoginDetails.updateFailedLoginTime()
+            thread1 = Thread(target = updateLoginDetails.updateFailedLoginTime)
+            thread1.start()
 
     return status

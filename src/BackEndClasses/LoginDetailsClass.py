@@ -133,6 +133,7 @@ class LoginDetails:
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
             conn = MySQLdb.connect(config.db_hostip, config.db_user, config.db_pass, config.db_name)
+            statement = conn.cursor()
             statement.execute(sql)
             conn.commit()
 
