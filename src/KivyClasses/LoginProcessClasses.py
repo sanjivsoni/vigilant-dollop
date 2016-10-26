@@ -249,7 +249,6 @@ class UsernameScreen(Screen):
             self.usernameField.disabled = False
             popup = Popup(title='Error', content=Label(text='Incorrect Password'), size_hint=(None, None), size=(180, 100))
             popup.open()
-            
 
     def recoverUsernameEvent(self, callback):
         root = App.get_running_app().root
@@ -461,6 +460,8 @@ class LevelTwoScreen(Screen):
         global generatedOTP
         choice = randint(0,1)
 
+
+
         if len(value) == 6:
             if value == generatedOTP:
                 Clock.unschedule(self._time_event)
@@ -476,11 +477,16 @@ class LevelTwoScreen(Screen):
                 self.midLayout.add_widget(self.submitButton)
 
             else:
-                popup = Popup(title='Error',
-                content=Label(text='Incorrect OTP'),
-                size_hint=(None, None), size=(180, 100))
-                popup.open()
-                print checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                #self.textInput.disabled = False
+                checkAttempts = checkAttemptsStatus(updateLoginDetails,loginMsgs)
+                if checkAttempts < 0:
+                    self.otpText.disabled = False
+                    popup = Popup(title='Error', content=Label(text='Incorrect OTP'), size_hint=(None, None), size=(180, 100))
+                    popup.open()
+                else:
+                    self.otpText.disabled = True
+                    popup = Popup(title='Error', content=Label(text='Timeout. Please wait for ' + str(minutes) + ' Minutes ' + str(seconds) + ' Seconds '), size_hint=(None, None), size=(480, 100))
+                    popup.open()
 
     def sendLoginMessages(self,dt):
         global loginMsgs
