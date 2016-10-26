@@ -128,6 +128,7 @@ class LoginDetails:
         try:
             config.statement.execute(sql)
             config.conn.commit()
+            print "Failed Login Time updated"
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
             establishConnection()
