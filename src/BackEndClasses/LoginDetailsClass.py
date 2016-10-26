@@ -157,8 +157,12 @@ class LoginDetails:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                time = aesDecrypt(row[0]).replace("#"," ")
-                ip = aesDecrypt(row[1])
+                if row[0] == "0":
+                    time = "0"
+                    ip = "0"
+                else:
+                    time = aesDecrypt(row[0]).replace("#"," ")
+                    ip = aesDecrypt(row[1])
 
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
@@ -166,12 +170,17 @@ class LoginDetails:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                time = aesDecrypt(row[0]).replace("#"," ")
-                ip = aesDecrypt(row[1])
+                if row[0] == "0":
+                    time = "0"
+                    ip = "0"
+                else:
+                    time = aesDecrypt(row[0]).replace("#"," ")
+                    ip = aesDecrypt(row[1])
 
 
         closeConnection()
-        if ip == "":
+        print "time", time
+        if ip == "0":
             ip = "NA"
         return ip + " " + convertUTCToLocal(time)
 
@@ -180,12 +189,17 @@ class LoginDetails:
         time = ""
         ip =""
         sql = "SELECT login_time,login_ip FROM login_stats WHERE userid = " + "'" + self.userID + "'"
+        print sql
         try:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                time = aesDecrypt(row[0]).replace("#"," ")
-                ip = aesDecrypt(row[1])
+                if row[0] == "0":
+                    time = "0"
+                    ip = "0"
+                else:
+                    time = aesDecrypt(row[0]).replace("#"," ")
+                    ip = aesDecrypt(row[1])
 
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
@@ -193,11 +207,15 @@ class LoginDetails:
             config.statement.execute(sql)
             results = config.statement.fetchall()
             for row in results:
-                time = aesDecrypt(row[0]).replace("#"," ")
-                ip = aesDecrypt(row[1])
+                if row[0] == "0":
+                    time = "0"
+                    ip = "0"
+                else:
+                    time = aesDecrypt(row[0]).replace("#"," ")
+                    ip = aesDecrypt(row[1])
 
         closeConnection()
-        if ip == "":
+        if ip == "0":
             ip = "NA"
         return ip+ " " + convertUTCToLocal(time)
 

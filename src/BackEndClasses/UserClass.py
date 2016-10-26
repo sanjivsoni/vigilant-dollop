@@ -10,9 +10,10 @@ class User:
 
 
     def createUser(self,info):
-        aesEncryptedInfo = aesEncrypt(info)
+        ifContactVerified = str(0)
+        aesEncryptedInfo = aesEncrypt(info + " " + ifContactVerified)
         establishConnection()
-        sql = "INSERT INTO user(userid,password,email,mobile,sudoPwd) VALUES" + insertQueryHelper(self.userID + " " + self.pwd + " " +  aesEncryptedInfo)
+        sql = "INSERT INTO user(userid,password,email,mobile,sudoPwd,contactVerified) VALUES" + insertQueryHelper(self.userID + " " + self.pwd + " " +  aesEncryptedInfo)
         #print sql
         try:
             config.statement.execute(sql)
@@ -83,3 +84,69 @@ class User:
         closeConnection()
 
         return checkFlag
+
+class VerifyUserCredentials:
+
+    def __init__(self,userid):
+        self.userID = hashEncrypt(userid)
+
+    def fetchUserContactDetails(self):
+
+        userMobile = ""
+        userEmail = ""
+
+        establishConnection()
+
+        sql = "SELECT email,mobile from user WHERE userid = '" + self.userID + "'"
+        #print sql
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                userEmail = aesDecrypt(row[0])
+                userMobile = aesDecrypt(row[1])
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+
+        closeConnection()
+        return userEmail + " " + userMobile
+
+    def setContactVerificationStatus(self):
+        establishConnection()
+
+        sql = "UPDATE user SET contactVerified = '" + aesEncrypt(str(1)) + "' WHERE userid = '" + self.userID + "'"
+        print sql
+
+        try:
+            config.statement.execute(sql)
+            config.conn.commit()
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+
+        closeConnection()
+
+    def getContactVerificationStatus(self):
+
+        status = ""
+        establishConnection()
+
+        sql = "SELECT contactVerified from user WHERE userid = '" + self.userID + "'"
+
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                status = int(aesDecrypt(row[0]))
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+
+        closeConnection()
+
+        print "status", status
+        return status

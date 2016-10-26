@@ -20,6 +20,7 @@ smtp_domain = "smtp.gmail.com"
 smtp_port = 587
 email_msg = "Your OneTimePassword(OTP) is "
 emailOtpSubject = "Your Vigilant Dollop OTP"
+emailVerificationSubject = "EmailID Verification"
 emailSuccesfulLoginSubject = "Succesful Login"
 emailFailedLoginSubject = "Failed Login"
 emailPwdChangedSubject = "Password Changed"

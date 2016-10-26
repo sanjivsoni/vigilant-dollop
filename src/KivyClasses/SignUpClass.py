@@ -26,18 +26,21 @@ class SignupScreen(Screen):
     ssnType = 0
 
     def _update_rect(self, instance, value):
-	self.rect.pos = instance.pos
-	self.rect.size = instance.size
+        self.rect.pos = instance.pos
+        self.rect.size = instance.size
 
     def __init__(self,**kwargs):
         super(SignupScreen, self).__init__(**kwargs)
         self.sudoPwd = ""
 
-	with self.canvas.before:
-	    Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
-	    self.rect = Rectangle(size=self.size, pos=self.pos)
+        with self.canvas.before:
+            Color(backgroundColor[0], backgroundColor[1], backgroundColor[2], backgroundColor[3])  # green; colors range from 0-1 instead of 0-255
+            self.rect = Rectangle(size=self.size, pos=self.pos)
 
-	self.bind(size = self._update_rect, pos=self._update_rect)
+        self.bind(size = self._update_rect, pos=self._update_rect)
+        self.captchaCorrectText = createCaptcha()
+        self.ids['21'].reload()
+        print "signup captcha" ,self.captchaCorrectText
 
     def setSudoPwd(self,pwd):
         self.sudoPwd = pwd
@@ -375,26 +378,31 @@ class SignupScreen(Screen):
         if not(self.SQ1 == 0) and not(self.SQ2 == 0) and not(self.ssnType == 0) and not(label[14].text == "Country Code"):
             if self.flag5 and self.flag3 and self.flag11 and self.flag1 and self.flag10 and self.flag4 and self.flag9 and self.flag8 and self.flag6 and self.flag2 and self.flag12:
 
-                if ID10000.text == '12345':
+                if ID10000.text == self.captchaCorrectText:
                     phoneNo = label[14].text+label[5].text
                     userCredentials = label[1].text + " " + label[2].text
                     userContactDetails = label[4].text + " " +phoneNo +  " " + self.sudoPwd
                     userPersonalDetails = label[7].text + " " +label[8].text + " " +label[6].text + " " + str(self.ssnType) + " " +label[11].text.replace(" ", "#")
                     userSecurityQues = str(self.SQ1) + " " + str(self.SQ2) +  " " +label[12].text.replace(" ", "#") + " " +label[13].text.replace(" ", "#")
 
-                    '''
+
                     newUser = User(userCredentials)
                     loginDetails = LoginDetails(hashEncrypt(label[1].text))
                     newUser.createUser(userContactDetails)
                     newUser.addPersonalDetails(userPersonalDetails)
                     newUser.addSecurityQuestions(userSecurityQues)
                     loginDetails.userCreated()
-                    '''
+
 
                     print 'Ok'
                     root = App.get_running_app().root
                     root.current = 'OTPVerification'
-                    root.get_screen('OTPVerification').startTimer()
+                    root.get_screen('OTPVerification').sendOTPforVerification(label[1].text)
+
+                else:
+                    popup = Popup(title='Error',content=Label(text="Incorrect Captcha"),size_hint=(None, None), size=(400, 200))
+                    popup.open()
+
 
         else:
             popup = Popup(title='Error',content=Label(text="Please Enter All The Fields Correctly."),size_hint=(None, None), size=(400, 200))
