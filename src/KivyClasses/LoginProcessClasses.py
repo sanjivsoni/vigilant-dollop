@@ -790,7 +790,7 @@ class RecoverScreen(Screen):
             popup.open()
 
     def recoverUserName(self):
-        print 'Recover USer NAme'
+        #print 'Recover USer NAme'
         self.textInput.text  = ''
         self.textInput.hint_text = 'USername'
         self.recoverLabel.text = "Enter Your new Username"
@@ -1082,7 +1082,7 @@ class HomeScreen(Screen):
         results = verifyUser.fetchLockedFiles()
 
         for i in results:
-            fileName = aesDecrypt(i[1])
+            fileName = aesDecrypt(i[1]).replace('#',' ')
             filePath = aesDecrypt(i[0])
             fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = str(fileName), background_color = (1, 0.29, 0.32,1))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
@@ -1203,7 +1203,7 @@ class Reset(Screen):
         self.topLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.1)
         self.upperLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.2)
         self.lowerLayout = BoxLayout(orientation='horizontal',size_hint_y =0.4)
-        self.middleLayout = BoxLayout(orientation='horizontal', size_hint=(0.4,0.2),pos_hint = {'center_y': .5, 'center_x': .5})
+        self.middleLayout = BoxLayout(orientation='horizontal', size_hint=(0.4,0.3),pos_hint = {'center_y': .5, 'center_x': .5})
         self.gridLayout = GridLayout(cols = 1,spacing = 20)
 
         #Create Widgets For Form
