@@ -1084,7 +1084,7 @@ class HomeScreen(Screen):
         for i in results:
             fileName = aesDecrypt(i[1])
             filePath = aesDecrypt(i[0])
-            fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = buttonId, background_color = (1, 0.29, 0.32,1))
+            fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = str(fileName), background_color = (1, 0.29, 0.32,1))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
 
             fileLabel = Label(text = str(fileName), width = 70, halign = 'left', valign = 'middle', id="label" + str(fileName), font_size = '15sp')
@@ -1375,8 +1375,6 @@ class OtpVerification(Screen):
         self.mobileOTP = mobileOtpQueue.get()
         self.emailOTP = emailOtpQueue.get()
         self.bottomLayout.remove_widget(self.regenerateOtpButton)
-        self.emailOtpText.disabled = True
-        self.mobileOtpText.disabled = True
 
     def startTimer(self):
         self.timerLabel.text = "00:00"
