@@ -113,7 +113,7 @@ class UsernameScreen(Screen):
 
         self.captchaCorrectText = ''
         self.captchaCorrectText = createCaptcha()
-        self.captchaTextInput.text = self.captchaCorrectText
+        #self.captchaTextInput.text = self.captchaCorrectText
         self.captcha = Image(source = 'src/images/captcha.jpg')
         self.captcha.reload()
 
@@ -143,9 +143,6 @@ class UsernameScreen(Screen):
         self.layout.add_widget(self.recoverUserNameButton)
 
         self.add_widget(self.layout)
-
-        self.usernameField.text = 'bhatshubhs'
-
 
     def clearLayout(self):
         for child in self.children[:]:
@@ -189,7 +186,7 @@ class UsernameScreen(Screen):
                 self.usernameField.hint_text = 'Password'
 
                 #self.usernameField.text = 'Qwe@1234'
-                self.usernameField.text = 'Test@1234'
+                #self.usernameField.text = 'Test@1234'
 
                 self.statusLabel.text = ' '
                 self.layout.remove_widget(self.captchaLayout)
@@ -694,7 +691,7 @@ class RecoverScreen(Screen):
         self.layout.add_widget(self.textInput)
         self.layout.add_widget(self.submitButton)
         # Stub
-        self.textInput.text = '+919810030997'
+        #self.textInput.text = '+919810030997'
         self.add_widget(self.topLayout)
         self.add_widget(self.layout)
 
@@ -1219,8 +1216,10 @@ class Reset(Screen):
         self.topLayout.add_widget(self.back)
 
         self.upperLayout.add_widget(self.label)
+        self.status = Label( text = '')
 
         # Grid Layout For Reset Form
+        self.gridLayout.add_widget(self.status)
         self.gridLayout.add_widget(self.text1)
         self.gridLayout.add_widget(self.text2)
         self.gridLayout.add_widget(self.resetButton)
@@ -1269,6 +1268,8 @@ class Reset(Screen):
                     sendData = sendData + self.text2.text
             if not(resetFlag == -1):
                 updateContactDetails.updateUserContactDetails(resetFlag,sendData)
+                self.status.text = 'Details Updated Successfully.'
+                Clock.schedule_once(self.redirectToHomeScreen, 3)
 
 class OtpVerification(Screen):
     def _update_rect(self, instance, value):
