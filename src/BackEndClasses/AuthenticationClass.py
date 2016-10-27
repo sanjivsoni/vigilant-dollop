@@ -178,38 +178,39 @@ class Authentication:
             return 0
 
     def unlockItem(self,filePath,fileName):
-        if(self.authenticationComplete):
-            encryptedSudoPwd = ""
-            establishConnection()
-            sql = "SELECT sudoPwd FROM user WHERE userid =" + "'" + self.userID + "'"
+        encryptedSudoPwd = ""
+        establishConnection()
+        sql = "SELECT sudoPwd FROM user WHERE userid =" + "'" + self.userID + "'"
 
+        try:
+            config.statement.execute(sql)
+            results = config.statement.fetchall()
+            for row in results:
+                encryptedSudoPwd = row[0]
+
+        except Exception, e:
+            print repr(e)
+            config.conn.rollback()
+            flag = 0
+
+        status = unlock(filePath + "/" +  fileName,encryptedSudoPwd)
+        #print filePath + "/" +  fileName + " Removed"
+
+        if status == 1:
+            filePath = filePath.replace(" ","#")
+            fileName = fileName.replace(" ","#")
+            sql = "DELETE FROM lockedFiles WHERE userid = " + "'" + self.userID + "' AND filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
+            print sql
             try:
                 config.statement.execute(sql)
-                results = config.statement.fetchall()
-                for row in results:
-                    encryptedSudoPwd = row[0]
-
+                config.conn.commit()
+                print "File unlocked"
             except Exception, e:
                 print repr(e)
                 config.conn.rollback()
                 flag = 0
-
-            status = unlock(filePath + "/" +  fileName,encryptedSudoPwd)
-
-            if status == 1:
-                filePath = filePath.replace(" ","#")
-                fileName = fileName.replace(" ","#")
-                sql = "DELETE FROM lockedFiles WHERE userid = " + "'" + self.userID + "' AND filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
-                try:
-                    config.statement.execute(sql)
-                    config.conn.commit()
-                    print "File unlocked"
-                except Exception, e:
-                    print repr(e)
-                    config.conn.rollback()
-                    flag = 0
-                closeConnection()
-                return 1
+            closeConnection()
+            return 1
 
 
 
