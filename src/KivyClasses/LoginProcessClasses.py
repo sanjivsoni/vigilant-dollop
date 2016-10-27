@@ -1082,7 +1082,7 @@ class HomeScreen(Screen):
         results = verifyUser.fetchLockedFiles()
 
         for i in results:
-            fileName = aesDecrypt(i[1])
+            fileName = aesDecrypt(i[1]).replace('#',' ') 
             filePath = aesDecrypt(i[0])
             fileButton = Button(text=' ', size=(40, 40), size_hint=(None, None), id = str(fileName), background_color = (1, 0.29, 0.32,1))
             fileButton.bind(on_press = partial(self.unlockFile, fileName, filePath))
