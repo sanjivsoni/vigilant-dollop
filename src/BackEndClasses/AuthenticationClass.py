@@ -200,7 +200,7 @@ class Authentication:
             filePath = filePath.replace(" ","#")
             fileName = fileName.replace(" ","#")
             sql = "DELETE FROM lockedFiles WHERE userid = " + "'" + self.userID + "' AND filepath = '" + aesEncrypt(filePath) + "' AND filename = '" + aesEncrypt(fileName) + "'"
-            print sql
+            #print sql
             try:
                 config.statement.execute(sql)
                 config.conn.commit()

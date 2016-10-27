@@ -1138,7 +1138,7 @@ class HomeScreen(Screen):
     def removeFile(self, fileName, labelPrevious, buttonPrevious, filePath, callback):
         global verifyUser
         verifyUser.unlockItem(filePath, fileName)
-        print "unlocking..............."
+        #print "unlocking..............."
 
         deleted = 1
         for child in self.grid.children:
