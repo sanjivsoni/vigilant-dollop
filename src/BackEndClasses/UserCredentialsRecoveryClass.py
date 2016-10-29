@@ -176,7 +176,8 @@ class UserRecovery:
             config.conn.commit()
             config.statement.execute(loginDetailsTableSQL)
             config.conn.commit()
-            
+            print "Username updated"
+
         except (AttributeError, MySQLdb.OperationalError):
             print "Reconnecting"
             establishConnection()
@@ -198,7 +199,7 @@ class UserRecovery:
     def updateUserPassword(self,newPassword):
         establishConnection()
         sql = "UPDATE user SET password = '" + hashEncrypt(newPassword) + "' " + " WHERE userid = " + "'" + self.userID + "'"
-        print sql
+        #print sql
         try:
             config.statement.execute(sql)
             config.conn.commit()

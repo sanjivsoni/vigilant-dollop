@@ -790,7 +790,7 @@ class RecoverScreen(Screen):
             popup.open()
 
     def recoverUserName(self):
-        print 'Recover USer NAme'
+        #print 'Recover USer NAme'
         self.textInput.text  = ''
         self.textInput.hint_text = 'USername'
         self.recoverLabel.text = "Enter Your new Username"
@@ -1137,8 +1137,8 @@ class HomeScreen(Screen):
 
     def removeFile(self, fileName, labelPrevious, buttonPrevious, filePath, callback):
         global verifyUser
-
         verifyUser.unlockItem(filePath, fileName)
+        #print "unlocking..............."
 
         deleted = 1
         for child in self.grid.children:
@@ -1203,7 +1203,7 @@ class Reset(Screen):
         self.topLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.1)
         self.upperLayout  = BoxLayout(orientation='horizontal',size_hint_y=0.2)
         self.lowerLayout = BoxLayout(orientation='horizontal',size_hint_y =0.4)
-        self.middleLayout = BoxLayout(orientation='horizontal', size_hint=(0.4,0.2),pos_hint = {'center_y': .5, 'center_x': .5})
+        self.middleLayout = BoxLayout(orientation='horizontal', size_hint=(0.4,0.3),pos_hint = {'center_y': .5, 'center_x': .5})
         self.gridLayout = GridLayout(cols = 1,spacing = 20)
 
         #Create Widgets For Form
